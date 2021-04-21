@@ -340,12 +340,13 @@ void renderPaths(NVGcontext* vg, const std::vector<vgerPrim>& primArray) {
     int N = 10000;
 
     for(int i=0;i<N;++i) {
+        auto c = rand_color();
         vgerPrim p = {
             .type = vgerBezier,
             .xform = matrix_identity_float3x3,
             .width = 0.01f*w,
             .cvs ={ rand2()*sz, rand2()*sz, rand2()*sz },
-            .colors = {{1,1,1,.1}, 0, 0}
+            .colors = {c, 0, 0}
         };
         primArray.push_back(p);
     }
