@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "MetalNanoVG",
+        "repositoryURL": "https://github.com/wtholliday/MetalNanoVG",
+        "state": {
+          "branch": "spm",
+          "revision": "b6f7f2535b185518875db19e118962a85b95e122",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
