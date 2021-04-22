@@ -150,7 +150,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                                       min_filter::linear);
 
     float4 color;
-    if(prim.texture != -1) {
+    if(prim.texture) {
         color = tex.sample(textureSampler, in.p);
     } else {
         color = prim.colors[0];

@@ -56,8 +56,8 @@ struct vgerPrim {
     /// Colors for gradients.
     vector_float4 colors[3];
 
-    /// Index of texture, or -1 if not texturing.
-    int texture;
+    /// Read from texture?
+    bool texture;
 
     /// Transform into texture.
 #ifdef __METAL_VERSION__
