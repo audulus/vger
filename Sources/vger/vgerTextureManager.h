@@ -7,6 +7,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface vgerTextureManager : NSObject
 
+@property (nonatomic, retain) id<MTLTexture> atlas;
+
 - (instancetype)initWithDevice:(id<MTLDevice>) device;
 
 /// Creates a new region in the texture.
@@ -15,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param height texture height
 /// @returns region index
 - (int) addRegion: (uint8_t*) data width:(int)width height:(int)height;
+
+/// Add region for an already loaded texture.
+- (int) addRegion:(id<MTLTexture>)texture;
 
 /// Updates the atlas texture.
 /// @param buffer to encode blit commands

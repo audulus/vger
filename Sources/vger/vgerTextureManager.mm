@@ -10,7 +10,6 @@
 @interface vgerTextureManager() {
     id<MTLDevice> device;
     MTLTextureDescriptor* atlasDesc;
-    id<MTLTexture> atlas;
     std::vector<stbrp_node> nodes;
     std::vector<stbrp_rect> regions;
     stbrp_context ctx;
@@ -35,8 +34,8 @@
         atlasDesc.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite;
         atlasDesc.storageMode = MTLStorageModeManaged;
 
-        atlas = [device newTextureWithDescriptor:atlasDesc];
-        assert(atlas);
+        self.atlas = [device newTextureWithDescriptor:atlasDesc];
+        assert(self.atlas);
     }
     return self;
 }
@@ -48,8 +47,14 @@
     assert(tex);
 
     [tex replaceRegion:MTLRegionMake2D(0, 0, width, height) mipmapLevel:0 withBytes:data bytesPerRow:width*sizeof(uint32)];
-    [newTextures addObject:tex];
+    return [self addRegion:tex];
 
+}
+
+/// Add region for an already loaded texture.
+- (int) addRegion:(id<MTLTexture>)texture {
+
+    [newTextures addObject:texture];
     return regions.size() + newTextures.count;
 
 }
@@ -79,7 +84,7 @@
                    sourceLevel:0
                   sourceOrigin:MTLOriginMake(0, 0, 0)
                     sourceSize:MTLSizeMake(tex.width, tex.height, 1)
-                     toTexture:atlas
+                     toTexture:self.atlas
               destinationSlice:0
               destinationLevel:0
              destinationOrigin:MTLOriginMake(r.x, r.y, 0)];

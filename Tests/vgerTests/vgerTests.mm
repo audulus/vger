@@ -4,6 +4,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
 #import "vgerRenderer.h"
+#import "testUtils.h"
 #include "nanovg_mtl.h"
 #include <vector>
 
@@ -54,42 +55,6 @@ using namespace simd;
 
 - (void)tearDown {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
-}
-
-void writeCGImage(CGImageRef image, CFURLRef url) {
-    auto dest = CGImageDestinationCreateWithURL(url, kUTTypePNG, 1, nil);
-    CGImageDestinationAddImage(dest, image, nil);
-    assert(CGImageDestinationFinalize(dest));
-}
-
-CGImageRef getImage(UInt8* data, int w, int h) {
-
-    auto provider = CGDataProviderCreateWithData(nullptr,
-                                                 data,
-                                                 4*w*h,
-                                                 nullptr);
-
-    return CGImageCreate(w, h,
-                         8, 32,
-                         w*4,
-                         CGColorSpaceCreateDeviceRGB(),
-                         kCGImageAlphaNoneSkipLast,
-                         provider,
-                         nil,
-                         true,
-                         kCGRenderingIntentDefault);
-
-}
-
-CGImageRef getTextureImage(id<MTLTexture> texture) {
-
-    int w = texture.width;
-    int h = texture.height;
-
-    std::vector<UInt8> imageBytes(4*w*h);
-    [texture getBytes:imageBytes.data() bytesPerRow:w * 4 fromRegion:MTLRegionMake2D(0, 0, w, h) mipmapLevel:0];
-
-    return getImage(imageBytes.data(), w, h);
 }
 
 static void SplitBezier(float t,

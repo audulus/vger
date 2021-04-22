@@ -25,7 +25,8 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "vgerTests",
-            dependencies: ["vger", "MetalNanoVG"]),
+            dependencies: ["vger", "MetalNanoVG"],
+            resources: [.copy("images")]),
     ],
     cxxLanguageStandard: .cxx14
 )
