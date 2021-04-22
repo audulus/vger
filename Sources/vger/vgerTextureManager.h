@@ -16,6 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @returns region index
 - (int) addRegion: (uint8_t*) data width:(int)width height:(int)height;
 
+/// Updates the atlas texture.
+/// @param buffer to encode blit commands
+- (void) update:(id<MTLCommandBuffer>) buffer;
+
 @end
 
 NS_ASSUME_NONNULL_END
