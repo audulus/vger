@@ -125,21 +125,24 @@ static void SplitBezier(float t,
             .width = 0.01,
             .radius = 0.2,
             .cvs = {0, {0,0.5}, {0.5,0.5}},
-            .colors = {cyan, 0, 0}
+            .colors = {cyan, 0, 0},
+            .texture = -1
         },
         {
             .type = vgerCurve,
             .xform=matrix_identity_float3x3,
             .width = 0.01,
             .count = 5,
-            .colors = {white, 0, 0}
+            .colors = {white, 0, 0},
+            .texture = -1
         },
         {
             .type = vgerSegment,
             .xform=matrix_identity_float3x3,
             .width = 0.01,
             .cvs = {{-.6,-.6}, {-.4,-.5}},
-            .colors = {magenta, 0, 0}
+            .colors = {magenta, 0, 0},
+            .texture = -1
         },
         {
             .type = vgerRect,
@@ -147,7 +150,8 @@ static void SplitBezier(float t,
             .width = 0.01,
             .cvs = {{-.8,-.8}, {.1,.1}},
             .radius=0.02,
-            .colors = {{1,1,1,.5}, 0, 0}
+            .colors = {{1,1,1,.5}, 0, 0},
+            .texture = -1
         },
         {
             .type = vgerArc,
@@ -155,7 +159,8 @@ static void SplitBezier(float t,
             .width = 0.01,
             .cvs = {{-.5, 0.5}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
             .radius=0.1,
-            .colors = {white}
+            .colors = {white},
+            .texture = -1
         }
     };
     
@@ -220,7 +225,8 @@ vector_float4 rand_color() {
             .xform = matrix_identity_float3x3,
             .width = 0.01,
             .cvs ={ rand_box(), rand_box(), rand_box() },
-            .colors = {rand_color(), 0, 0}
+            .colors = {rand_color(), 0, 0},
+            .texture = -1
         };
         primArray.push_back(p);
     }
@@ -270,13 +276,15 @@ vector_float4 rand_color() {
                 .type = vgerBezier,
                 .xform = matrix_identity_float3x3,
                 .width = 0.01,
-                .colors = {c, 0, 0}
+                .colors = {c, 0, 0},
+                .texture = -1
             },
             {
                 .type = vgerBezier,
                 .xform = matrix_identity_float3x3,
                 .width = 0.01,
-                .colors = {c, 0, 0}
+                .colors = {c, 0, 0},
+                .texture = -1
             }
         };
         SplitBezier(.5, cvs, p[0].cvs, p[1].cvs);

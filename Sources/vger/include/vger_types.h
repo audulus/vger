@@ -52,6 +52,17 @@ struct vgerPrim {
     
     /// Colors for gradients.
     vector_float4 colors[3];
+
+    /// Index of texture, or -1 if not texturing.
+    int texture;
+
+    /// Transform into texture.
+#ifdef __METAL_VERSION__
+    float3x3 txform;
+#else
+    matrix_float3x3 txform;
+#endif
+
 };
 
 #endif /* vger_types_h */
