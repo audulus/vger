@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param pass render pass info
 /// @param primBuffer buffer of vgerPrims
 /// @param n number of vgerPrims in buffer
+/// @param texture texture to sample for textured prims
 - (void) encodeTo:(id<MTLCommandBuffer>) buffer
              pass:(MTLRenderPassDescriptor*) pass
             prims:(id<MTLBuffer>) primBuffer
