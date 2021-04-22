@@ -24,7 +24,7 @@ enum vgerPrimType {
     /// Multi-segment bezier curve.
     vgerCurve,
 
-    /// Connection wire.
+    /// Connection wire. See https://www.shadertoy.com/view/NdsXRl
     vgerWire
 };
 
