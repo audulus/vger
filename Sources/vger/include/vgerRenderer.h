@@ -19,7 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) encodeTo:(id<MTLCommandBuffer>) buffer
              pass:(MTLRenderPassDescriptor*) pass
             prims:(id<MTLBuffer>) primBuffer
-            count:(int)n;
+            count:(int)n
+          texture:(id<MTLTexture>)texture;
 
 @end
 

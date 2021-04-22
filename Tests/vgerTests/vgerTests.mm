@@ -15,6 +15,7 @@ using namespace simd;
     vgerRenderer* renderer;
     id<MTLTexture> texture;
     MTLRenderPassDescriptor* pass;
+    id<MTLTexture> sampleTexture;
 }
 
 @end
@@ -40,6 +41,9 @@ using namespace simd;
 
     texture = [device newTextureWithDescriptor:textureDesc];
     assert(texture);
+
+    sampleTexture = [device newTextureWithDescriptor:textureDesc];
+    assert(sampleTexture);
 
     pass = [MTLRenderPassDescriptor new];
     pass.colorAttachments[0].texture = texture;
@@ -176,7 +180,11 @@ static void SplitBezier(float t,
 
     auto commandBuffer = [queue commandBuffer];
 
-    [renderer encodeTo:commandBuffer pass:pass prims:prims count:sizeof(primArray)/sizeof(vgerPrim)];
+    [renderer encodeTo:commandBuffer
+                  pass:pass
+                 prims:prims
+                 count:sizeof(primArray)/sizeof(vgerPrim)
+               texture:sampleTexture];
 
     // Sync texture on macOS
     #if TARGET_OS_OSX
@@ -239,7 +247,11 @@ vector_float4 rand_color() {
         [self startMeasuring];
         auto commandBuffer = [queue commandBuffer];
 
-        [renderer encodeTo:commandBuffer pass:pass prims:prims count:primArray.size()];
+        [renderer encodeTo:commandBuffer
+                      pass:pass
+                     prims:prims
+                     count:primArray.size()
+                   texture:sampleTexture];
 
         // Sync texture on macOS
         #if TARGET_OS_OSX
@@ -300,7 +312,11 @@ vector_float4 rand_color() {
         [self startMeasuring];
         auto commandBuffer = [queue commandBuffer];
 
-        [renderer encodeTo:commandBuffer pass:pass prims:prims count:primArray.size()];
+        [renderer encodeTo:commandBuffer
+                      pass:pass
+                     prims:prims
+                     count:primArray.size()
+                   texture:sampleTexture];
 
         // Sync texture on macOS
         #if TARGET_OS_OSX

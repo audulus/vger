@@ -63,12 +63,14 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
              pass:(MTLRenderPassDescriptor*) pass
             prims:(id<MTLBuffer>) primBuffer
             count:(int)n
+          texture:(id<MTLTexture>)texture
 {
     auto enc = [buffer renderCommandEncoderWithDescriptor:pass];
     
     [enc setRenderPipelineState:pipeline];
     [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
     [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
+    [enc setFragmentTexture:texture atIndex:0];
     [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:n];
     [enc endEncoding];
     
