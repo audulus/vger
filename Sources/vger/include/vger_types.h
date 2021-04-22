@@ -22,7 +22,10 @@ enum vgerPrimType {
     vgerSegment,
     
     /// Multi-segment bezier curve.
-    vgerCurve
+    vgerCurve,
+
+    /// Connection wire.
+    vgerWire
 };
 
 /// Primitive rendered by the GPU.
