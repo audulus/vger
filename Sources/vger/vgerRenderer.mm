@@ -2,21 +2,9 @@
 
 #import "vgerRenderer.h"
 
-@interface vgerBundleFinder : NSObject
-@end
-
-@implementation vgerBundleFinder
-
-- (instancetype)init
-{
-    return [super init];
-}
-
-@end
-
 static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
-    auto bundle = [NSBundle bundleForClass:vgerBundleFinder.class];
+    auto bundle = [NSBundle bundleForClass:vgerRenderer.class];
 
     assert(bundle);
 
