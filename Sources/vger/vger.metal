@@ -146,6 +146,16 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 
     float fw = length(fwidth(in.p));
 
-    return mix(float4(prim.colors[0].rgb,0.1), prim.colors[0], 1.0-smoothstep(sw,sw+fw,d) );
+    constexpr sampler textureSampler (mag_filter::linear,
+                                      min_filter::linear);
+
+    float4 color;
+    if(prim.texture != -1) {
+        color = tex.sample(textureSampler, in.p);
+    } else {
+        color = prim.colors[0];
+    }
+
+    return mix(float4(color.rgb,0.1), color, 1.0-smoothstep(sw,sw+fw,d) );
 
 }
