@@ -182,9 +182,14 @@ simd_float4 magenta = {1,0,1,1};
         .colors = {cyan, 0, 0},
     };
 
+    vgerRender(vger, &p);
+
+    vgerSave(vger);
     vgerTranslate(vger, float2{0.5f,0.0f});
     vgerTranslate(vger, float2{0.0f,0.5f});
+    vgerScale(vger, float2{0.2f, 0.2f});
     vgerRender(vger, &p);
+    vgerRestore(vger);
 
     auto commandBuffer = [queue commandBuffer];
 
