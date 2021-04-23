@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param width texture width
 /// @param height texture height
 /// @returns region index
-- (int) addRegion: (uint8_t*) data width:(int)width height:(int)height bytesPerRow:(NSUInteger)bytesPerRow;
+- (int) addRegion: (const uint8_t*) data width:(int)width height:(int)height bytesPerRow:(NSUInteger)bytesPerRow;
 
 /// Add region for an already loaded texture.
 - (int) addRegion:(id<MTLTexture>)texture;

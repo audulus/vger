@@ -42,7 +42,7 @@
     return self;
 }
 
-- (int) addRegion:(uint8_t *)data width:(int)width height:(int)height bytesPerRow:(NSUInteger)bytesPerRow {
+- (int) addRegion:(const uint8_t *)data width:(int)width height:(int)height bytesPerRow:(NSUInteger)bytesPerRow {
 
     auto desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm width:width height:height mipmapped:NO];
     desc.usage = MTLTextureUsageShaderRead;
