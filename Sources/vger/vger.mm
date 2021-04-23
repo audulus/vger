@@ -69,11 +69,12 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
 
     for(;*str;++str) {
         auto info = [vg->glyphCache getGlyph:*str size:12];
+        float2 sz = {float(info.glyphSize.width), float(info.glyphSize.height)};
 
         vgerPrim prim = {
             .type = vgerRect,
            // .texture = -info.regionIndex,
-            .cvs = {p, p+float2{float(info.glyphSize.width), float(info.glyphSize.height)}},
+            .cvs = {p, p+sz},
             .xform=matrix_identity_float3x3,
             .width = 0.01,
             .radius = 0,
@@ -82,7 +83,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
 
         vgerRender(vg, &prim);
 
-        p.x = info.glyphSize.width;
+        p.x = sz.x;
     }
 
 }
