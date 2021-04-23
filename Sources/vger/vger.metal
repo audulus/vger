@@ -9,6 +9,7 @@ using namespace metal;
 struct VertexOut {
     float4 position  [[ position ]];
     float2 p;
+    float2 t;
     int primIndex;
 };
 
@@ -127,6 +128,7 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
     
     auto rect = sdPrimOBB(prim).inset(-0.02);
 
+    out.t = verts[vid];
     out.p = verts[vid].x * rect.u + verts[vid].y * rect.v + rect.origin;
     out.position = float4(prim.xform * float3(out.p, 1), 1);
     
