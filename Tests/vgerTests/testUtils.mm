@@ -33,8 +33,23 @@ CGImageRef getTextureImage(id<MTLTexture> texture) {
     int w = texture.width;
     int h = texture.height;
 
-    std::vector<UInt8> imageBytes(4*w*h);
-    [texture getBytes:imageBytes.data() bytesPerRow:w * 4 fromRegion:MTLRegionMake2D(0, 0, w, h) mipmapLevel:0];
+    std::vector<UInt8> imageBytes(4*w*h, 0);
+
+    switch(texture.pixelFormat) {
+        case MTLPixelFormatRGBA8Unorm:
+            [texture getBytes:imageBytes.data() bytesPerRow:w * 4 fromRegion:MTLRegionMake2D(0, 0, w, h) mipmapLevel:0];
+            break;
+        case MTLPixelFormatA8Unorm: {
+            std::vector<UInt8> tmpBytes(w*h);
+            [texture getBytes:tmpBytes.data() bytesPerRow:w fromRegion:MTLRegionMake2D(0, 0, w, h) mipmapLevel:0];
+            for(auto i=0;i<tmpBytes.size();++i) {
+                imageBytes[4*i] = tmpBytes[i];
+            }
+        }
+
+        default:
+            assert(false && "unsupported pixel format");
+    }
 
     return getImage(imageBytes.data(), w, h);
 }
