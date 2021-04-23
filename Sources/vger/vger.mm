@@ -23,7 +23,7 @@ struct vger {
     vger() {
         device = MTLCreateSystemDefaultDevice();
         renderer = [[vgerRenderer alloc] initWithDevice:device];
-        txMgr = [[vgerTextureManager alloc] initWithDevice:device];
+        txMgr = [[vgerTextureManager alloc] initWithDevice:device pixelFormat:MTLPixelFormatRGBA8Unorm];
         for(int i=0;i<3;++i) {
             prims[i] = [device newBufferWithLength:MAX_PRIMS*sizeof(vgerPrim) options:MTLResourceStorageModeShared];
         }
@@ -47,7 +47,7 @@ void vgerBegin(vger* vg) {
 
 int  vgerAddTexture(vger* vg, uint8_t* data, int width, int height) {
     assert(data);
-    return [vg->txMgr addRegion:data width:width height:height];
+    return [vg->txMgr addRegion:data width:width height:height bytesPerRow:width*sizeof(uint32)];
 }
 
 void vgerRender(vger* vg, const vgerPrim* prim) {

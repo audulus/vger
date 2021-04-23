@@ -41,7 +41,7 @@
 }
 
 - (void)testPackTextures {
-    vgerTextureManager* mgr = [[vgerTextureManager alloc] initWithDevice:device];
+    vgerTextureManager* mgr = [[vgerTextureManager alloc] initWithDevice:device pixelFormat:MTLPixelFormatRGBA8Unorm];
 
     id<MTLTexture> tex[5];
     int sz = 16;

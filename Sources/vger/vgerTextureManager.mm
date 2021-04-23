@@ -19,12 +19,12 @@
 
 @implementation vgerTextureManager
 
-- (instancetype) initWithDevice:(id<MTLDevice>)device {
+- (instancetype) initWithDevice:(id<MTLDevice>)device pixelFormat:(MTLPixelFormat)format {
     self = [super init];
     if (self) {
         self->device = device;
         atlasDesc = [MTLTextureDescriptor
-                            texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
+                            texture2DDescriptorWithPixelFormat:format
                             width:ATLAS_SIZE
                             height:ATLAS_SIZE
                             mipmapped:NO];
@@ -42,7 +42,7 @@
     return self;
 }
 
-- (int) addRegion:(uint8_t *)data width:(int)width height:(int)height {
+- (int) addRegion:(uint8_t *)data width:(int)width height:(int)height bytesPerRow:(NSUInteger)bytesPerRow {
 
     auto desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm width:width height:height mipmapped:NO];
     desc.usage = MTLTextureUsageShaderRead;
@@ -50,7 +50,7 @@
     auto tex = [device newTextureWithDescriptor:desc];
     assert(tex);
 
-    [tex replaceRegion:MTLRegionMake2D(0, 0, width, height) mipmapLevel:0 withBytes:data bytesPerRow:width*sizeof(uint32)];
+    [tex replaceRegion:MTLRegionMake2D(0, 0, width, height) mipmapLevel:0 withBytes:data bytesPerRow:bytesPerRow];
     return [self addRegion:tex];
 
 }

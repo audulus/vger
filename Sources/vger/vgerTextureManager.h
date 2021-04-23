@@ -9,14 +9,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, retain) id<MTLTexture> atlas;
 
-- (instancetype)initWithDevice:(id<MTLDevice>) device;
+- (instancetype)initWithDevice:(id<MTLDevice>) device pixelFormat:(MTLPixelFormat)format;
 
 /// Creates a new region in the texture.
 /// @param data RGBA texture data (8-bits per component)
 /// @param width texture width
 /// @param height texture height
 /// @returns region index
-- (int) addRegion: (uint8_t*) data width:(int)width height:(int)height;
+- (int) addRegion: (uint8_t*) data width:(int)width height:(int)height bytesPerRow:(NSUInteger)bytesPerRow;
 
 /// Add region for an already loaded texture.
 - (int) addRegion:(id<MTLTexture>)texture;
