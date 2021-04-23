@@ -22,6 +22,10 @@
     return self;
 }
 
+- (void) dealloc {
+    CFRelease(ctFont);
+}
+
 - (GlyphInfo) getGlyph:(CGGlyph)glyph size:(float) size {
 
     if(glyph >= glyphs.size()) {
