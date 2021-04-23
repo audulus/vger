@@ -48,11 +48,11 @@
     int width = ceilf(boundingRect.size.width);
     int height = ceilf(boundingRect.size.height);
 
-    uint8_t *imageData = (uint8_t*) malloc(width * height);
+    std::vector<uint8_t> imageData(width*height);
 
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
     CGBitmapInfo bitmapInfo = (kCGBitmapAlphaInfoMask & kCGImageAlphaNone);
-    CGContextRef context = CGBitmapContextCreate(imageData,
+    CGContextRef context = CGBitmapContextCreate(imageData.data(),
                                                  width,
                                                  height,
                                                  8,
@@ -63,11 +63,14 @@
     CGContextAddPath(context, path);
     CGContextFillPath(context);
 
-    auto region = [mgr addRegion:imageData width:width height:height bytesPerRow:width];
+    auto region = [mgr addRegion:imageData.data() width:width height:height bytesPerRow:width];
 
     GlyphInfo info = {size, region};
 
     v.push_back(info);
+
+    CGPathRelease(path);
+    CGContextRelease(context);
 
     return info;
 
