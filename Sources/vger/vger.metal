@@ -153,7 +153,8 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
     float fw = length(fwidth(in.p));
 
     constexpr sampler textureSampler (mag_filter::linear,
-                                      min_filter::linear);
+                                      min_filter::linear,
+                                      coord::pixel);
 
     float4 color;
     switch(prim.paint) {
