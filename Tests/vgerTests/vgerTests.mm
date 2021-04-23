@@ -208,6 +208,50 @@ simd_float4 magenta = {1,0,1,1};
     showTexture(texture, @"xform.png");
 }
 
+- (void) testRects {
+
+    auto vger = vgerNew();
+    assert(vger);
+
+    vgerBegin(vger);
+
+    vgerSave(vger);
+    vgerScale(vger, float2{0.05, 0.05});
+
+    vgerPrim p = {
+        .type = vgerRect,
+        .width = 0.01,
+        .cvs = { {0,0}, {1,1}},
+        .radius=0.04,
+        .colors = {{1,1,1,.5}, 0, 0},
+    };
+
+    for(int i=0;i<10;++i) {
+        vgerRender(vger, &p);
+        p.cvs[0].x += 1.2;
+    }
+
+    vgerRestore(vger);
+
+    auto commandBuffer = [queue commandBuffer];
+
+    vgerEncode(vger, commandBuffer, pass);
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder endEncoding];
+    #endif
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    vgerDelete(vger);
+
+    showTexture(texture, @"rects.png");
+}
+
 - (void) testText {
 
     auto vger = vgerNew();
