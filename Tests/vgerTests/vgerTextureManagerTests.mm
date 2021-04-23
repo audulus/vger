@@ -25,11 +25,18 @@
     // Put teardown code here. This method is called after the invocation of each test method in the class.
 }
 
+- (NSURL*) getImage:(NSString*)name {
+    NSString* path = @"Contents/Resources/vger_vgerTests.bundle/Contents/Resources/images/";
+    path = [path stringByAppendingString:name];
+    NSBundle* bundle = [NSBundle bundleForClass:self.class];
+    return [bundle.bundleURL URLByAppendingPathComponent:path];
+}
+
 - (void)testPackTextures {
     vgerTextureManager* mgr = [[vgerTextureManager alloc] initWithDevice:device];
 
     NSBundle* bundle = [NSBundle bundleForClass:self.class];
-    NSURL* imageURL = [bundle.bundleURL URLByAppendingPathComponent:@"Contents/Resources/vger_vgerTests.bundle/Contents/Resources/images/icon-mac-16.png"];
+    NSURL* imageURL = [self getImage:@"icon-mac-32.png"];
 
     NSLog(@"url: %@", imageURL);
 
