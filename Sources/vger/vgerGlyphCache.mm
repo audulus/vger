@@ -42,7 +42,7 @@
     CGRect boundingRect;
     CTFontGetBoundingRectsForGlyphs(ctFont, kCTFontOrientationHorizontal, &glyph, &boundingRect, 1);
 
-    CGAffineTransform glyphTransform = CGAffineTransformMake(1, 0, 0, -1, 0, 0);
+    CGAffineTransform glyphTransform = CGAffineTransformMake(1, 0, 0, -1, -boundingRect.origin.x, -boundingRect.origin.y);
     CGPathRef path = CTFontCreatePathForGlyph(ctFont, glyph, &glyphTransform);
 
     int width = ceilf(boundingRect.size.width);
