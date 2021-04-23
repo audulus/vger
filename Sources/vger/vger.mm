@@ -83,7 +83,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
 
         vgerRender(vg, &prim);
 
-        p.x = sz.x;
+        p.x += sz.x;
     }
 
 }
