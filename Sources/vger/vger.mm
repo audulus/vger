@@ -95,9 +95,10 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
 
             auto info = [vg->glyphCache getGlyph:glyphs[i] size:12];
             if(info.regionIndex != -1) {
-                float2 sz = {float(info.glyphSize.width), float(info.glyphSize.height)};
 
-                float2 p = {float(positions[i].x), float(positions[i].y)};
+                CGRect r = CTRunGetImageBounds(run, nil, CFRangeMake(i, 1));
+                float2 p = {float(r.origin.x), float(r.origin.y)};
+                float2 sz = {float(r.size.width), float(r.size.height)};
 
                 vgerPrim prim = {
                     .type = vgerRect,
