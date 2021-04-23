@@ -115,8 +115,8 @@ simd_float4 magenta = {1,0,1,1};
             .type = vgerRect,
             .xform=matrix_identity_float3x3,
             .width = 0.01,
-            .cvs = {{-.8,-.8}, {.1,.1}},
-            .radius=0.02,
+            .cvs = {{-.8,-.8}, {-.6,-.6}},
+            .radius=0.04,
             .colors = {{1,1,1,.5}, 0, 0},
         },
         {

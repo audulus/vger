@@ -25,8 +25,11 @@ float sdPrim(const device vgerPrim& prim, float2 p) {
         case vgerArc:
             d = sdArc(p - prim.cvs[0], prim.cvs[1], prim.cvs[2], prim.radius, 0.002);
             break;
-        case vgerRect:
-            d = sdBox(p - prim.cvs[0], prim.cvs[1], prim.radius);
+        case vgerRect: {
+            auto center = .5*(prim.cvs[1] + prim.cvs[0]);
+            auto size = prim.cvs[1] - prim.cvs[0];
+            d = sdBox(p - center, .5*size, prim.radius);
+        }
             break;
         case vgerSegment:
             d = sdSegment(p, prim.cvs[0], prim.cvs[1]);
@@ -82,8 +85,8 @@ OBB sdPrimOBB(const device vgerPrim& prim) {
             return { prim.cvs[0] - prim.radius, {d,0}, {0,d} };
         }
         case vgerRect: {
-            auto sz = prim.cvs[1];
-            return { prim.cvs[0]-sz, {2*sz.x,0}, {0,2*sz.y} };
+            auto sz = prim.cvs[1]-prim.cvs[0];
+            return { prim.cvs[0], {sz.x,0}, {0,sz.y} };
         }
         case vgerSegment: {
             auto a = prim.cvs[0];
