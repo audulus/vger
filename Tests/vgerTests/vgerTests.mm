@@ -561,11 +561,29 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     vgerTranslate(vger, float2{-1, -1});
     vgerScale(vger, float2{s, s});
 
-    textAt(vger, 100, 400, "Quadratic Bezier stroke");
-    textAt(vger, 100, 300, "Rounded rectangle");
-    textAt(vger, 100, 200, "Circle");
-    textAt(vger, 100, 100, "Line segment");
-    textAt(vger, 100, 000, "Arc");
+    vgerPrim bez = {
+        .type = vgerBezier,
+        .width = 1.0,
+        .cvs = {{50, 450}, {100,450}, {100,500}},
+        .colors = {{1,0,1,1}}
+    };
+
+    vgerRender(vger, &bez);
+    textAt(vger, 150, 450, "Quadratic Bezier stroke");
+
+    vgerPrim rect = {
+        .type = vgerRect,
+        .width = 0.0,
+        .radius = 10,
+        .cvs = {{50, 350}, {100,400}},
+        .colors = {{1,0,1,1}}
+    };
+    vgerRender(vger, &rect);
+    textAt(vger, 150, 350, "Rounded rectangle");
+
+    textAt(vger, 150, 250, "Circle");
+    textAt(vger, 150, 150, "Line segment");
+    textAt(vger, 150, 050, "Arc");
 
     vgerRestore(vger);
 
