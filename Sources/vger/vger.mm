@@ -58,3 +58,12 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
                      count:vg->primCount
                    texture:vg->txMgr.atlas];
 }
+
+void vgerSave(vger* vg) {
+    vg->txStack.push_back(vg->txStack.back());
+}
+
+void vgerRestore(vger* vg) {
+    vg->txStack.pop_back();
+    assert(!vg->txStack.empty());
+}
