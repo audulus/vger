@@ -115,6 +115,13 @@ void vgerScale(vger* vg, vector_float2 s) {
     A = matrix_multiply(A, M);
 }
 
+/// Transforms a point according to the current transformation.
+vector_float2 vgerTransform(vger* vg, vector_float2 p) {
+    auto& M = vg->txStack.back();
+    auto q = matrix_multiply(M, float3{p.x,p.y,1.0});
+    return {q.x/q.z, q.y/q.z};
+}
+
 void vgerSave(vger* vg) {
     vg->txStack.push_back(vg->txStack.back());
 }

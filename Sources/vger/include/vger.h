@@ -40,6 +40,9 @@ void vgerTranslate(vger*, vector_float2 t);
 /// Scales current coordinate system.
 void vgerScale(vger*, vector_float2 s);
 
+/// Transforms a point according to the current transformation.
+vector_float2 vgerTransform(vger*, vector_float2 p);
+
 /// Saves the render state.
 void vgerSave(vger*);
 
