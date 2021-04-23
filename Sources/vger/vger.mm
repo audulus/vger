@@ -43,6 +43,11 @@ void vgerBegin(vger* vg) {
     vg->primCount = 0;
 }
 
+int  vgerAddTexture(vger* vg, uint8_t* data, int width, int height) {
+    assert(data);
+    return [vg->txMgr addRegion:data width:width height:height];
+}
+
 void vgerRender(vger* vg, const vgerPrim* prim) {
     *vg->p = *prim;
     vg->p->xform = vg->txStack.back();
