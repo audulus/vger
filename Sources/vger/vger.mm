@@ -47,6 +47,7 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
     *vg->p = *prim;
     vg->p->xform = vg->txStack.back();
     vg->p++;
+    vg->primCount++;
 }
 
 void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
