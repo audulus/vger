@@ -95,22 +95,24 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
             printf("got glyph %d\n", glyphs[i]);
 
             auto info = [vg->glyphCache getGlyph:glyphs[i] size:12];
-            float2 sz = {float(info.glyphSize.width), float(info.glyphSize.height)};
+            if(info.regionIndex != -1) {
+                float2 sz = {float(info.glyphSize.width), float(info.glyphSize.height)};
 
-            float2 p = {float(positions[i].x), float(positions[i].y)};
+                float2 p = {float(positions[i].x), float(positions[i].y)};
 
-            vgerPrim prim = {
-                .type = vgerRect,
-                .paint = vgerGlyph,
-                .texture = info.regionIndex,
-                .cvs = {p, p+sz},
-                .xform=matrix_identity_float3x3,
-                .width = 0.01,
-                .radius = 0,
-                .colors = {color, 0, 0},
-            };
+                vgerPrim prim = {
+                    .type = vgerRect,
+                    .paint = vgerGlyph,
+                    .texture = info.regionIndex,
+                    .cvs = {p, p+sz},
+                    .xform=matrix_identity_float3x3,
+                    .width = 0.01,
+                    .radius = 0,
+                    .colors = {color, 0, 0},
+                };
 
-            vgerRender(vg, &prim);
+                vgerRender(vg, &prim);
+            }
         }
     }
 

@@ -54,7 +54,7 @@
 
     if(path == 0) {
         NSLog(@"no path for glyph index %d\n", (int)glyph);
-        return;
+        return GlyphInfo();
     }
 
     int width = ceilf(boundingRect.size.width);
