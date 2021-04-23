@@ -92,7 +92,6 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
         CTRunGetPositions(run, entire, positions);
 
         for(int i=0;i<glyphCount;++i) {
-            printf("got glyph %d\n", glyphs[i]);
 
             auto info = [vg->glyphCache getGlyph:glyphs[i] size:12];
             if(info.regionIndex != -1) {
