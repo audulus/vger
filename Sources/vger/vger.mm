@@ -18,12 +18,12 @@ struct vger {
     int curPrims = 0;
     vgerPrim* p;
     int primCount = 0;
-    vgerTextureManager* txMgr;
+    vgerTextureManager* texMgr;
 
     vger() {
         device = MTLCreateSystemDefaultDevice();
         renderer = [[vgerRenderer alloc] initWithDevice:device];
-        txMgr = [[vgerTextureManager alloc] initWithDevice:device pixelFormat:MTLPixelFormatRGBA8Unorm];
+        texMgr = [[vgerTextureManager alloc] initWithDevice:device pixelFormat:MTLPixelFormatRGBA8Unorm];
         for(int i=0;i<3;++i) {
             prims[i] = [device newBufferWithLength:MAX_PRIMS*sizeof(vgerPrim) options:MTLResourceStorageModeShared];
         }
@@ -47,7 +47,7 @@ void vgerBegin(vger* vg) {
 
 int  vgerAddTexture(vger* vg, const uint8_t* data, int width, int height) {
     assert(data);
-    return [vg->txMgr addRegion:data width:width height:height bytesPerRow:width*sizeof(uint32)];
+    return [vg->texMgr addRegion:data width:width height:height bytesPerRow:width*sizeof(uint32)];
 }
 
 void vgerRender(vger* vg, const vgerPrim* prim) {
@@ -60,12 +60,12 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
 }
 
 void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
-    [vg->txMgr update:buf];
+    [vg->texMgr update:buf];
     [vg->renderer encodeTo:buf
                       pass:pass
                      prims:vg->prims[vg->curPrims]
                      count:vg->primCount
-                   texture:vg->txMgr.atlas];
+                   texture:vg->texMgr.atlas];
 }
 
 void vgerTranslate(vger* vg, vector_float2 t) {
