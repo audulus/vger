@@ -17,7 +17,7 @@
     self = [super init];
     if (self) {
         mgr = [[vgerTextureManager alloc] initWithDevice:device pixelFormat:MTLPixelFormatA8Unorm];
-        ctFont = CTFontCreateWithName((__bridge CFStringRef)@"Avenir-light", /*fontPointSize*/12, NULL);
+        ctFont = CTFontCreateWithName((__bridge CFStringRef)@"Avenir-light", /*fontPointSize*/48, NULL);
     }
     return self;
 }
@@ -47,7 +47,7 @@
     CGRect boundingRect;
     CTFontGetBoundingRectsForGlyphs(ctFont, kCTFontOrientationHorizontal, &glyph, &boundingRect, 1);
 
-    CGAffineTransform glyphTransform = CGAffineTransformMake(1, 0, 0, -1, -boundingRect.origin.x, -boundingRect.origin.y);
+    CGAffineTransform glyphTransform = CGAffineTransformMake(1, 0, 0, 1, -boundingRect.origin.x, -boundingRect.origin.y);
     CGPathRef path = CTFontCreatePathForGlyph(ctFont, glyph, &glyphTransform);
 
     if(path == 0) {
@@ -72,8 +72,29 @@
                                                  colorSpace,
                                                  bitmapInfo);
 
+    // Fill the context with an opaque black color
+    CGContextSetRGBFillColor(context, 0, 0, 0, 1);
+    CGContextFillRect(context, CGRectMake(0, 0, width, height));
+
+    // Set fill color so that glyphs are solid white
+    CGContextSetRGBFillColor(context, 1, 1, 1, 1);
+
     CGContextAddPath(context, path);
     CGContextFillPath(context);
+
+    printf("GLYPH %d\n", (int) glyph);
+    for(int i=0;i<width*height;++i) {
+        if(i % width == 0) {
+            printf("\n");
+        }
+        if(imageData[i] == 0) {
+            printf(".");
+        } else {
+            printf("*");
+        }
+        //printf("%d ", (int) imageData[i]);
+    }
+    printf("\n");
 
     auto region = [mgr addRegion:imageData.data() width:width height:height bytesPerRow:width];
 
