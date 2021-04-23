@@ -104,7 +104,7 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
         auto& prim = primp[i];
         if(prim.paint == vgerTexture) {
             auto M = matrix_identity_float3x3;
-            auto r = rects[prim.texture];
+            auto r = rects[prim.texture-1];
             M.columns[0].x = r.w;
             M.columns[1].y = r.h;
             M.columns[2] = float3{float(r.x), float(r.y), 1.0f};
