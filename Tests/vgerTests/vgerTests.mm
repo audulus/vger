@@ -589,8 +589,16 @@ static void textAt(vger* vger, float x, float y, const char* str) {
         .colors = {{1,0,1,1}}
     };
     vgerRender(vger, &circle);
-
     textAt(vger, 150, 250, "Circle");
+
+    vgerPrim line = {
+        .type = vgerSegment,
+        .width = 10.0,
+        .radius = 25,
+        .cvs = {{50, 150}, {100,200}},
+        .colors = {{1,0,1,1}}
+    };
+    vgerRender(vger, &line);
     textAt(vger, 150, 150, "Line segment");
     textAt(vger, 150, 050, "Arc");
 
