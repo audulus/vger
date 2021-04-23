@@ -3,6 +3,7 @@
 #import <XCTest/XCTest.h>
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
+#import <MetalKit/MetalKit.h>
 #import "../../Sources/vger/vgerRenderer.h"
 #import "testUtils.h"
 #import "vger.h"
@@ -18,6 +19,7 @@ using namespace simd;
     id<MTLTexture> texture;
     MTLRenderPassDescriptor* pass;
     id<MTLTexture> sampleTexture;
+    MTKTextureLoader* loader;
 }
 
 @end
@@ -28,6 +30,7 @@ using namespace simd;
     device = MTLCreateSystemDefaultDevice();
     queue = [device newCommandQueue];
     renderer = [[vgerRenderer alloc] initWithDevice:device];
+    loader = [[MTKTextureLoader alloc] initWithDevice: device];
 
     int w = 512;
     int h = 512;
@@ -252,6 +255,61 @@ simd_float4 magenta = {1,0,1,1};
     vgerDelete(vger);
 
     showTexture(texture, @"rects.png");
+}
+
+- (NSURL*) getImageURL:(NSString*)name {
+    NSString* path = @"Contents/Resources/vger_vgerTests.bundle/Contents/Resources/images/";
+    path = [path stringByAppendingString:name];
+    NSBundle* bundle = [NSBundle bundleForClass:self.class];
+    return [bundle.bundleURL URLByAppendingPathComponent:path];
+}
+
+- (id<MTLTexture>) getTexture:(NSString*)name {
+
+    NSError* error;
+    id<MTLTexture> tex = [loader newTextureWithContentsOfURL:[self getImageURL:name] options:nil error:&error];
+    assert(error == nil);
+    return tex;
+}
+
+- (void) testRenderTexture {
+
+    auto vger = vgerNew();
+
+    vgerBegin(vger);
+
+    auto tex = [self getTexture:@"icon-mac-256.png"];
+    auto idx = vgerAddMTLTexture(vger, tex);
+
+    vgerPrim p = {
+        .type = vgerRect,
+        .width = 0.01,
+        .cvs = { {-.5,-.5}, {.5,.5}},
+        .radius=0.3,
+        .colors = {{1,1,1,.5}, 0, 0},
+        .paint = vgerTexture,
+        .texture = idx
+    };
+
+    vgerRender(vger, &p);
+
+    auto commandBuffer = [queue commandBuffer];
+
+    vgerEncode(vger, commandBuffer, pass);
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder endEncoding];
+    #endif
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    vgerDelete(vger);
+
+    showTexture(texture, @"texture.png");
 }
 
 - (void) testText {
