@@ -161,12 +161,16 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
     switch(prim.paint) {
         case vgerColor:
             color = prim.colors[0];
+            break;
         case vgerTexture:
-            color = tex.sample(textureSampler, in.p);
+            color = tex.sample(textureSampler, in.t);
+            break;
         case vgerGlyph:
             color = float4(prim.colors[0].rgb, prim.colors[0].a * glyphs.sample(textureSampler, in.t).a);
+            break;
         case vgerGradient:
             color = prim.colors[0]; // XXX
+            break;
     }
 
     return mix(float4(color.rgb,0.1), color, 1.0-smoothstep(sw,sw+fw,d) );
