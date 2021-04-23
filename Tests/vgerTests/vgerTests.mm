@@ -145,7 +145,8 @@ simd_float4 magenta = {1,0,1,1};
                   pass:pass
                  prims:prims
                  count:sizeof(primArray)/sizeof(vgerPrim)
-               texture:sampleTexture];
+               texture:sampleTexture
+          glyphTexture:sampleTexture];
 
     // Sync texture on macOS
     #if TARGET_OS_OSX
@@ -329,7 +330,8 @@ vector_float4 rand_color() {
                       pass:pass
                      prims:prims
                      count:primArray.size()
-                   texture:sampleTexture];
+                   texture:sampleTexture
+              glyphTexture:sampleTexture];
 
         // Sync texture on macOS
         #if TARGET_OS_OSX
@@ -386,7 +388,8 @@ vector_float4 rand_color() {
                       pass:pass
                      prims:prims
                      count:primArray.size()
-                   texture:sampleTexture];
+                   texture:sampleTexture
+         glyphTexture:sampleTexture];
 
         // Sync texture on macOS
         #if TARGET_OS_OSX

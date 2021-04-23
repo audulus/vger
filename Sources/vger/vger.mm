@@ -94,7 +94,8 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
                       pass:pass
                      prims:vg->prims[vg->curPrims]
                      count:vg->primCount
-                   texture:vg->texMgr.atlas];
+                   texture:vg->texMgr.atlas
+              glyphTexture:[vg->glyphCache getAltas]];
 }
 
 void vgerTranslate(vger* vg, vector_float2 t) {

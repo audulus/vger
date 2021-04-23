@@ -135,7 +135,8 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
 
 fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
-                              texture2d<float, access::sample> tex) {
+                              texture2d<float, access::sample> tex,
+                              texture2d<float, access::sample> glyphs) {
     
     device auto& prim = prims[in.primIndex];
     

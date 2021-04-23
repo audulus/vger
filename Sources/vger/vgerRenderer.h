@@ -21,7 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
              pass:(MTLRenderPassDescriptor*) pass
             prims:(id<MTLBuffer>) primBuffer
             count:(int)n
-          texture:(id<MTLTexture>)texture;
+          texture:(id<MTLTexture>)texture
+     glyphTexture:(id<MTLTexture>)glyphTexture;
 
 @end
 
