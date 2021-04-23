@@ -26,7 +26,7 @@ void vgerDelete(vger*);
 void vgerBegin(vger*);
 
 /// Create a texture to sample from.
-int  vgerAddTexture(vger*, uint8_t* data, int width, int height);
+int  vgerAddTexture(vger*, const uint8_t* data, int width, int height);
 
 /// Render a prim.
 void vgerRender(vger*, const vgerPrim* prim);

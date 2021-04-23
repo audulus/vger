@@ -45,7 +45,7 @@ void vgerBegin(vger* vg) {
     vg->primCount = 0;
 }
 
-int  vgerAddTexture(vger* vg, uint8_t* data, int width, int height) {
+int  vgerAddTexture(vger* vg, const uint8_t* data, int width, int height) {
     assert(data);
     return [vg->txMgr addRegion:data width:width height:height bytesPerRow:width*sizeof(uint32)];
 }
