@@ -7,6 +7,8 @@
 #import "vgerTextureManager.h"
 #include <vector>
 
+#define MAX_PRIMS 4096
+
 struct vger {
 
     id<MTLDevice> device;
@@ -23,7 +25,7 @@ struct vger {
         renderer = [[vgerRenderer alloc] initWithDevice:device];
         txMgr = [[vgerTextureManager alloc] initWithDevice:device];
         for(int i=0;i<3;++i) {
-            prims[i] = [device newBufferWithLength:4096*sizeof(vgerPrim) options:MTLResourceStorageModeShared];
+            prims[i] = [device newBufferWithLength:MAX_PRIMS*sizeof(vgerPrim) options:MTLResourceStorageModeShared];
         }
         txStack.push_back(matrix_identity_float3x3);
     }
@@ -49,10 +51,12 @@ int  vgerAddTexture(vger* vg, uint8_t* data, int width, int height) {
 }
 
 void vgerRender(vger* vg, const vgerPrim* prim) {
-    *vg->p = *prim;
-    vg->p->xform = vg->txStack.back();
-    vg->p++;
-    vg->primCount++;
+    if(vg->primCount < MAX_PRIMS) {
+        *vg->p = *prim;
+        vg->p->xform = vg->txStack.back();
+        vg->p++;
+        vg->primCount++;
+    }
 }
 
 void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
