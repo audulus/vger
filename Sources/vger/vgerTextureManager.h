@@ -2,6 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
+#include "stb_rect_pack.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// Updates the atlas texture.
 /// @param buffer to encode blit commands
 - (void) update:(id<MTLCommandBuffer>) buffer;
+
+/// Get a pointer to the first rectangle.
+- (stbrp_rect*) getRects;
 
 @end
 

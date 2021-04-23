@@ -100,4 +100,9 @@
     }
 }
 
+/// Get a pointer to the first rectangle.
+- (stbrp_rect*) getRects {
+    return regions.data();
+}
+
 @end
