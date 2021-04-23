@@ -2,6 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #include <simd/simd.h>
+#import <Metal/Metal.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,6 +16,8 @@ struct GlyphInfo {
 - (instancetype)initWithDevice:(id<MTLDevice>) device;
 
 - (GlyphInfo) getGlyph:(CGGlyph)glyph size:(float)size;
+
+- (void) update:(id<MTLCommandBuffer>) buffer;
 
 @end
 

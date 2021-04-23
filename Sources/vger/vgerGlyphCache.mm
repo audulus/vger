@@ -76,4 +76,8 @@
 
 }
 
+- (void) update:(id<MTLCommandBuffer>) buffer {
+    [mgr update:buffer];
+}
+
 @end
