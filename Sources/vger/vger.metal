@@ -128,7 +128,8 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
     
     auto rect = sdPrimOBB(prim).inset(-0.02);
 
-    out.t = verts[vid];
+    auto t = prim.txform * float3(verts[vid], 1);
+    out.t = float2(t.x/t.z, t.y/t.z);
     out.p = verts[vid].x * rect.u + verts[vid].y * rect.v + rect.origin;
     out.position = float4(prim.xform * float3(out.p, 1), 1);
     
