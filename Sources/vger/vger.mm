@@ -72,24 +72,42 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
 void vgerRenderText(vger* vg, const char* str, float4 color) {
     float2 p{0};
 
-    for(;*str;++str) {
-        auto info = [vg->glyphCache getGlyph:*str size:12];
-        float2 sz = {float(info.glyphSize.width), float(info.glyphSize.height)};
+    CFRange entire = CFRangeMake(0, 0);
 
-        vgerPrim prim = {
-            .type = vgerRect,
-            .paint = vgerGlyph,
-            .texture = info.regionIndex,
-            .cvs = {p, p+sz},
-            .xform=matrix_identity_float3x3,
-            .width = 0.01,
-            .radius = 0,
-            .colors = {color, 0, 0},
-        };
+    NSString* string = [NSString stringWithUTF8String:str];
+    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:string attributes:nil];
+    auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
+    auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
 
-        vgerRender(vg, &prim);
+    NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
+    for(id r in runs) {
+        CTRunRef run = (__bridge CTRunRef)r;
+        size_t glyphCount = CTRunGetGlyphCount(run);
 
-        p.x += sz.x;
+        CGGlyph glyphs[glyphCount];
+        CTRunGetGlyphs(run, entire, glyphs);
+
+        for(int i=0;i<glyphCount;++i) {
+            printf("got glyph %d\n", glyphs[i]);
+
+            auto info = [vg->glyphCache getGlyph:glyphs[i] size:12];
+            float2 sz = {float(info.glyphSize.width), float(info.glyphSize.height)};
+
+            vgerPrim prim = {
+                .type = vgerRect,
+                .paint = vgerGlyph,
+                .texture = info.regionIndex,
+                .cvs = {p, p+sz},
+                .xform=matrix_identity_float3x3,
+                .width = 0.01,
+                .radius = 0,
+                .colors = {color, 0, 0},
+            };
+
+            vgerRender(vg, &prim);
+
+            p.x += sz.x;
+        }
     }
 
 }
