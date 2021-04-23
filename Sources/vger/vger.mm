@@ -90,7 +90,23 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
 }
 
 void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
+    
     [vg->texMgr update:buf];
+
+    auto rects = [vg->texMgr getRects];
+    auto primp = (vgerPrim*) vg->prims[vg->curPrims].contents;
+    for(int i=0;i<vg->primCount;++i) {
+        auto& prim = primp[i];
+        if(prim.paint == vgerTexture) {
+            auto M = matrix_identity_float3x3;
+            auto r = rects[prim.texture];
+            M.columns[0].x = r.w;
+            M.columns[1].y = r.h;
+            M.columns[2] = float3{float(r.x), float(r.y), 1.0f};
+            prim.txform = M;
+        }
+    }
+
     [vg->renderer encodeTo:buf
                       pass:pass
                      prims:vg->prims[vg->curPrims]

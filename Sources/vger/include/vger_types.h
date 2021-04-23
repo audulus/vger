@@ -75,6 +75,9 @@ typedef struct {
     /// Read from texture?
     vgerPaintType paint;
 
+    /// The texture region.
+    int texture;
+
     /// Transform into texture.
 #ifdef __METAL_VERSION__
     float3x3 txform;
