@@ -36,6 +36,8 @@
 
         self.atlas = [device newTextureWithDescriptor:atlasDesc];
         assert(self.atlas);
+
+        newTextures = [NSMutableArray<id<MTLTexture>> new];
     }
     return self;
 }
