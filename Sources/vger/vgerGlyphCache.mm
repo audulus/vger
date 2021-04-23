@@ -53,14 +53,14 @@
     CGPathRef path = CTFontCreatePathForGlyph(ctFont, glyph, &glyphTransform);
 
     if(path == 0) {
-        NSLog(@"no path for glyph index %d\n", (int)glyph);
+        //NSLog(@"no path for glyph index %d\n", (int)glyph);
         return GlyphInfo();
     }
 
     int width = ceilf(boundingRect.size.width);
     int height = ceilf(boundingRect.size.height);
 
-    NSLog(@"glyph size: %d %d\n", width, height);
+    //NSLog(@"glyph size: %d %d\n", width, height);
 
     std::vector<uint8_t> imageData(width*height);
 
@@ -84,6 +84,7 @@
     CGContextAddPath(context, path);
     CGContextFillPath(context);
 
+    /*
     printf("GLYPH %d\n", (int) glyph);
     for(int i=0;i<width*height;++i) {
         if(i % width == 0) {
@@ -97,6 +98,7 @@
         //printf("%d ", (int) imageData[i]);
     }
     printf("\n");
+     */
 
     auto region = [mgr addRegion:imageData.data() width:width height:height bytesPerRow:width];
 
