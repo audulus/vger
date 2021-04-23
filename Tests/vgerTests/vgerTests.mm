@@ -157,13 +157,7 @@ simd_float4 magenta = {1,0,1,1};
     [commandBuffer commit];
     [commandBuffer waitUntilCompleted];
 
-    auto tmpURL = [NSFileManager.defaultManager.temporaryDirectory URLByAppendingPathComponent:@"vger.png"];
-
-    NSLog(@"saving to %@", tmpURL);
-
-    writeCGImage(getTextureImage(texture), (__bridge CFURLRef)tmpURL);
-
-    system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
+    showTexture(texture, @"vger.png");
 
 }
 
