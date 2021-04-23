@@ -162,7 +162,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
         case vgerTexture:
             color = tex.sample(textureSampler, in.p);
         case vgerGlyph:
-            color = float4(prim.colors[0].rgb, prim.colors[0].a * glyphs.sample(textureSampler, in.p).a);
+            color = float4(prim.colors[0].rgb, prim.colors[0].a * glyphs.sample(textureSampler, in.t).a);
         case vgerGradient:
             color = prim.colors[0]; // XXX
     }
