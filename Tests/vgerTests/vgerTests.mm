@@ -561,10 +561,10 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     vgerTranslate(vger, float2{-1, -1});
     vgerScale(vger, float2{s, s});
 
-    textAt(vger, 100, 400, "Quadratic bezier stroke.");
-    textAt(vger, 100, 300, "Rounded rectangle.");
-    textAt(vger, 100, 200, "Circle.");
-    textAt(vger, 100, 100, "Line Segment");
+    textAt(vger, 100, 400, "Quadratic Bezier stroke");
+    textAt(vger, 100, 300, "Rounded rectangle");
+    textAt(vger, 100, 200, "Circle");
+    textAt(vger, 100, 100, "Line segment");
     textAt(vger, 100, 000, "Arc");
 
     vgerRestore(vger);
