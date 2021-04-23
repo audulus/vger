@@ -185,6 +185,8 @@ simd_float4 magenta = {1,0,1,1};
     vgerTranslate(vger, float2{0.0f,0.5f});
     vgerScale(vger, float2{0.2f, 0.2f});
     vgerRender(vger, &p);
+
+    XCTAssertTrue(simd_equal(vgerTransform(vger, float2{0,0}), float2{0.5, 0.5}));
     vgerRestore(vger);
 
     auto commandBuffer = [queue commandBuffer];
