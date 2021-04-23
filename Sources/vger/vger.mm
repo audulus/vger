@@ -45,7 +45,7 @@ void vgerDelete(vger* vg) {
 }
 
 void vgerBegin(vger* vg) {
-    vg->curPrims++;
+    vg->curPrims = (vg->curPrims+1)%3;
     vg->p = (vgerPrim*) vg->prims[vg->curPrims].contents;
     vg->primCount = 0;
 }
