@@ -40,11 +40,6 @@
         }
     }
 
-    CGFloat fontAscent = CTFontGetAscent(ctFont);
-    CGFloat fontDescent = CTFontGetDescent(ctFont);
-    CGSize advance;
-    CTFontGetAdvancesForGlyphs(ctFont, kCTFontOrientationHorizontal, &glyph, &advance, 1);
-
     // Render the glyph with CoreText.
     CGRect boundingRect;
     CTFontGetBoundingRectsForGlyphs(ctFont, kCTFontOrientationHorizontal, &glyph, &boundingRect, 1);
@@ -102,7 +97,7 @@
 
     auto region = [mgr addRegion:imageData.data() width:width height:height bytesPerRow:width];
 
-    GlyphInfo info = {size, region, advance, .glyphSize=boundingRect.size};
+    GlyphInfo info = {size, region, .glyphSize=boundingRect.size};
 
     v.push_back(info);
 

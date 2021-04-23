@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 struct GlyphInfo {
     float size = 0.0;
     int regionIndex = -1;
-    CGSize advance = CGSizeZero;
     CGSize glyphSize = CGSizeZero;
 };
 
