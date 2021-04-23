@@ -34,7 +34,7 @@
         atlasDesc.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite;
         atlasDesc.storageMode = MTLStorageModeManaged;
 
-        self.atlas = [device newTextureWithDescriptor:atlasDesc];
+        _atlas = [device newTextureWithDescriptor:atlasDesc];
         assert(self.atlas);
 
         newTextures = [NSMutableArray<id<MTLTexture>> new];
