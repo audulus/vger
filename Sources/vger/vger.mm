@@ -5,6 +5,7 @@
 #import <Metal/Metal.h>
 #import "vgerRenderer.h"
 #import "vgerTextureManager.h"
+#import "vgerGlyphCache.h"
 #include <vector>
 
 #define MAX_PRIMS 4096
@@ -19,11 +20,13 @@ struct vger {
     vgerPrim* p;
     int primCount = 0;
     vgerTextureManager* texMgr;
+    vgerGlyphCache* glyphCache;
 
     vger() {
         device = MTLCreateSystemDefaultDevice();
         renderer = [[vgerRenderer alloc] initWithDevice:device];
         texMgr = [[vgerTextureManager alloc] initWithDevice:device pixelFormat:MTLPixelFormatRGBA8Unorm];
+        glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
         for(int i=0;i<3;++i) {
             prims[i] = [device newBufferWithLength:MAX_PRIMS*sizeof(vgerPrim) options:MTLResourceStorageModeShared];
         }
