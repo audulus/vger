@@ -46,6 +46,7 @@ CGImageRef getTextureImage(id<MTLTexture> texture) {
                 imageBytes[4*i] = tmpBytes[i];
             }
         }
+            break;
 
         default:
             assert(false && "unsupported pixel format");
