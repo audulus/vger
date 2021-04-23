@@ -204,6 +204,36 @@ simd_float4 magenta = {1,0,1,1};
     showTexture(texture, @"xform.png");
 }
 
+- (void) testText {
+
+    auto vger = vgerNew();
+
+    vgerBegin(vger);
+
+    vgerSave(vger);
+    vgerScale(vger, float2{0.01, 0.01});
+    vgerRenderText(vger, "This is a test.", cyan);
+    vgerRestore(vger);
+
+    auto commandBuffer = [queue commandBuffer];
+
+    vgerEncode(vger, commandBuffer, pass);
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder endEncoding];
+    #endif
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    vgerDelete(vger);
+
+    showTexture(texture, @"text.png");
+}
+
 static
 vector_float2 rand2() {
     return float2{float(rand()) / RAND_MAX, float(rand()) / RAND_MAX};
