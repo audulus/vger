@@ -148,9 +148,9 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 
     auto sw = prim.width; // stroke width
 
-    if(d > 2*sw) {
-        discard_fragment();
-    }
+    //if(d > 2*sw) {
+    //    discard_fragment();
+    //}
 
     float fw = length(fwidth(in.p));
 
