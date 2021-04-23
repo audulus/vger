@@ -55,12 +55,10 @@ int  vgerAddTexture(vger* vg, const uint8_t* data, int width, int height) {
     return [vg->texMgr addRegion:data width:width height:height bytesPerRow:width*sizeof(uint32)];
 }
 
-#ifdef __OBJC__
 int vgerAddMTLTexture(vger* vg, id<MTLTexture> tex) {
     assert(tex);
     return [vg->texMgr addRegion:tex];
 }
-#endif
 
 void vgerRender(vger* vg, const vgerPrim* prim) {
     if(vg->primCount < MAX_PRIMS) {
