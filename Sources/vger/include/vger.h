@@ -6,6 +6,10 @@
 #include <simd/simd.h>
 #include "vger_types.h"
 
+#ifdef __OBJC__
+#import <Metal/Metal.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -39,7 +43,7 @@ void vgerSave(vger*);
 /// Restores the render state.
 void vgerRestore(vger*);
 
-#ifdef __objc
+#ifdef __OBJC__
 /// Encode drawing commands to a metal command buffer.
 void vgerEncode(vger*, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 #endif

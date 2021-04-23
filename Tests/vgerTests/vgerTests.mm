@@ -5,6 +5,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "vgerRenderer.h"
 #import "testUtils.h"
+#import "vger.h"
 #include "nanovg_mtl.h"
 #include <vector>
 
@@ -72,16 +73,16 @@ static void SplitBezier(float t,
 
 }
 
+simd_float4 white = {1,1,1,1};
+simd_float4 cyan = {0,1,1,1};
+simd_float4 magenta = {1,0,1,1};
+
 - (void) testBasic {
 
     simd_float2 cvs[3] = {0, {0,0.5}, {0.5,0.5}};
     simd_float2 cvs_l[3];
     simd_float2 cvs_r[3];
     SplitBezier(0.5, cvs, cvs_l, cvs_r);
-
-    simd_float4 white = {1,1,1,1};
-    simd_float4 cyan = {0,1,1,1};
-    simd_float4 magenta = {1,0,1,1};
 
     float theta = 0;
     float ap = .5 * M_PI;
@@ -164,6 +165,44 @@ static void SplitBezier(float t,
 
     system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
 
+}
+
+- (void) testTransformStack {
+
+    auto vger = vgerNew();
+
+    vgerBegin(vger);
+
+    vgerPrim p = {
+        .type = vgerCircle,
+        .xform=matrix_identity_float3x3,
+        .width = 0.01,
+        .radius = 0.2,
+        .cvs = {0, {0,0.5}, {0.5,0.5}},
+        .colors = {cyan, 0, 0},
+    };
+
+    vgerTranslate(vger, float2{0.5f,0.0f});
+    vgerTranslate(vger, float2{0.0f,0.5f});
+    vgerRender(vger, &p);
+
+    auto commandBuffer = [queue commandBuffer];
+
+    vgerEncode(vger, commandBuffer, pass);
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder endEncoding];
+    #endif
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    vgerDelete(vger);
+
+    showTexture(texture, @"xform.png");
 }
 
 static
