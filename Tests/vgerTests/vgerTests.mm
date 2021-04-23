@@ -3,7 +3,7 @@
 #import <XCTest/XCTest.h>
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
-#import "vgerRenderer.h"
+#import "../../Sources/vger/vgerRenderer.h"
 #import "testUtils.h"
 #import "vger.h"
 #include "nanovg_mtl.h"
