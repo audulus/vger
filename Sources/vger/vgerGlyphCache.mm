@@ -17,7 +17,7 @@
     self = [super init];
     if (self) {
         mgr = [[vgerTextureManager alloc] initWithDevice:device pixelFormat:MTLPixelFormatA8Unorm];
-        ctFont = CTFontCreateWithName((__bridge CFStringRef)@"Avenir-light", /*fontPointSize*/48, NULL);
+        ctFont = CTFontCreateWithName((__bridge CFStringRef)@"Avenir-light", /*fontPointSize*/24, NULL);
     }
     return self;
 }
