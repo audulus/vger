@@ -259,9 +259,11 @@ simd_float4 magenta = {1,0,1,1};
 
     vgerBegin(vger);
 
+    float s = 1.0/512.0;
+
     vgerSave(vger);
-    vgerScale(vger, float2{0.01, 0.01});
-    vgerRenderText(vger, "This is a test.", float4{0,1,1,0.1});
+    vgerScale(vger, float2{s, s});
+    vgerRenderText(vger, "This is a test.", float4{0,1,1,0.2});
     vgerRestore(vger);
 
     auto commandBuffer = [queue commandBuffer];
