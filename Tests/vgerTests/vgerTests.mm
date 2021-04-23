@@ -581,6 +581,15 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     vgerRender(vger, &rect);
     textAt(vger, 150, 350, "Rounded rectangle");
 
+    vgerPrim circle = {
+        .type = vgerCircle,
+        .width = 0.0,
+        .radius = 25,
+        .cvs = {{75, 275}},
+        .colors = {{1,0,1,1}}
+    };
+    vgerRender(vger, &circle);
+
     textAt(vger, 150, 250, "Circle");
     textAt(vger, 150, 150, "Line segment");
     textAt(vger, 150, 050, "Arc");
