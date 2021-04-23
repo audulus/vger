@@ -8,6 +8,8 @@
 #import "vgerGlyphCache.h"
 #include <vector>
 
+using namespace simd;
+
 #define MAX_PRIMS 4096
 
 struct vger {
@@ -60,6 +62,29 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
         vg->p++;
         vg->primCount++;
     }
+}
+
+void vgerRenderText(vger* vg, const char* str, float4 color) {
+    float2 p{0};
+
+    for(;*str;++str) {
+        auto info = [vg->glyphCache getGlyph:*str size:12];
+
+        vgerPrim prim = {
+            .type = vgerRect,
+           // .texture = -info.regionIndex,
+            .cvs = {p, p+float2{float(info.glyphSize.width), float(info.glyphSize.height)}},
+            .xform=matrix_identity_float3x3,
+            .radius = 0,
+            .colors = {color, 0, 0},
+        };
+
+        vgerRender(vg, &prim);
+
+        p.x = info.advance.width;
+        p.y = info.advance.height;
+    }
+
 }
 
 void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {

@@ -42,6 +42,8 @@
 
     CGFloat fontAscent = CTFontGetAscent(ctFont);
     CGFloat fontDescent = CTFontGetDescent(ctFont);
+    CGSize advance;
+    CTFontGetAdvancesForGlyphs(ctFont, kCTFontOrientationHorizontal, &glyph, &advance, 1);
 
     // Render the glyph with CoreText.
     CGRect boundingRect;
@@ -98,7 +100,7 @@
 
     auto region = [mgr addRegion:imageData.data() width:width height:height bytesPerRow:width];
 
-    GlyphInfo info = {size, region};
+    GlyphInfo info = {size, region, advance, .glyphSize=boundingRect.size};
 
     v.push_back(info);
 

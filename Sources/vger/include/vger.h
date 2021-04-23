@@ -31,6 +31,9 @@ int  vgerAddTexture(vger*, const uint8_t* data, int width, int height);
 /// Render a prim.
 void vgerRender(vger*, const vgerPrim* prim);
 
+/// Render text.
+void vgerRenderText(vger*, const char* str, vector_float4 color);
+
 /// Translates current coordinate system.
 void vgerTranslate(vger*, vector_float2 t);
 
