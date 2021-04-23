@@ -28,6 +28,22 @@ typedef enum {
     vgerWire
 } vgerPrimType;
 
+typedef enum {
+
+    /// Solid colors.
+    vgerColor,
+
+    /// Texture fill.
+    vgerTexture,
+
+    /// Glyph fill.
+    vgerGlyph,
+
+    /// Gradient fill.
+    vgerGradient
+
+} vgerPaintType;
+
 /// Primitive rendered by the GPU.
 typedef struct {
     
@@ -57,7 +73,7 @@ typedef struct {
     vector_float4 colors[3];
 
     /// Read from texture?
-    bool texture;
+    vgerPaintType paint;
 
     /// Transform into texture.
 #ifdef __METAL_VERSION__

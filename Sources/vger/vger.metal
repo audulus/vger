@@ -154,10 +154,15 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                                       min_filter::linear);
 
     float4 color;
-    if(prim.texture) {
-        color = tex.sample(textureSampler, in.p);
-    } else {
-        color = prim.colors[0];
+    switch(prim.paint) {
+        case vgerColor:
+            color = prim.colors[0];
+        case vgerTexture:
+            color = tex.sample(textureSampler, in.p);
+        case vgerGlyph:
+            color = float4(prim.colors[0].rgb, prim.colors[0].a * glyphs.sample(textureSampler, in.p).a);
+        case vgerGradient:
+            color = prim.colors[0]; // XXX
     }
 
     return mix(float4(color.rgb,0.1), color, 1.0-smoothstep(sw,sw+fw,d) );
