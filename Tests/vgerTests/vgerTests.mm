@@ -542,4 +542,51 @@ void renderPaths(NVGcontext* vg, const std::vector<vgerPrim>& primArray) {
     system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
 }
 
+static void textAt(vger* vger, float x, float y, const char* str) {
+    vgerSave(vger);
+    vgerTranslate(vger, float2{x, y});
+    vgerRenderText(vger, str, float4{0,1,1,1});
+    vgerRestore(vger);
+}
+
+- (void) testPrimDemo {
+
+    auto vger = vgerNew();
+
+    vgerBegin(vger);
+
+    float s = 1.0/256.0;
+
+    vgerSave(vger);
+    vgerTranslate(vger, float2{-1, -1});
+    vgerScale(vger, float2{s, s});
+
+    textAt(vger, 100, 400, "Quadratic bezier stroke.");
+    textAt(vger, 100, 300, "Rounded rectangle.");
+    textAt(vger, 100, 200, "Circle.");
+    textAt(vger, 100, 100, "Line Segment");
+    textAt(vger, 100, 000, "Arc");
+
+    vgerRestore(vger);
+
+    auto commandBuffer = [queue commandBuffer];
+
+    vgerEncode(vger, commandBuffer, pass);
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder endEncoding];
+    #endif
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    vgerDelete(vger);
+
+    showTexture(texture, @"demo.png");
+
+}
+
 @end
