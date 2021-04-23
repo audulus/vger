@@ -43,14 +43,15 @@
 - (void)testPackTextures {
     vgerTextureManager* mgr = [[vgerTextureManager alloc] initWithDevice:device];
 
-    auto tex = [self getTexture:@"icon-mac-128.png"];
+    id<MTLTexture> tex[5];
+    int sz = 16;
+    for(int i=0;i<5;++i, sz*=2) {
+        tex[i] = [self getTexture:[NSString stringWithFormat:@"icon-mac-%d.png", sz]];
+    }
 
-    showTexture(tex, @"icon.png");
-
-    [mgr addRegion:tex];
-    [mgr addRegion:tex];
-    [mgr addRegion:tex];
-    [mgr addRegion:tex];
+    for(int i=0;i<200;++i) {
+        [mgr addRegion:tex[rand() % 5]];
+    }
 
     id<MTLCommandBuffer> buf = [queue commandBuffer];
     [mgr update:buf];
