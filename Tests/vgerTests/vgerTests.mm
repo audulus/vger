@@ -176,7 +176,7 @@ simd_float4 magenta = {1,0,1,1};
         .colors = {cyan, 0, 0},
     };
 
-    XCTAssertTrue(simd_equal(vgerTransform(vger, float2{0,0}), float2{0.0}));
+    XCTAssertTrue(simd_equal(vgerTransform(vger, float2{0,0}), float2{0, 0}));
 
     vgerRender(vger, &p);
 
