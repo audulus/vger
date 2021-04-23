@@ -4,7 +4,7 @@
 #define vger_types_h
 
 /// VGER supports simple primitive types.
-enum vgerPrimType {
+typedef enum {
     
     /// Filled circle.
     vgerCircle,
@@ -26,10 +26,10 @@ enum vgerPrimType {
 
     /// Connection wire. See https://www.shadertoy.com/view/NdsXRl
     vgerWire
-};
+} vgerPrimType;
 
 /// Primitive rendered by the GPU.
-struct vgerPrim {
+typedef struct {
     
     /// Type of primitive.
     vgerPrimType type;
@@ -66,6 +66,6 @@ struct vgerPrim {
     matrix_float3x3 txform;
 #endif
 
-};
+} vgerPrim;
 
 #endif /* vger_types_h */
