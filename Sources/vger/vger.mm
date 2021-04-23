@@ -114,6 +114,9 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
         }
     }
 
+    CFRelease(typesetter);
+    CFRelease(line);
+
 }
 
 void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
