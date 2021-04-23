@@ -73,6 +73,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
 
         vgerPrim prim = {
             .type = vgerRect,
+            .paint = vgerGlyph,
            // .texture = -info.regionIndex,
             .cvs = {p, p+sz},
             .xform=matrix_identity_float3x3,
