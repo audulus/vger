@@ -42,6 +42,8 @@
     [buf commit];
     [buf waitUntilCompleted];
 
+    showTexture(atlas, @"glyph_atlas.png");
+
 }
 
 @end
