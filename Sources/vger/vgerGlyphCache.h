@@ -19,6 +19,8 @@ struct GlyphInfo {
 
 - (void) update:(id<MTLCommandBuffer>) buffer;
 
+- (id<MTLTexture>) getAltas;
+
 @end
 
 NS_ASSUME_NONNULL_END

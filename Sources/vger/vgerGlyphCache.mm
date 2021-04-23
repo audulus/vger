@@ -50,8 +50,15 @@
     CGAffineTransform glyphTransform = CGAffineTransformMake(1, 0, 0, -1, -boundingRect.origin.x, -boundingRect.origin.y);
     CGPathRef path = CTFontCreatePathForGlyph(ctFont, glyph, &glyphTransform);
 
+    if(path == 0) {
+        NSLog(@"no path for glyph index %d\n", (int)glyph);
+        return;
+    }
+
     int width = ceilf(boundingRect.size.width);
     int height = ceilf(boundingRect.size.height);
+
+    NSLog(@"glyph size: %d %d\n", width, height);
 
     std::vector<uint8_t> imageData(width*height);
 
@@ -83,6 +90,10 @@
 
 - (void) update:(id<MTLCommandBuffer>) buffer {
     [mgr update:buffer];
+}
+
+- (id<MTLTexture>) getAltas {
+    return mgr.atlas;
 }
 
 @end
