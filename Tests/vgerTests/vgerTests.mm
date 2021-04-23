@@ -319,13 +319,7 @@ vector_float4 rand_color() {
         [self stopMeasuring];
     }];
 
-    auto tmpURL = [NSFileManager.defaultManager.temporaryDirectory URLByAppendingPathComponent:@"vger_bezier_perf.png"];
-
-    NSLog(@"saving to %@", tmpURL);
-
-    writeCGImage(getTextureImage(texture), (__bridge CFURLRef)tmpURL);
-
-    system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
+    showTexture(texture, @"vger_bezier_split_perf.png");
 }
 
 void renderPaths(NVGcontext* vg, const std::vector<vgerPrim>& primArray) {
