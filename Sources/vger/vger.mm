@@ -59,6 +59,24 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
                    texture:vg->txMgr.atlas];
 }
 
+void vgerTranslate(vger* vg, vector_float2 t) {
+    auto M = matrix_identity_float3x3;
+    M.columns[2] = vector3(t, 1);
+
+    auto& A = vg->txStack.back();
+    A = matrix_multiply(A, M);
+}
+
+/// Scales current coordinate system.
+void vgerScale(vger* vg, vector_float2 s) {
+    auto M = matrix_identity_float3x3;
+    M.columns[0].x = s.x;
+    M.columns[1].y = s.y;
+
+    auto& A = vg->txStack.back();
+    A = matrix_multiply(A, M);
+}
+
 void vgerSave(vger* vg) {
     vg->txStack.push_back(vg->txStack.back());
 }

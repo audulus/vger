@@ -31,7 +31,7 @@ void vgerRender(vger*, const vgerPrim* prim);
 void vgerTranslate(vger*, vector_float2 t);
 
 /// Scales current coordinate system.
-void vgerScale(vger*, float x, float y);
+void vgerScale(vger*, vector_float2 s);
 
 /// Saves the render state.
 void vgerSave(vger*);
