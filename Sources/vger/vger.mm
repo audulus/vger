@@ -3,6 +3,7 @@
 #import "vger.h"
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
+#import <Cocoa/Cocoa.h>
 #import "vgerRenderer.h"
 #import "vgerTextureManager.h"
 #import "vgerGlyphCache.h"
@@ -74,8 +75,9 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
 
     CFRange entire = CFRangeMake(0, 0);
 
+    NSDictionary *attributes = @{ NSFontAttributeName : (__bridge id)[vg->glyphCache getFont] };
     NSString* string = [NSString stringWithUTF8String:str];
-    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:string attributes:nil];
+    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
     auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
     auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
 
