@@ -28,6 +28,10 @@ void vgerBegin(vger*);
 /// Create a texture to sample from.
 int  vgerAddTexture(vger*, const uint8_t* data, int width, int height);
 
+#ifdef __OBJC__
+int vgerAddMTLTexture(vger*, id<MTLTexture>);
+#endif
+
 /// Render a prim.
 void vgerRender(vger*, const vgerPrim* prim);
 
