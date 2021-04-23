@@ -37,6 +37,8 @@
     id<MTLTexture> tex = [loader newTextureWithContentsOfURL:imageURL options:nil error:&error];
     assert(error == nil);
 
+    showTexture(tex, @"icon.png");
+
     [mgr addRegion:tex];
     [mgr addRegion:tex];
     [mgr addRegion:tex];
@@ -55,10 +57,9 @@
     [buf commit];
     [buf waitUntilCompleted];
 
-    auto tmpURL = [NSFileManager.defaultManager.temporaryDirectory URLByAppendingPathComponent:@"atlas.png"];
-    NSLog(@"saving to %@", tmpURL);
-    writeCGImage(getTextureImage(mgr.atlas), (__bridge CFURLRef)tmpURL);
-    system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
+    assert(buf.error == nil);
+
+    showTexture(mgr.atlas, @"atlas.png");
 }
 
 

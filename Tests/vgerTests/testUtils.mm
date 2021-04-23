@@ -38,3 +38,12 @@ CGImageRef getTextureImage(id<MTLTexture> texture) {
 
     return getImage(imageBytes.data(), w, h);
 }
+
+void showTexture(id<MTLTexture> texture, NSString* name) {
+
+    auto tmpURL = [NSFileManager.defaultManager.temporaryDirectory URLByAppendingPathComponent:name];
+    NSLog(@"saving to %@", tmpURL);
+    writeCGImage(getTextureImage(texture), (__bridge CFURLRef)tmpURL);
+    system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
+
+}

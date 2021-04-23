@@ -43,6 +43,8 @@
 - (int) addRegion:(uint8_t *)data width:(int)width height:(int)height {
 
     auto desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm width:width height:height mipmapped:NO];
+    desc.usage = MTLTextureUsageShaderRead;
+    desc.storageMode = MTLStorageModeManaged;
     auto tex = [device newTextureWithDescriptor:desc];
     assert(tex);
 
