@@ -3,6 +3,7 @@
 #import <Foundation/Foundation.h>
 #include <simd/simd.h>
 #import <Metal/Metal.h>
+#include "stb_rect_pack.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,6 +23,9 @@ struct GlyphInfo {
 - (void) update:(id<MTLCommandBuffer>) buffer;
 
 - (id<MTLTexture>) getAltas;
+
+/// Get a pointer to the first rectangle.
+- (stbrp_rect*) getRects;
 
 @end
 

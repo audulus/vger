@@ -79,7 +79,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
         vgerPrim prim = {
             .type = vgerRect,
             .paint = vgerGlyph,
-           // .texture = -info.regionIndex,
+            .texture = info.regionIndex,
             .cvs = {p, p+sz},
             .xform=matrix_identity_float3x3,
             .width = 0.01,
@@ -97,14 +97,23 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
 void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
     
     [vg->texMgr update:buf];
+    [vg->glyphCache update:buf];
 
     auto rects = [vg->texMgr getRects];
+    auto glyphRects = [vg->glyphCache getRects];
     auto primp = (vgerPrim*) vg->prims[vg->curPrims].contents;
     for(int i=0;i<vg->primCount;++i) {
         auto& prim = primp[i];
         if(prim.paint == vgerTexture) {
             auto M = matrix_identity_float3x3;
             auto r = rects[prim.texture-1];
+            M.columns[0].x = r.w;
+            M.columns[1].y = r.h;
+            M.columns[2] = float3{float(r.x), float(r.y), 1.0f};
+            prim.txform = M;
+        } else if(prim.paint == vgerGlyph) {
+            auto M = matrix_identity_float3x3;
+            auto r = glyphRects[prim.texture-1];
             M.columns[0].x = r.w;
             M.columns[1].y = r.h;
             M.columns[2] = float3{float(r.x), float(r.y), 1.0f};

@@ -119,4 +119,8 @@
     return mgr.atlas;
 }
 
+- (stbrp_rect*) getRects {
+    return [mgr getRects];
+}
+
 @end
