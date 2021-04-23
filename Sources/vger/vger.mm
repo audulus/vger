@@ -99,14 +99,14 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
     [vg->texMgr update:buf];
     [vg->glyphCache update:buf];
 
-    auto rects = [vg->texMgr getRects];
+    auto texRects = [vg->texMgr getRects];
     auto glyphRects = [vg->glyphCache getRects];
     auto primp = (vgerPrim*) vg->prims[vg->curPrims].contents;
     for(int i=0;i<vg->primCount;++i) {
         auto& prim = primp[i];
         if(prim.paint == vgerTexture) {
             auto M = matrix_identity_float3x3;
-            auto r = rects[prim.texture-1];
+            auto r = texRects[prim.texture-1];
             M.columns[0].x = r.w;
             M.columns[1].y = r.h;
             M.columns[2] = float3{float(r.x), float(r.y), 1.0f};
