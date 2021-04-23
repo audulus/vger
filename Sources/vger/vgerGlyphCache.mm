@@ -123,4 +123,8 @@
     return [mgr getRects];
 }
 
+- (CTFontRef) getFont {
+    return ctFont;
+}
+
 @end

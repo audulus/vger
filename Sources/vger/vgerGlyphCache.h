@@ -27,6 +27,8 @@ struct GlyphInfo {
 /// Get a pointer to the first rectangle.
 - (stbrp_rect*) getRects;
 
+- (CTFontRef) getFont;
+
 @end
 
 NS_ASSUME_NONNULL_END
