@@ -56,6 +56,9 @@ void vgerRestore(vger*);
 #ifdef __OBJC__
 /// Encode drawing commands to a metal command buffer.
 void vgerEncode(vger*, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
+
+/// For debugging.
+id<MTLTexture> vgerGetGlyphAtlas(vger*);
 #endif
 
 #ifdef __cplusplus

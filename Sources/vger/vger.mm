@@ -189,3 +189,7 @@ void vgerRestore(vger* vg) {
     vg->txStack.pop_back();
     assert(!vg->txStack.empty());
 }
+
+id<MTLTexture> vgerGetGlyphAtlas(vger* vg) {
+    return [vg->glyphCache getAltas];
+}
