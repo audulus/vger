@@ -13,7 +13,7 @@ float sdCircle( float2 p, float r )
 float sdBox( float2 p, float2 b, float r )
 {
     float2 d = abs(p)-b+r;
-    return length(max(d,0.0)) + min(max(d.x,d.y),0.0)-r;
+    return length(max(d,float2(0.0))) + min(max(d.x,d.y),0.0)-r;
 }
 
 float sdSegment(float2 p, float2 a, float2 b )
@@ -25,7 +25,7 @@ float sdSegment(float2 p, float2 a, float2 b )
 
 float sdArc(float2 p, float2 sca, float2 scb, float ra, float rb )
 {
-    p *= float2x2{{sca.x,sca.y},{-sca.y,sca.x}};
+    p *= float2x2{float2{sca.x,sca.y},float2{-sca.y,sca.x}};
     p.x = abs(p.x);
     float k = (scb.y*p.x>scb.x*p.y) ? dot(p,scb) : length(p);
     return sqrt( dot(p,p) + ra*ra - 2.0*ra*k ) - rb;
@@ -53,7 +53,7 @@ float sdBezier(float2 pos, float2 A, float2 B, float2 C )
     if( h >= 0.0)
     {
         h = sqrt(h);
-        float2 x = (float2(h,-h)-q)/2.0;
+        float2 x = (float2{h,-h}-q)/2.0;
         float2 uv = sign(x)*pow(abs(x), float2(1.0/3.0));
         float t = clamp( uv.x+uv.y-kx, 0.0, 1.0 );
         res = dot2(d + (c + b*t)*t);
@@ -64,7 +64,7 @@ float sdBezier(float2 pos, float2 A, float2 B, float2 C )
         float v = acos( q/(p*z*2.0) ) / 3.0;
         float m = cos(v);
         float n = sin(v)*1.732050808;
-        float3  t = clamp(float3(m+m,-n-m,n-m)*z-kx,0.0,1.0);
+        float3  t = clamp(float3{m+m,-n-m,n-m}*z-kx,0.0,1.0);
         res = min( dot2(d+(c+b*t.x)*t.x),
                    dot2(d+(c+b*t.y)*t.y) );
         // the third root cannot be the closest
@@ -91,7 +91,7 @@ float2 get_distance_vector(float2 b0, float2 b1, float2 b2) {
     float f=b*d-a*a; // ð‘“(ð‘)
     float2 d21=b2-b1, d10=b1-b0, d20=b2-b0;
     float2 gf=2.0*(b*d21+d*d10+a*d20);
-    gf=float2(gf.y,-gf.x);
+    gf=float2{gf.y,-gf.x};
     float2 pp=-f*gf/dot(gf,gf);
     float2 d0p=b0-pp;
     float ap=det(d0p,d20), bp=2.0*det(d10,d0p);
@@ -105,6 +105,7 @@ float sdBezierApprox(float2 p, float2 b0, float2 b1, float2 b2) {
     return length(get_distance_vector(b0-p, b1-p, b2-p));
 }
 
+#if 0
 template<class T>
 float sdPolygon(float2 p, T v, int num)
 {
@@ -127,27 +128,6 @@ float sdPolygon(float2 p, T v, int num)
 
     return s*sqrt(d);
 }
-
-/// Does a bezier curve potentially intersect a rect? Quick reject test based on convex hull.
-bool bezierRectCull(float2 min, float2 max, float2 a, float2 b, float2 c) {
-    
-    if(a.x < min.x and b.x < min.x and c.x < min.x) {
-        return false;
-    }
-    
-    if(a.y < min.y and b.y < min.y and c.y < min.y) {
-        return false;
-    }
-    
-    if(a.x > max.x and b.x > max.x and c.x > max.x) {
-        return false;
-    }
-    
-    if(a.y > max.y and b.y > max.y and c.y > max.y) {
-        return false;
-    }
-    
-    return true;
-}
+#endif
 
 #endif /* sdf_h */
