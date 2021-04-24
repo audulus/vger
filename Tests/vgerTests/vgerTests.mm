@@ -318,7 +318,7 @@ simd_float4 magenta = {1,0,1,1};
 
     vgerBegin(vger);
 
-    float s = 1.0/512.0;
+    float s = 1.0/256.0;
 
     vgerSave(vger);
     vgerScale(vger, float2{s, s});
@@ -328,20 +328,24 @@ simd_float4 magenta = {1,0,1,1};
     auto commandBuffer = [queue commandBuffer];
 
     vgerEncode(vger, commandBuffer, pass);
+    auto atlas = vgerGetGlyphAtlas(vger);
 
     // Sync texture on macOS
     #if TARGET_OS_OSX
     auto blitEncoder = [commandBuffer blitCommandEncoder];
     [blitEncoder synchronizeResource:texture];
+    [blitEncoder synchronizeResource:atlas];
     [blitEncoder endEncoding];
     #endif
 
     [commandBuffer commit];
     [commandBuffer waitUntilCompleted];
 
+    showTexture(atlas, @"glyph_atlas.png");
+    showTexture(texture, @"text.png");
+
     vgerDelete(vger);
 
-    showTexture(texture, @"text.png");
 }
 
 static
