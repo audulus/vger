@@ -1,6 +1,6 @@
 # vger (WIP)
 
-vger is a vector graphics renderer which renders a limited set of primitives, but does so entirely on the GPU using a single draw call. Works on iOS and macOS.
+vger is a vector graphics renderer which renders a limited set of primitives, but does so almost entirely on the GPU using a single draw call. Works on iOS and macOS.
 
 ![demo](demo.png)
 
