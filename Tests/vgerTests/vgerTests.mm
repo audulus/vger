@@ -599,6 +599,16 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     };
     vgerRender(vger, &line);
     textAt(vger, 150, 150, "Line segment");
+
+    float theta = 0;
+    float ap = .5 * M_PI;
+    vgerPrim arc = {
+        .type = vgerArc,
+        .width = 10.0,
+        .cvs = {{50, 50}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
+        .radius=20,
+    };
+    vgerRender(vger, &arc);
     textAt(vger, 150, 050, "Arc");
 
     vgerRestore(vger);
