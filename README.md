@@ -1,8 +1,15 @@
-# vger
+# vger (WIP)
 
-vger is a vector graphics renderer which renders a limited set of primitives, but does so entirely on the GPU using a single draw call.
+vger is a vector graphics renderer which renders a limited set of primitives, but does so entirely on the GPU using a single draw call. Works on iOS and macOS.
 
 ![demo](demo.png)
 
 Each primitive can be filled with a solid color, or a texture (gradients are forthcoming).
 
+## Usage
+
+Create a rendering context using `vgerNew()`.
+
+Then call `vgerRenderPrim` and `vgerRenderText` to store drawing commands. See `vger.h` for transformation functions.
+
+Finally, call `vgerEncode` to encode rendering commands to a `MTLCommandBuffer`.
