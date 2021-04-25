@@ -15,7 +15,6 @@ using namespace simd;
 @interface vgerTests : XCTestCase {
     id<MTLDevice> device;
     id<MTLCommandQueue> queue;
-    vgerRenderer* renderer;
     id<MTLTexture> texture;
     MTLRenderPassDescriptor* pass;
     id<MTLTexture> sampleTexture;
@@ -29,7 +28,6 @@ using namespace simd;
 - (void)setUp {
     device = MTLCreateSystemDefaultDevice();
     queue = [device newCommandQueue];
-    renderer = [[vgerRenderer alloc] initWithDevice:device];
     loader = [[MTKTextureLoader alloc] initWithDevice: device];
 
     int w = 512;
