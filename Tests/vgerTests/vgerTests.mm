@@ -380,20 +380,18 @@ vector_float4 rand_color() {
         primArray.push_back(p);
     }
 
-    auto prims = [device newBufferWithBytes:primArray.data() length:primArray.size()*sizeof(vgerPrim) options:MTLResourceStorageModeShared];
-    assert(prims);
+    auto vger = vgerNew();
+    vgerBegin(vger);
 
-    [self measureMetrics:@[XCTPerformanceMetric_WallClockTime] automaticallyStartMeasuring:NO forBlock:^{
+    [self measureBlock:^{
 
-        [self startMeasuring];
         auto commandBuffer = [queue commandBuffer];
 
-        [renderer encodeTo:commandBuffer
-                      pass:pass
-                     prims:prims
-                     count:primArray.size()
-                   texture:sampleTexture
-              glyphTexture:sampleTexture];
+        for(int i=0;i<primArray.size();++i) {
+           vgerRender(vger, &primArray[i]);
+        }
+
+        vgerEncode(vger, commandBuffer, pass);
 
         // Sync texture on macOS
         #if TARGET_OS_OSX
@@ -404,7 +402,7 @@ vector_float4 rand_color() {
 
         [commandBuffer commit];
         [commandBuffer waitUntilCompleted];
-        [self stopMeasuring];
+
     }];
 
     showTexture(texture, @"vger_bezier_perf.png");
