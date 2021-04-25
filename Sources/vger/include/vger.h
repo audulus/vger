@@ -23,7 +23,7 @@ vger* vgerNew();
 void vgerDelete(vger*);
 
 /// Begin rendering a frame.
-void vgerBegin(vger*);
+void vgerBegin(vger*, float windowWidth, float windowHeight, float devicePxRatio);
 
 /// Create a texture to sample from.
 int  vgerAddTexture(vger*, const uint8_t* data, int width, int height);

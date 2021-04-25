@@ -130,7 +130,7 @@ simd_float4 magenta = {1,0,1,1};
 
     auto vg = vgerNew();
 
-    vgerBegin(vg);
+    vgerBegin(vg, 512, 512, 1.0);
 
     for(int i=0;i< (sizeof(primArray)/sizeof(vgerPrim)); ++i) {
         vgerRender(vg, primArray+i);
@@ -158,7 +158,7 @@ simd_float4 magenta = {1,0,1,1};
 
     auto vger = vgerNew();
 
-    vgerBegin(vger);
+    vgerBegin(vger, 512, 512, 1.0);
 
     vgerPrim p = {
         .type = vgerCircle,
@@ -205,7 +205,7 @@ simd_float4 magenta = {1,0,1,1};
     auto vger = vgerNew();
     assert(vger);
 
-    vgerBegin(vger);
+    vgerBegin(vger, 512, 512, 1.0);
 
     vgerSave(vger);
     vgerScale(vger, float2{0.05, 0.05});
@@ -264,7 +264,7 @@ simd_float4 magenta = {1,0,1,1};
 
     auto vger = vgerNew();
 
-    vgerBegin(vger);
+    vgerBegin(vger, 512, 512, 1.0);
 
     auto tex = [self getTexture:@"icon-mac-256.png"];
     auto idx = vgerAddMTLTexture(vger, tex);
@@ -304,7 +304,7 @@ simd_float4 magenta = {1,0,1,1};
 
     auto vger = vgerNew();
 
-    vgerBegin(vger);
+    vgerBegin(vger, 512, 512, 1.0);
 
     float s = 1.0/256.0;
 
@@ -371,7 +371,7 @@ vector_float4 rand_color() {
 
     [self measureBlock:^{
 
-        vgerBegin(vger);
+        vgerBegin(vger, 512, 512, 1.0);
 
         for(int i=0;i<primArray.size();++i) {
            vgerRender(vger, &primArray[i]);
@@ -426,7 +426,7 @@ vector_float4 rand_color() {
 
     [self measureBlock:^{
 
-        vgerBegin(vger);
+        vgerBegin(vger, 512, 512, 1.0);
 
         for(int i=0;i<2*N;++i) {
             vgerRender(vger, &primArray[i]);
@@ -537,7 +537,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
 
     auto vger = vgerNew();
 
-    vgerBegin(vger);
+    vgerBegin(vger, 512, 512, 1.0);
 
     float s = 1.0/256.0;
 

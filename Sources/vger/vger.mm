@@ -46,7 +46,7 @@ void vgerDelete(vger* vg) {
     delete vg;
 }
 
-void vgerBegin(vger* vg) {
+void vgerBegin(vger* vg, float windowWidth, float windowHeight, float devicePxRatio) {
     vg->curPrims = (vg->curPrims+1)%3;
     vg->p = (vgerPrim*) vg->prims[vg->curPrims].contents;
     vg->primCount = 0;
