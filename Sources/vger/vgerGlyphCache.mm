@@ -44,7 +44,9 @@
     CGRect boundingRect;
     CTFontGetBoundingRectsForGlyphs(ctFont, kCTFontOrientationHorizontal, &glyph, &boundingRect, 1);
 
-    CGAffineTransform glyphTransform = CGAffineTransformMake(1, 0, 0, 1, -boundingRect.origin.x, -boundingRect.origin.y);
+    CGAffineTransform glyphTransform = CGAffineTransformMake(1, 0, 0, 1,
+                                                             -boundingRect.origin.x + GLYPH_MARGIN,
+                                                             -boundingRect.origin.y + GLYPH_MARGIN);
     CGPathRef path = CTFontCreatePathForGlyph(ctFont, glyph, &glyphTransform);
 
     if(path == 0) {
@@ -52,8 +54,8 @@
         return GlyphInfo();
     }
 
-    int width = ceilf(boundingRect.size.width);
-    int height = ceilf(boundingRect.size.height);
+    int width = ceilf(boundingRect.size.width) + 2*GLYPH_MARGIN;
+    int height = ceilf(boundingRect.size.height) + 2*GLYPH_MARGIN;
 
     //NSLog(@"glyph size: %d %d\n", width, height);
 
