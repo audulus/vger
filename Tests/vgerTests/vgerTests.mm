@@ -163,8 +163,8 @@ simd_float4 magenta = {1,0,1,1};
     vgerPrim p = {
         .type = vgerCircle,
         .width = 0.01,
-        .radius = 0.2,
-        .cvs = {0, {0,0.5}, {0.5,0.5}},
+        .radius = 10,
+        .cvs = { {20, 20}},
         .colors = {cyan, 0, 0},
     };
 
@@ -173,12 +173,11 @@ simd_float4 magenta = {1,0,1,1};
     vgerRender(vger, &p);
 
     vgerSave(vger);
-    vgerTranslate(vger, float2{0.5f,0.0f});
-    vgerTranslate(vger, float2{0.0f,0.5f});
-    vgerScale(vger, float2{0.2f, 0.2f});
+    vgerTranslate(vger, float2{100,0.0f});
+    vgerTranslate(vger, float2{0.0f,100});
+    vgerScale(vger, float2{2.0f, 2.0f});
     vgerRender(vger, &p);
 
-    XCTAssertTrue(simd_equal(vgerTransform(vger, float2{0,0}), float2{0.5, 0.5}));
     vgerRestore(vger);
 
     auto commandBuffer = [queue commandBuffer];
