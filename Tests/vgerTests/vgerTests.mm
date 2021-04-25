@@ -207,20 +207,19 @@ simd_float4 magenta = {1,0,1,1};
     vgerBegin(vger, 512, 512, 1.0);
 
     vgerSave(vger);
-    vgerScale(vger, float2{0.05, 0.05});
 
     vgerPrim p = {
         .type = vgerRect,
         .width = 0.01,
-        .cvs = { {0,0}, {1,1}},
+        .cvs = { {20,20}, {40,40}},
         .radius=0.3,
         .colors = {{1,1,1,.5}, 0, 0},
     };
 
     for(int i=0;i<10;++i) {
         vgerRender(vger, &p);
-        p.cvs[0].x += 2;
-        p.cvs[1].x += 2;
+        p.cvs[0].x += 40;
+        p.cvs[1].x += 40;
     }
 
     vgerRestore(vger);
