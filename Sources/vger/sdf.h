@@ -3,6 +3,12 @@
 #ifndef sdf_h
 #define sdf_h
 
+#ifdef __METAL_VERSION__
+#define DEVICE device
+#else
+#define DEVICE
+#endif
+
 // From https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm
 
 float sdCircle( float2 p, float r )
@@ -130,11 +136,51 @@ float sdPolygon(float2 p, T v, int num)
 }
 #endif
 
-#if __METAL_VERSION__
-float sdPrim(const device vgerPrim& prim, float2 p) {
-#else
-float sdPrim(const vgerPrim& prim, float2 p) {
-#endif
+/// Axis-aligned bounding box.
+struct BBox {
+    float2 min;
+    float2 max;
+
+    BBox inset(float d) const {
+        return {min+d, max-d};
+    }
+};
+
+BBox sdPrimBounds(const DEVICE vgerPrim& prim) {
+    BBox b;
+    switch(prim.type) {
+        case vgerBezier:
+            b = BBox{
+                min(min(prim.cvs[0], prim.cvs[1]), prim.cvs[2]),
+                max(max(prim.cvs[0], prim.cvs[1]), prim.cvs[2])
+            };
+            break;
+        case vgerCircle:
+        case vgerArc:
+            b = {prim.cvs[0] - prim.radius, prim.cvs[0] + prim.radius};
+            break;
+        case vgerSegment:
+        case vgerWire:
+            b = BBox{
+                min(prim.cvs[0], prim.cvs[1]),
+                max(prim.cvs[0], prim.cvs[1])
+            };
+            break;
+        case vgerRect:
+            b = BBox{prim.cvs[0], prim.cvs[1]};
+            break;
+        case vgerCurve: {
+            b = {FLT_MAX, -FLT_MAX};
+            for(int i=0;i<prim.count;++i) {
+                b.min = min(b.min, prim.cvs[i]);
+                b.max = max(b.max, prim.cvs[i]);
+            }
+        }
+    }
+    return b.inset(-prim.width);
+}
+
+float sdPrim(const DEVICE vgerPrim& prim, float2 p) {
     float d = FLT_MAX;
     switch(prim.type) {
         case vgerBezier:
