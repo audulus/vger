@@ -107,8 +107,6 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
     
     float d = sdPrim(prim, in.t);
 
-    auto sw = prim.width; // stroke width
-
     //if(d > 2*sw) {
     //    discard_fragment();
     //}
@@ -135,6 +133,6 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
             break;
     }
 
-    return mix(float4(color.rgb,0.1), color, 1.0-smoothstep(sw,sw+fw,d) );
+    return mix(float4(color.rgb,0.1), color, 1.0-smoothstep(0,fw,d) );
 
 }
