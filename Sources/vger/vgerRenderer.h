@@ -22,7 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
             prims:(id<MTLBuffer>) primBuffer
             count:(int)n
           texture:(id<MTLTexture>)texture
-     glyphTexture:(id<MTLTexture>)glyphTexture;
+     glyphTexture:(id<MTLTexture>)glyphTexture
+       windowSize:(vector_float2)windowSize;
 
 @end
 

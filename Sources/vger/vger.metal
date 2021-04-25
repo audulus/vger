@@ -83,7 +83,8 @@ OBB sdPrimOBB(const device vgerPrim& prim) {
 
 vertex VertexOut vger_vertex(uint vid [[vertex_id]],
                              uint iid [[instance_id]],
-                             const device vgerPrim* prims) {
+                             const device vgerPrim* prims,
+                             constant float2& viewSize) {
     
     device auto& prim = prims[iid];
     

@@ -25,6 +25,7 @@ struct vger {
     int primCount = 0;
     vgerTextureManager* texMgr;
     vgerGlyphCache* glyphCache;
+    float2 windowSize;
 
     vger() {
         device = MTLCreateSystemDefaultDevice();
@@ -50,6 +51,7 @@ void vgerBegin(vger* vg, float windowWidth, float windowHeight, float devicePxRa
     vg->curPrims = (vg->curPrims+1)%3;
     vg->p = (vgerPrim*) vg->prims[vg->curPrims].contents;
     vg->primCount = 0;
+    vg->windowSize = {windowWidth, windowHeight};
 }
 
 int  vgerAddTexture(vger* vg, const uint8_t* data, int width, int height) {
@@ -172,7 +174,8 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
                      prims:vg->prims[vg->curPrims]
                      count:vg->primCount
                    texture:vg->texMgr.atlas
-              glyphTexture:[vg->glyphCache getAltas]];
+              glyphTexture:[vg->glyphCache getAltas]
+                windowSize:vg->windowSize];
 }
 
 void vgerTranslate(vger* vg, vector_float2 t) {

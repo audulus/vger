@@ -65,11 +65,13 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
             count:(int)n
           texture:(id<MTLTexture>)texture
      glyphTexture:(id<MTLTexture>)glyphTexture
+       windowSize:(vector_float2)windowSize
 {
     auto enc = [buffer renderCommandEncoderWithDescriptor:pass];
     
     [enc setRenderPipelineState:pipeline];
     [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
+    [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:1];
     [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
     [enc setFragmentTexture:texture atIndex:0];
     [enc setFragmentTexture:glyphTexture atIndex:1];
