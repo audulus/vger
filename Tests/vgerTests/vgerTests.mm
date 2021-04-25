@@ -535,11 +535,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
 
     vgerBegin(vger, 512, 512, 1.0);
 
-    float s = 1.0/256.0;
-
     vgerSave(vger);
-    vgerTranslate(vger, float2{-1, -1});
-    vgerScale(vger, float2{s, s});
 
     vgerPrim bez = {
         .type = vgerBezier,
