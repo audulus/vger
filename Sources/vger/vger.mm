@@ -104,7 +104,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
                     .type = vgerRect,
                     .paint = vgerGlyph,
                     .texture = info.regionIndex,
-                    .cvs = {p, p+sz},
+                    .cvs = {p-1, p+sz+2},
                     .xform=matrix_identity_float3x3,
                     .txform=matrix_identity_float3x3,
                     .width = 0.01,
@@ -112,8 +112,8 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
                     .colors = {color, 0, 0},
                 };
 
-                prim.txform.columns[0].x = info.glyphSize.width;
-                prim.txform.columns[1].y = info.glyphSize.height;
+                prim.txform.columns[0].x = info.glyphSize.width+2;
+                prim.txform.columns[1].y = info.glyphSize.height+2;
 
                 vgerRender(vg, &prim);
             }
@@ -144,7 +144,7 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
             prim.txform = M;
         } else if(prim.paint == vgerGlyph) {
             auto r = glyphRects[prim.texture-1];
-            prim.txform.columns[2] = float3{float(r.x+GLYPH_MARGIN), float(r.y+GLYPH_MARGIN), 1.0f};
+            prim.txform.columns[2] = float3{float(r.x+GLYPH_MARGIN-1), float(r.y+GLYPH_MARGIN-1), 1.0f};
         }
     }
 
