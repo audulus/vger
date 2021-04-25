@@ -12,7 +12,7 @@
 using namespace simd;
 #import "sdf.h"
 
-#define MAX_PRIMS 4096
+#define MAX_PRIMS 16384
 
 struct vger {
 
