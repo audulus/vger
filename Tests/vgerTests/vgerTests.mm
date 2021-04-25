@@ -360,8 +360,8 @@ vector_float4 rand_color() {
     for(int i=0;i<N;++i) {
         vgerPrim p = {
             .type = vgerBezier,
-            .width = 0.01,
-            .cvs ={ rand_box(), rand_box(), rand_box() },
+            .width = 1,
+            .cvs ={ 512*rand2(), 512*rand2(), 512*rand2() },
             .colors = {rand_color(), 0, 0},
         };
         primArray.push_back(p);
