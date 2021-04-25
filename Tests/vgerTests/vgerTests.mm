@@ -399,7 +399,7 @@ vector_float4 rand_color() {
     int N = 10000;
 
     for(int i=0;i<N;++i) {
-        simd_float2 cvs[3] = { rand_box(), rand_box(), rand_box() };
+        simd_float2 cvs[3] = { 512*rand2(), 512*rand2(), 512*rand2() };
         auto c = rand_color();
         vgerPrim p[2] = {
             {
