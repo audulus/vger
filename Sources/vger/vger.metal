@@ -81,8 +81,6 @@ OBB sdPrimOBB(const device vgerPrim& prim) {
     return {0,0};
 }
 
-constant float2 tverts[4] = { float2(0, 1), float2(1, 1), float2(0, 0), float2(1, 0) };
-
 vertex VertexOut vger_vertex(uint vid [[vertex_id]],
                              uint iid [[instance_id]],
                              const device vgerPrim* prims) {
@@ -92,9 +90,8 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
     VertexOut out;
     out.primIndex = iid;
 
-    auto t = prim.txform * float3(tverts[vid], 1);
-    out.t = float2(t.x/t.z, t.y/t.z);
     out.p = prim.verts[vid];
+    out.t = prim.texcoords[vid];
     out.position = float4(out.p, 1, 1);
     
     return out;

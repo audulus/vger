@@ -116,14 +116,18 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
                     .paint = vgerGlyph,
                     .texture = info.regionIndex,
                     .cvs = {p-1, p+sz+2},
-                    .txform=matrix_identity_float3x3,
                     .width = 0.01,
                     .radius = 0,
                     .colors = {color, 0, 0},
                 };
 
-                prim.txform.columns[0].x = info.glyphSize.width+2;
-                prim.txform.columns[1].y = info.glyphSize.height+2;
+                float w = info.glyphSize.width+2;
+                float h = info.glyphSize.height+2;
+
+                prim.texcoords[0] = float2{0,h};
+                prim.texcoords[1] = float2{w,h};
+                prim.texcoords[2] = float2{0,0};
+                prim.texcoords[3] = float2{w,0};
 
                 vgerRender(vg, &prim);
             }
@@ -146,15 +150,20 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
     for(int i=0;i<vg->primCount;++i) {
         auto& prim = primp[i];
         if(prim.paint == vgerTexture) {
-            auto M = matrix_identity_float3x3;
             auto r = texRects[prim.texture-1];
-            M.columns[0].x = r.w;
-            M.columns[1].y = r.h;
-            M.columns[2] = float3{float(r.x), float(r.y), 1.0f};
-            prim.txform = M;
+            float w = r.w; float h = r.h;
+            float2 t = float2{float(r.x), float(r.y)};
+
+            prim.texcoords[0] = float2{0,h} + t;
+            prim.texcoords[1] = float2{w,h} + t;
+            prim.texcoords[2] = float2{0,0} + t;
+            prim.texcoords[3] = float2{w,0} + t;
+
         } else if(prim.paint == vgerGlyph) {
             auto r = glyphRects[prim.texture-1];
-            prim.txform.columns[2] = float3{float(r.x+GLYPH_MARGIN-1), float(r.y+GLYPH_MARGIN-1), 1.0f};
+            for(int i=0;i<4;++i) {
+                prim.texcoords[i] += float2{float(r.x+GLYPH_MARGIN-1), float(r.y+GLYPH_MARGIN-1)};
+            }
         }
     }
 

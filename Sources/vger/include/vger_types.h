@@ -70,13 +70,6 @@ typedef struct {
 
     /// The texture region.
     int texture;
-
-    /// Transform into texture.
-#ifdef __METAL_VERSION__
-    float3x3 txform;
-#else
-    matrix_float3x3 txform;
-#endif
     
     /// Vertices of the quad we're rendering.
     vector_float2 verts[4];
