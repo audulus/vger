@@ -304,10 +304,8 @@ simd_float4 magenta = {1,0,1,1};
 
     vgerBegin(vger, 512, 512, 1.0);
 
-    float s = 1.0/256.0;
-
     vgerSave(vger);
-    vgerScale(vger, float2{s, s});
+    vgerTranslate(vger, float2{100,100});
     vgerRenderText(vger, "This is a test.", float4{0,1,1,1});
     vgerRestore(vger);
 

@@ -104,6 +104,14 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                               texture2d<float, access::sample> glyphs) {
 
     device auto& prim = prims[in.primIndex];
+
+    constexpr sampler textureSampler (mag_filter::linear,
+                                      min_filter::linear,
+                                      coord::pixel);
+
+    if(prim.paint == vgerGlyph) {
+        return float4(prim.colors[0].rgb, prim.colors[0].a * glyphs.sample(textureSampler, in.t).a);
+    }
     
     float d = sdPrim(prim, in.t);
 
@@ -112,10 +120,6 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
     //}
 
     float fw = length(fwidth(in.t));
-
-    constexpr sampler textureSampler (mag_filter::linear,
-                                      min_filter::linear,
-                                      coord::pixel);
 
     float4 color;
     switch(prim.paint) {
