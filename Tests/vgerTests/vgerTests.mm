@@ -139,17 +139,17 @@ simd_float4 magenta = {1,0,1,1};
     pts[3] = cvs_r[1];
     pts[4] = cvs_r[2];
 
-    auto prims = [device newBufferWithBytes:primArray length:sizeof(primArray) options:MTLResourceStorageModeShared];
-    assert(prims);
+    auto vg = vgerNew();
+
+    vgerBegin(vg);
+
+    for(int i=0;i< (sizeof(primArray)/sizeof(vgerPrim)); ++i) {
+        vgerRender(vg, primArray+i);
+    }
 
     auto commandBuffer = [queue commandBuffer];
 
-    [renderer encodeTo:commandBuffer
-                  pass:pass
-                 prims:prims
-                 count:sizeof(primArray)/sizeof(vgerPrim)
-               texture:sampleTexture
-          glyphTexture:sampleTexture];
+    vgerEncode(vg, commandBuffer, pass);
 
     // Sync texture on macOS
     #if TARGET_OS_OSX

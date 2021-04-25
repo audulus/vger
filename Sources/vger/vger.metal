@@ -81,7 +81,6 @@ OBB sdPrimOBB(const device vgerPrim& prim) {
     return {0,0};
 }
 
-constant float2 verts[4] = { float2(0, 0), float2(1, 0), float2(0, 1), float2(1, 1) };
 constant float2 tverts[4] = { float2(0, 1), float2(1, 1), float2(0, 0), float2(1, 0) };
 
 vertex VertexOut vger_vertex(uint vid [[vertex_id]],
@@ -92,13 +91,11 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
     
     VertexOut out;
     out.primIndex = iid;
-    
-    auto rect = sdPrimOBB(prim).inset(-0.02);
 
     auto t = prim.txform * float3(tverts[vid], 1);
     out.t = float2(t.x/t.z, t.y/t.z);
-    out.p = verts[vid].x * rect.u + verts[vid].y * rect.v + rect.origin;
-    out.position = float4(prim.xform * float3(out.p, 1), 1);
+    out.p = prim.verts[vid];
+    out.position = float4(out.p, 1, 1);
     
     return out;
 }
@@ -107,7 +104,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
                               texture2d<float, access::sample> tex,
                               texture2d<float, access::sample> glyphs) {
-    
+
     device auto& prim = prims[in.primIndex];
     
     float d = sdPrim(prim, in.p);

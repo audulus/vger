@@ -73,6 +73,10 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
         vg->p->verts[2] = vgerTransform(vg, float2{bounds.min.x, bounds.max.y});
         vg->p->verts[3] = vgerTransform(vg, bounds.max);
 
+        vg->p->cvs[0] = vgerTransform(vg, vg->p->cvs[0]);
+        vg->p->cvs[1] = vgerTransform(vg, vg->p->cvs[1]);
+        vg->p->cvs[2] = vgerTransform(vg, vg->p->cvs[2]);
+
         vg->p++;
         vg->primCount++;
     }
