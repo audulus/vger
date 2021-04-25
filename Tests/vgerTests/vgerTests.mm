@@ -101,8 +101,8 @@ simd_float4 magenta = {1,0,1,1};
         },
         {
             .type = vgerSegment,
-            .width = 0.01,
-            .cvs = {{-.6,-.6}, {-.4,-.5}},
+            .width = 10,
+            .cvs = {{100,100}, {200,200}},
             .colors = {magenta, 0, 0},
         },
         {
