@@ -92,7 +92,6 @@ simd_float4 magenta = {1,0,1,1};
         // { .type = vgerBezier, .cvs = {0, {0,0.5}, {0.5,0.5}}, .colors = {{1,1,1,.5}, 0, 0}},
         {
             .type = vgerCircle,
-            .xform=matrix_identity_float3x3,
             .width = 0.01,
             .radius = 0.2,
             .cvs = {0, {0,0.5}, {0.5,0.5}},
@@ -100,21 +99,18 @@ simd_float4 magenta = {1,0,1,1};
         },
         {
             .type = vgerCurve,
-            .xform=matrix_identity_float3x3,
             .width = 0.01,
             .count = 5,
             .colors = {white, 0, 0},
         },
         {
             .type = vgerSegment,
-            .xform=matrix_identity_float3x3,
             .width = 0.01,
             .cvs = {{-.6,-.6}, {-.4,-.5}},
             .colors = {magenta, 0, 0},
         },
         {
             .type = vgerRect,
-            .xform=matrix_identity_float3x3,
             .width = 0.01,
             .cvs = {{-.8,-.8}, {-.6,-.6}},
             .radius=0.04,
@@ -122,7 +118,6 @@ simd_float4 magenta = {1,0,1,1};
         },
         {
             .type = vgerArc,
-            .xform=matrix_identity_float3x3,
             .width = 0.01,
             .cvs = {{-.5, 0.5}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
             .radius=0.1,
@@ -171,7 +166,6 @@ simd_float4 magenta = {1,0,1,1};
 
     vgerPrim p = {
         .type = vgerCircle,
-        .xform=matrix_identity_float3x3,
         .width = 0.01,
         .radius = 0.2,
         .cvs = {0, {0,0.5}, {0.5,0.5}},
@@ -370,7 +364,6 @@ vector_float4 rand_color() {
     for(int i=0;i<N;++i) {
         vgerPrim p = {
             .type = vgerBezier,
-            .xform = matrix_identity_float3x3,
             .width = 0.01,
             .cvs ={ rand_box(), rand_box(), rand_box() },
             .colors = {rand_color(), 0, 0},
@@ -419,13 +412,11 @@ vector_float4 rand_color() {
         vgerPrim p[2] = {
             {
                 .type = vgerBezier,
-                .xform = matrix_identity_float3x3,
                 .width = 0.01,
                 .colors = {c, 0, 0},
             },
             {
                 .type = vgerBezier,
-                .xform = matrix_identity_float3x3,
                 .width = 0.01,
                 .colors = {c, 0, 0},
             }
@@ -490,7 +481,6 @@ void renderPaths(NVGcontext* vg, const std::vector<vgerPrim>& primArray) {
         auto c = rand_color();
         vgerPrim p = {
             .type = vgerBezier,
-            .xform = matrix_identity_float3x3,
             .width = 0.01f*w,
             .cvs ={ rand2()*sz, rand2()*sz, rand2()*sz },
             .colors = {c, 0, 0}

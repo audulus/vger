@@ -50,13 +50,6 @@ typedef struct {
     /// Type of primitive.
     vgerPrimType type;
 
-    /// Transform applied to drawing region.
-#ifdef __METAL_VERSION__
-    float3x3 xform;
-#else
-    matrix_float3x3 xform;
-#endif
-
     /// Stroke width.
     float width;
     

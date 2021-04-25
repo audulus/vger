@@ -65,7 +65,6 @@ int vgerAddMTLTexture(vger* vg, id<MTLTexture> tex) {
 void vgerRender(vger* vg, const vgerPrim* prim) {
     if(vg->primCount < MAX_PRIMS) {
         *vg->p = *prim;
-        vg->p->xform = vg->txStack.back();
 
         auto bounds = sdPrimBounds(*prim);
         vg->p->verts[0] = vgerTransform(vg, bounds.min);
@@ -117,7 +116,6 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
                     .paint = vgerGlyph,
                     .texture = info.regionIndex,
                     .cvs = {p-1, p+sz+2},
-                    .xform=matrix_identity_float3x3,
                     .txform=matrix_identity_float3x3,
                     .width = 0.01,
                     .radius = 0,
