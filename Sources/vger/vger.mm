@@ -68,10 +68,10 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
         vg->p->xform = vg->txStack.back();
 
         auto bounds = sdPrimBounds(*prim);
-        vg->p->verts[0] = bounds.min;
-        vg->p->verts[1] = {bounds.max.x, bounds.min.y};
-        vg->p->verts[2] = {bounds.min.x, bounds.max.y};
-        vg->p->verts[3] = bounds.max;
+        vg->p->verts[0] = vgerTransform(vg, bounds.min);
+        vg->p->verts[1] = vgerTransform(vg, float2{bounds.max.x, bounds.min.y});
+        vg->p->verts[2] = vgerTransform(vg, float2{bounds.min.x, bounds.max.y});
+        vg->p->verts[3] = vgerTransform(vg, bounds.max);
 
         vg->p++;
         vg->primCount++;
