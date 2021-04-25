@@ -10,6 +10,7 @@
 #include <vector>
 
 using namespace simd;
+#import "sdf.h"
 
 #define MAX_PRIMS 4096
 
@@ -65,6 +66,13 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
     if(vg->primCount < MAX_PRIMS) {
         *vg->p = *prim;
         vg->p->xform = vg->txStack.back();
+
+        auto bounds = sdPrimBounds(*prim);
+        vg->p->verts[0] = bounds.min;
+        vg->p->verts[1] = {bounds.max.x, bounds.min.y};
+        vg->p->verts[2] = {bounds.min.x, bounds.max.y};
+        vg->p->verts[3] = bounds.max;
+
         vg->p++;
         vg->primCount++;
     }
