@@ -114,9 +114,9 @@ simd_float4 magenta = {1,0,1,1};
         },
         {
             .type = vgerArc,
-            .width = 0.01,
-            .cvs = {{-.5, 0.5}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
-            .radius=0.1,
+            .width = 3,
+            .cvs = {{100, 400}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
+            .radius= 30,
             .colors = {white},
         }
     };
