@@ -7,29 +7,55 @@
 #define DEVICE device
 #else
 #define DEVICE
+
+#include <simd/simd.h>
+using namespace simd;
+
+inline float min(float a, float b) {
+    return a > b ? b : a;
+}
+
+inline float clamp(float x, float a, float b) {
+    if(x > b) x = b;
+    if(x < a) x = a;
+    return x;
+}
+
+inline float3 clamp(float3 x, float a, float b) {
+    return simd_clamp(x, a, b);
+}
+
+inline float mix(float a, float b, float t) {
+    return (1-t)*a + t*b;
+}
+
+inline float2 mix(float2 a, float2 b, float t) {
+    return (1-t)*a + t*b;
+}
+
 #endif
 
 // From https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm
 
-float sdCircle( float2 p, float r )
+inline float sdCircle( float2 p, float r )
 {
     return length(p) - r;
 }
 
-float sdBox( float2 p, float2 b, float r )
+inline float sdBox( float2 p, float2 b, float r )
 {
     float2 d = abs(p)-b+r;
     return length(max(d,float2(0.0))) + min(max(d.x,d.y),0.0)-r;
 }
 
-float sdSegment(float2 p, float2 a, float2 b )
+inline float sdSegment(float2 p, float2 a, float2 b )
 {
     float2 pa = p-a, ba = b-a;
     float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
     return length( pa - ba*h );
 }
 
-float sdArc(float2 p, float2 sca, float2 scb, float ra, float rb )
+inline float sdArc(float2 p, float2 sca, float2 scb, float ra, float rb )
 {
     p *= float2x2{float2{sca.x,sca.y},float2{-sca.y,sca.x}};
     p.x = abs(p.x);
@@ -37,11 +63,11 @@ float sdArc(float2 p, float2 sca, float2 scb, float ra, float rb )
     return sqrt( dot(p,p) + ra*ra - 2.0*ra*k ) - rb;
 }
 
-float dot2(float2 v) {
+inline float dot2(float2 v) {
     return dot(v,v);
 }
 
-float sdBezier(float2 pos, float2 A, float2 B, float2 C )
+inline float sdBezier(float2 pos, float2 A, float2 B, float2 C )
 {
     float2 a = B - A;
     float2 b = A - 2.0*B + C;
@@ -79,16 +105,16 @@ float sdBezier(float2 pos, float2 A, float2 B, float2 C )
     return sqrt( res );
 }
 
-float det(float2 a, float2 b) { return a.x*b.y-b.x*a.y; }
+inline float det(float2 a, float2 b) { return a.x*b.y-b.x*a.y; }
 
-float2 closestPointInSegment( float2 a, float2 b )
+inline float2 closestPointInSegment( float2 a, float2 b )
 {
     float2 ba = b - a;
     return a + ba*clamp( -dot(a,ba)/dot(ba,ba), 0.0, 1.0 );
 }
 
 // From: http://research.microsoft.com/en-us/um/people/hoppe/ravg.pdf
-float2 get_distance_vector(float2 b0, float2 b1, float2 b2) {
+inline float2 get_distance_vector(float2 b0, float2 b1, float2 b2) {
     
     float a=det(b0,b2), b=2.0*det(b1,b0), d=2.0*det(b2,b1);
     
@@ -107,7 +133,7 @@ float2 get_distance_vector(float2 b0, float2 b1, float2 b2) {
     
 }
 
-float sdBezierApprox(float2 p, float2 b0, float2 b1, float2 b2) {
+inline float sdBezierApprox(float2 p, float2 b0, float2 b1, float2 b2) {
     return length(get_distance_vector(b0-p, b1-p, b2-p));
 }
 
@@ -146,7 +172,7 @@ struct BBox {
     }
 };
 
-BBox sdPrimBounds(const DEVICE vgerPrim& prim) {
+inline BBox sdPrimBounds(const DEVICE vgerPrim& prim) {
     BBox b;
     switch(prim.type) {
         case vgerBezier:
@@ -180,7 +206,7 @@ BBox sdPrimBounds(const DEVICE vgerPrim& prim) {
     return b.inset(-prim.width);
 }
 
-float sdPrim(const DEVICE vgerPrim& prim, float2 p) {
+inline float sdPrim(const DEVICE vgerPrim& prim, float2 p) {
     float d = FLT_MAX;
     switch(prim.type) {
         case vgerBezier:
