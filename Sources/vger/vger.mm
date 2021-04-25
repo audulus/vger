@@ -69,14 +69,14 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
         *vg->p = *prim;
 
         auto bounds = sdPrimBounds(*prim).inset(-1);
-        vg->p->verts[0] = vgerTransform(vg, bounds.min);
-        vg->p->verts[1] = vgerTransform(vg, float2{bounds.max.x, bounds.min.y});
-        vg->p->verts[2] = vgerTransform(vg, float2{bounds.min.x, bounds.max.y});
-        vg->p->verts[3] = vgerTransform(vg, bounds.max);
+        vg->p->texcoords[0] = bounds.min;
+        vg->p->texcoords[1] = float2{bounds.max.x, bounds.min.y};
+        vg->p->texcoords[2] = float2{bounds.min.x, bounds.max.y};
+        vg->p->texcoords[3] = bounds.max;
 
-        vg->p->cvs[0] = vgerTransform(vg, vg->p->cvs[0]);
-        vg->p->cvs[1] = vgerTransform(vg, vg->p->cvs[1]);
-        vg->p->cvs[2] = vgerTransform(vg, vg->p->cvs[2]);
+        for(int i=0;i<4;++i) {
+            vg->p->verts[i] = vgerTransform(vg, vg->p->texcoords[i]);
+        }
 
         vg->p++;
         vg->primCount++;

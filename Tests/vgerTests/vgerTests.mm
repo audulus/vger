@@ -162,7 +162,7 @@ simd_float4 magenta = {1,0,1,1};
 
     vgerPrim p = {
         .type = vgerCircle,
-        .width = 0.01,
+        .width = 0.00,
         .radius = 10,
         .cvs = { {20, 20}},
         .colors = {cyan, 0, 0},
@@ -175,7 +175,7 @@ simd_float4 magenta = {1,0,1,1};
     vgerSave(vger);
     vgerTranslate(vger, float2{100,0.0f});
     vgerTranslate(vger, float2{0.0f,100});
-    vgerScale(vger, float2{2.0f, 2.0f});
+    vgerScale(vger, float2{4.0f, 4.0f});
     vgerRender(vger, &p);
 
     vgerRestore(vger);

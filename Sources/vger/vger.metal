@@ -105,7 +105,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 
     device auto& prim = prims[in.primIndex];
     
-    float d = sdPrim(prim, in.p);
+    float d = sdPrim(prim, in.t);
 
     auto sw = prim.width; // stroke width
 
@@ -113,7 +113,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
     //    discard_fragment();
     //}
 
-    float fw = length(fwidth(in.p));
+    float fw = length(fwidth(in.t));
 
     constexpr sampler textureSampler (mag_filter::linear,
                                       min_filter::linear,
