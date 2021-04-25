@@ -93,7 +93,7 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
 
     out.p = prim.verts[vid];
     out.t = prim.texcoords[vid];
-    out.position = float4(out.p, 1, 1);
+    out.position = float4(2.0 * out.p / viewSize - 1.0, 0, 1);
     
     return out;
 }

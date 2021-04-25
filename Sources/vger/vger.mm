@@ -68,7 +68,7 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
     if(vg->primCount < MAX_PRIMS) {
         *vg->p = *prim;
 
-        auto bounds = sdPrimBounds(*prim).inset(-0.02);
+        auto bounds = sdPrimBounds(*prim).inset(-1);
         vg->p->verts[0] = vgerTransform(vg, bounds.min);
         vg->p->verts[1] = vgerTransform(vg, float2{bounds.max.x, bounds.min.y});
         vg->p->verts[2] = vgerTransform(vg, float2{bounds.min.x, bounds.max.y});

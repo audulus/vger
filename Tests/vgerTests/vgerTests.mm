@@ -76,7 +76,7 @@ simd_float4 magenta = {1,0,1,1};
 
 - (void) testBasic {
 
-    simd_float2 cvs[3] = {0, {0,0.5}, {0.5,0.5}};
+    simd_float2 cvs[3] = {256, {256,384}, {384,384}};
     simd_float2 cvs_l[3];
     simd_float2 cvs_r[3];
     SplitBezier(0.5, cvs, cvs_l, cvs_r);
@@ -88,14 +88,14 @@ simd_float4 magenta = {1,0,1,1};
         // { .type = vgerBezier, .cvs = {0, {0,0.5}, {0.5,0.5}}, .colors = {{1,1,1,.5}, 0, 0}},
         {
             .type = vgerCircle,
-            .width = 0.01,
-            .radius = 0.2,
-            .cvs = {0, {0,0.5}, {0.5,0.5}},
+            .width = 10,
+            .radius = 40,
+            .cvs = {256, 256},
             .colors = {cyan, 0, 0},
         },
         {
             .type = vgerCurve,
-            .width = 0.01,
+            .width = 1,
             .count = 5,
             .colors = {white, 0, 0},
         },
