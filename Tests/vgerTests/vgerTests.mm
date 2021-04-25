@@ -581,8 +581,9 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     vgerPrim arc = {
         .type = vgerArc,
         .width = 10.0,
-        .cvs = {{50, 50}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
-        .radius=20,
+        .cvs = {{75, 75}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
+        .radius=25,
+        .colors = {magenta}
     };
     vgerRender(vger, &arc);
     textAt(vger, 150, 050, "Arc");
