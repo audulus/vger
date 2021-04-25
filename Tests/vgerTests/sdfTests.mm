@@ -2,6 +2,7 @@
 
 #import <XCTest/XCTest.h>
 #import <simd/simd.h>
+#include "vger_types.h"
 
 using namespace simd;
 

@@ -13,40 +13,6 @@ struct VertexOut {
     int primIndex;
 };
 
-float sdPrim(const device vgerPrim& prim, float2 p) {
-    float d = FLT_MAX;
-    switch(prim.type) {
-        case vgerBezier:
-            // d = sdBezier(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]);
-            d = sdBezierApprox(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]);
-            break;
-        case vgerCircle:
-            d = sdCircle(p - prim.cvs[0], prim.radius);
-            break;
-        case vgerArc:
-            d = sdArc(p - prim.cvs[0], prim.cvs[1], prim.cvs[2], prim.radius, 0.002);
-            break;
-        case vgerRect: {
-            auto center = .5*(prim.cvs[1] + prim.cvs[0]);
-            auto size = prim.cvs[1] - prim.cvs[0];
-            d = sdBox(p - center, .5*size, prim.radius);
-        }
-            break;
-        case vgerSegment:
-            d = sdSegment(p, prim.cvs[0], prim.cvs[1]);
-            break;
-        case vgerCurve:
-            for(int i=0;i<prim.count-2;i+=2) {
-                d = min(d, sdBezierApprox(p,
-                                          prim.cvs[i],
-                                          prim.cvs[i+1],
-                                          prim.cvs[i+2]));
-            }
-            break;
-    }
-    return d;
-}
-
 // Oriented bounding box.
 struct OBB {
     float2 origin;
