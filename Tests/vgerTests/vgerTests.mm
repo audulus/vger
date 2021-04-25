@@ -17,7 +17,6 @@ using namespace simd;
     id<MTLCommandQueue> queue;
     id<MTLTexture> texture;
     MTLRenderPassDescriptor* pass;
-    id<MTLTexture> sampleTexture;
     MTKTextureLoader* loader;
 }
 
@@ -44,9 +43,6 @@ using namespace simd;
 
     texture = [device newTextureWithDescriptor:textureDesc];
     assert(texture);
-
-    sampleTexture = [device newTextureWithDescriptor:textureDesc];
-    assert(sampleTexture);
 
     pass = [MTLRenderPassDescriptor new];
     pass.colorAttachments[0].texture = texture;
