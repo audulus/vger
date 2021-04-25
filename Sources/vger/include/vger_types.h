@@ -84,6 +84,12 @@ typedef struct {
 #else
     matrix_float3x3 txform;
 #endif
+    
+    /// Vertices of the quad we're rendering.
+    vector_float2 verts[4];
+    
+    /// Texture coordinates of quad.
+    vector_float2 texcoords[4];
 
 } vgerPrim;
 
