@@ -593,11 +593,13 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     auto commandBuffer = [queue commandBuffer];
 
     vgerEncode(vger, commandBuffer, pass);
+    auto atlas = vgerGetGlyphAtlas(vger);
 
     // Sync texture on macOS
     #if TARGET_OS_OSX
     auto blitEncoder = [commandBuffer blitCommandEncoder];
     [blitEncoder synchronizeResource:texture];
+    [blitEncoder synchronizeResource:atlas];
     [blitEncoder endEncoding];
     #endif
 
@@ -607,6 +609,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     vgerDelete(vger);
 
     showTexture(texture, @"demo.png");
+    showTexture(atlas, @"glyph_atlas.png");
 
 }
 
