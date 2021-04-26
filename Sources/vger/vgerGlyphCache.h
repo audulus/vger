@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define GLYPH_MARGIN 2
+#define GLYPH_MARGIN 4
 
 struct GlyphInfo {
     float size = 0.0;
