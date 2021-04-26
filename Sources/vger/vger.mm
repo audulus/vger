@@ -71,55 +71,60 @@ int vgerAddMTLTexture(vger* vg, id<MTLTexture> tex) {
 
 void vgerRender(vger* vg, const vgerPrim* prim) {
 
-
-#if 0
-    auto bounds = sdPrimBounds(*prim).inset(-1);
-    auto tiles = ceil((bounds.max - bounds.min)/TILE_SIZE);
-
-    for(float y=0;y<tiles.y;++y) {
-        for(float x=0;x<tiles.x;++x) {
-
-            float2 c = bounds.min + TILE_SIZE * float2{x+.5f, y+.5f};
-            if(sdPrim(*prim, c) < TILE_SIZE * M_SQRT2) {
-                vgerPrim p = *prim;
-                p.texcoords[0] = bounds.min + TILE_SIZE * float2{x,y};
-                p.texcoords[1] = bounds.min + TILE_SIZE * float2{x+1,y};
-                p.texcoords[2] = bounds.min + TILE_SIZE * float2{x,y+1};
-                p.texcoords[3] = bounds.min + TILE_SIZE * float2{x+1,y+1};
-
-                for(int i=0;i<4;++i) {
-                    p.verts[i] = vgerTransform(vg, p.texcoords[i]);
-                }
-
-                if(vg->primCount < MAX_PRIMS) {
-                    *vg->p = p;
-
-                    vg->p++;
-                    vg->primCount++;
-                }
-            }
-
-        }
-    }
-#else
-
-    if(vg->primCount < MAX_PRIMS) {
-        *vg->p = *prim;
+    if(prim->type == vgerBezier or prim->type == vgerCurve) {
 
         auto bounds = sdPrimBounds(*prim).inset(-1);
-        vg->p->texcoords[0] = bounds.min;
-        vg->p->texcoords[1] = float2{bounds.max.x, bounds.min.y};
-        vg->p->texcoords[2] = float2{bounds.min.x, bounds.max.y};
-        vg->p->texcoords[3] = bounds.max;
+        auto tiles = ceil((bounds.max - bounds.min)/TILE_SIZE);
 
-        for(int i=0;i<4;++i) {
-            vg->p->verts[i] = vgerTransform(vg, vg->p->texcoords[i]);
+        for(float y=0;y<tiles.y;++y) {
+            for(float x=0;x<tiles.x;++x) {
+
+                float2 c = bounds.min + TILE_SIZE * float2{x+.5f, y+.5f};
+                if(sdPrim(*prim, c) < TILE_SIZE * M_SQRT2) {
+                    vgerPrim p = *prim;
+                    p.texcoords[0] = bounds.min + TILE_SIZE * float2{x,y};
+                    p.texcoords[1] = bounds.min + TILE_SIZE * float2{x+1,y};
+                    p.texcoords[2] = bounds.min + TILE_SIZE * float2{x,y+1};
+                    p.texcoords[3] = bounds.min + TILE_SIZE * float2{x+1,y+1};
+
+                    for(int i=0;i<4;++i) {
+                        p.verts[i] = p.texcoords[i];
+                    }
+                    p.xform = vg->txStack.back();
+
+                    if(vg->primCount < MAX_PRIMS) {
+                        *vg->p = p;
+
+                        vg->p++;
+                        vg->primCount++;
+                    }
+                }
+
+            }
         }
 
-        vg->p++;
-        vg->primCount++;
+    } else {
+
+        if(vg->primCount < MAX_PRIMS) {
+            *vg->p = *prim;
+
+            auto bounds = sdPrimBounds(*prim).inset(-1);
+            vg->p->texcoords[0] = bounds.min;
+            vg->p->texcoords[1] = float2{bounds.max.x, bounds.min.y};
+            vg->p->texcoords[2] = float2{bounds.min.x, bounds.max.y};
+            vg->p->texcoords[3] = bounds.max;
+
+            for(int i=0;i<4;++i) {
+                vg->p->verts[i] = vg->p->texcoords[i];
+            }
+
+            vg->p->xform = vg->txStack.back();
+
+            vg->p++;
+            vg->primCount++;
+        }
+
     }
-#endif
 
 }
 
@@ -164,10 +169,11 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
 
                 if(vg->primCount < MAX_PRIMS) {
 
-                    prim.verts[0] = vgerTransform(vg, a);
-                    prim.verts[1] = vgerTransform(vg, float2{b.x, a.y});
-                    prim.verts[2] = vgerTransform(vg, float2{a.x, b.y});
-                    prim.verts[3] = vgerTransform(vg, b);
+                    prim.verts[0] = a;
+                    prim.verts[1] = float2{b.x, a.y};
+                    prim.verts[2] = float2{a.x, b.y};
+                    prim.verts[3] = b;
+                    prim.xform = vg->txStack.back();
 
                     auto bounds = info.glyphBounds;
                     float w = info.glyphBounds.size.width+2;

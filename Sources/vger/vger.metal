@@ -91,7 +91,9 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
     VertexOut out;
     out.primIndex = iid;
 
-    out.p = prim.verts[vid];
+    auto q = prim.xform * float3(prim.verts[vid], 1.0);
+
+    out.p = float2{q.x/q.z, q.y/q.z};
     out.t = prim.texcoords[vid];
     out.position = float4(2.0 * out.p / viewSize - 1.0, 0, 1);
     
