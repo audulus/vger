@@ -332,6 +332,41 @@ simd_float4 magenta = {1,0,1,1};
 
 }
 
+- (void) testScaleText {
+
+    auto vger = vgerNew();
+
+    vgerBegin(vger, 512, 512, 1.0);
+
+    vgerSave(vger);
+    vgerTranslate(vger, float2{100,100});
+    vgerScale(vger, float2{10,10});
+    vgerRenderText(vger, "This is a test.", float4{0,1,1,1});
+    vgerRestore(vger);
+
+    auto commandBuffer = [queue commandBuffer];
+
+    vgerEncode(vger, commandBuffer, pass);
+    auto atlas = vgerGetGlyphAtlas(vger);
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder synchronizeResource:atlas];
+    [blitEncoder endEncoding];
+    #endif
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    showTexture(atlas, @"glyph_atlas.png");
+    showTexture(texture, @"text.png");
+
+    vgerDelete(vger);
+
+}
+
 static
 vector_float2 rand2() {
     return float2{float(rand()) / RAND_MAX, float(rand()) / RAND_MAX};
