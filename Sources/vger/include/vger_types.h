@@ -25,7 +25,10 @@ typedef enum {
     vgerCurve,
 
     /// Connection wire. See https://www.shadertoy.com/view/NdsXRl
-    vgerWire
+    vgerWire,
+
+    /// Text rendering.
+    vgerGlyph
 } vgerPrimType;
 
 typedef enum {
@@ -35,9 +38,6 @@ typedef enum {
 
     /// Texture fill.
     vgerTexture,
-
-    /// Glyph fill.
-    vgerGlyph,
 
     /// Gradient fill.
     vgerGradient

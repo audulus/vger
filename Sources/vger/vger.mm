@@ -158,8 +158,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
                 float2 a = p-1, b = p+sz+2;
 
                 vgerPrim prim = {
-                    .type = vgerRect,
-                    .paint = vgerGlyph,
+                    .type = vgerGlyph,
                     .texture = info.regionIndex,
                     .cvs = {a, b},
                     .width = 0.01,
@@ -220,7 +219,9 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
             prim.texcoords[2] = float2{0,0} + t;
             prim.texcoords[3] = float2{w,0} + t;
 
-        } else if(prim.paint == vgerGlyph) {
+        }
+
+        if(prim.type == vgerGlyph) {
             auto r = glyphRects[prim.texture-1];
             for(int i=0;i<4;++i) {
                 prim.texcoords[i] += float2{float(r.x), float(r.y)};

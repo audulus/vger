@@ -111,7 +111,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                                       min_filter::linear,
                                       coord::pixel);
 
-    if(prim.paint == vgerGlyph) {
+    if(prim.type == vgerGlyph) {
         return float4(prim.colors[0].rgb, prim.colors[0].a * glyphs.sample(textureSampler, in.t).a);
     }
     
