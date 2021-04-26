@@ -27,6 +27,9 @@ struct vger {
     vgerGlyphCache* glyphCache;
     float2 windowSize;
 
+    // Glyph scratch space (avoid malloc).
+    std::vector<CGGlyph> glyphs;
+
     vger() {
         device = MTLCreateSystemDefaultDevice();
         renderer = [[vgerRenderer alloc] initWithDevice:device];
@@ -98,15 +101,12 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
         CTRunRef run = (__bridge CTRunRef)r;
         size_t glyphCount = CTRunGetGlyphCount(run);
 
-        CGGlyph glyphs[glyphCount];
-        CTRunGetGlyphs(run, entire, glyphs);
-
-        CGPoint positions[glyphCount];
-        CTRunGetPositions(run, entire, positions);
+        vg->glyphs.resize(glyphCount);
+        CTRunGetGlyphs(run, entire, vg->glyphs.data());
 
         for(int i=0;i<glyphCount;++i) {
 
-            auto info = [vg->glyphCache getGlyph:glyphs[i] size:12];
+            auto info = [vg->glyphCache getGlyph:vg->glyphs[i] size:12];
             if(info.regionIndex != -1) {
 
                 CGRect r = CTRunGetImageBounds(run, nil, CFRangeMake(i, 1));
