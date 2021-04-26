@@ -67,7 +67,42 @@ int vgerAddMTLTexture(vger* vg, id<MTLTexture> tex) {
     return [vg->texMgr addRegion:tex];
 }
 
+#define TILE_SIZE 16
+
 void vgerRender(vger* vg, const vgerPrim* prim) {
+
+
+#if 0
+    auto bounds = sdPrimBounds(*prim).inset(-1);
+    auto tiles = ceil((bounds.max - bounds.min)/16);
+
+    for(float y=0;y<tiles.y;++y) {
+        for(float x=0;x<tiles.x;++x) {
+
+            float2 c = bounds.min + TILE_SIZE * float2{x+.5f, y+.5f};
+            if(sdPrim(*prim, c) < TILE_SIZE * M_SQRT2) {
+                vgerPrim p = *prim;
+                p.texcoords[0] = bounds.min + TILE_SIZE * float2{x,y};
+                p.texcoords[1] = bounds.min + TILE_SIZE * float2{x+1,y};
+                p.texcoords[2] = bounds.min + TILE_SIZE * float2{x,y+1};
+                p.texcoords[3] = bounds.min + TILE_SIZE * float2{x+1,y+1};
+
+                for(int i=0;i<4;++i) {
+                    p.verts[i] = vgerTransform(vg, p.texcoords[i]);
+                }
+
+                if(vg->primCount < MAX_PRIMS) {
+                    *vg->p = p;
+
+                    vg->p++;
+                    vg->primCount++;
+                }
+            }
+
+        }
+    }
+#else
+
     if(vg->primCount < MAX_PRIMS) {
         *vg->p = *prim;
 
@@ -84,6 +119,8 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
         vg->p++;
         vg->primCount++;
     }
+#endif
+
 }
 
 void vgerRenderText(vger* vg, const char* str, float4 color) {
