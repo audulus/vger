@@ -142,3 +142,6 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
     return mix(float4(color.rgb,0.1), color, 1.0-smoothstep(0,fw,d) );
 
 }
+    outTexture.write(float4(rgb, 1.0), gid);
+
+}
