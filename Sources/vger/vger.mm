@@ -74,7 +74,7 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
 
 #if 0
     auto bounds = sdPrimBounds(*prim).inset(-1);
-    auto tiles = ceil((bounds.max - bounds.min)/16);
+    auto tiles = ceil((bounds.max - bounds.min)/TILE_SIZE);
 
     for(float y=0;y<tiles.y;++y) {
         for(float x=0;x<tiles.x;++x) {
