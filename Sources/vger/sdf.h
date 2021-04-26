@@ -170,6 +170,8 @@ struct BBox {
     BBox inset(float d) const {
         return {min+d, max-d};
     }
+
+    float2 size() const { return max - min; }
 };
 
 inline BBox sdPrimBounds(const DEVICE vgerPrim& prim) {

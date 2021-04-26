@@ -67,25 +67,25 @@ int vgerAddMTLTexture(vger* vg, id<MTLTexture> tex) {
     return [vg->texMgr addRegion:tex];
 }
 
-#define TILE_SIZE 16
-
 void vgerRender(vger* vg, const vgerPrim* prim) {
 
     if(prim->type == vgerBezier or prim->type == vgerCurve) {
 
         auto bounds = sdPrimBounds(*prim).inset(-1);
-        auto tiles = ceil((bounds.max - bounds.min)/TILE_SIZE);
+
+        float2 tiles = {8,8};
+        auto tile_size = bounds.size() / tiles;
 
         for(float y=0;y<tiles.y;++y) {
             for(float x=0;x<tiles.x;++x) {
 
-                float2 c = bounds.min + TILE_SIZE * float2{x+.5f, y+.5f};
-                if(sdPrim(*prim, c) < TILE_SIZE * M_SQRT2) {
+                float2 c = bounds.min + tile_size * float2{x+.5f, y+.5f};
+                if(sdPrim(*prim, c) < max(tile_size.x, tile_size.y) * 0.5 * M_SQRT2) {
                     vgerPrim p = *prim;
-                    p.texcoords[0] = bounds.min + TILE_SIZE * float2{x,y};
-                    p.texcoords[1] = bounds.min + TILE_SIZE * float2{x+1,y};
-                    p.texcoords[2] = bounds.min + TILE_SIZE * float2{x,y+1};
-                    p.texcoords[3] = bounds.min + TILE_SIZE * float2{x+1,y+1};
+                    p.texcoords[0] = bounds.min + tile_size * float2{x,y};
+                    p.texcoords[1] = bounds.min + tile_size * float2{x+1,y};
+                    p.texcoords[2] = bounds.min + tile_size * float2{x,y+1};
+                    p.texcoords[3] = bounds.min + tile_size * float2{x+1,y+1};
 
                     for(int i=0;i<4;++i) {
                         p.verts[i] = p.texcoords[i];
