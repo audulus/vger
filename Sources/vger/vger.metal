@@ -141,6 +141,9 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 }
 
 #define TILE_BUF_SIZE 4096
+#define MAX_TILES_WIDTH 256
+#define TILE_PIXEL_SIZE 16
+#define SQRT_2 1.414213562373095
 
 enum vgerCmdType {
     vgerCmdEnd,
@@ -150,15 +153,56 @@ enum vgerCmdType {
     vgerCmdSegment
 };
 
-struct vgerRenderCmd {
+struct vgerCmd {
     vgerCmdType type;
     float radius;
     float2 cvs[3];
     float4 rgba;
 };
 
+kernel void vger_tile(const device vgerPrim* prims,
+                      constant int& primCount,
+                      device vgerCmd* tiles,
+                      uint2 gid [[thread_position_in_grid]]) {
+
+    uint tileIndex = gid.y * MAX_TILES_WIDTH + gid.x;
+    float2 center = float2(gid * TILE_PIXEL_SIZE + TILE_PIXEL_SIZE/2);
+
+    device auto *dst = tiles + tileIndex * TILE_BUF_SIZE;
+
+    // Go backwards through prims (front to back).
+    for(int i=primCount-1;i>=0;--i) {
+        const device vgerPrim& prim = prims[i];
+        device vgerCmd& cmd = *dst;
+
+        if(sdPrim(prim, center) < TILE_PIXEL_SIZE * 0.5 * SQRT_2) {
+            // Tile intersects the primitive, output command.
+            switch(prim.type) {
+                case vgerBezier:
+                    cmd.type = vgerCmdBezier;
+                    cmd.cvs[0] = prim.cvs[0];
+                    cmd.cvs[1] = prim.cvs[1];
+                    cmd.cvs[2] = prim.cvs[2];
+                    ++dst;
+                    break;
+                case vgerCircle:
+                    cmd.type = vgerCmdCircle;
+                    cmd.cvs[0] = prim.cvs[0];
+                    cmd.radius = prim.radius;
+                    ++dst;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    dst->type = vgerCmdEnd;
+
+}
+
 kernel void vger_render(texture2d<float, access::write> outTexture [[texture(0)]],
-                        const device vgerRenderCmd *tiles [[buffer(0)]],
+                        const device vgerCmd *tiles [[buffer(0)]],
                         uint2 gid [[thread_position_in_grid]],
                         uint2 tgid [[threadgroup_position_in_grid]])
 {
