@@ -81,22 +81,6 @@
     CGContextAddPath(context, path);
     CGContextFillPath(context);
 
-    /*
-    printf("GLYPH %d\n", (int) glyph);
-    for(int i=0;i<width*height;++i) {
-        if(i % width == 0) {
-            printf("\n");
-        }
-        if(imageData[i] == 0) {
-            printf(".");
-        } else {
-            printf("*");
-        }
-        //printf("%d ", (int) imageData[i]);
-    }
-    printf("\n");
-     */
-
     auto region = [mgr addRegion:imageData.data() width:width height:height bytesPerRow:width];
 
     GlyphInfo info = {
