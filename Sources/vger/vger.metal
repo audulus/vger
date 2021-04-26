@@ -131,9 +131,6 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
         case vgerTexture:
             color = tex.sample(textureSampler, in.t);
             break;
-        case vgerGlyph:
-            color = float4(prim.colors[0].rgb, prim.colors[0].a * glyphs.sample(textureSampler, in.t).a);
-            break;
         case vgerGradient:
             color = prim.colors[0]; // XXX
             break;
@@ -142,6 +139,51 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
     return mix(float4(color.rgb,0.1), color, 1.0-smoothstep(0,fw,d) );
 
 }
+
+#define TILE_BUF_SIZE 4096
+
+enum vgerCmdType {
+    vgerCmdEnd,
+    vgerCmdBezier,
+    vgerCmdRect,
+    vgerCmdCircle,
+    vgerCmdSegment
+};
+
+struct vgerRenderCmd {
+    vgerCmdType type;
+    float radius;
+    float2 cvs[3];
+    float4 rgba;
+};
+
+kernel void vger_render(texture2d<float, access::write> outTexture [[texture(0)]],
+                        const device vgerRenderCmd *tiles [[buffer(0)]],
+                        uint2 gid [[thread_position_in_grid]],
+                        uint2 tgid [[threadgroup_position_in_grid]])
+{
+    uint tileIndex = tgid.y * 256 + tgid.x;
+    float2 pos = float2(gid.x, gid.y);
+    float3 rgb = 0.0;
+
+    const device auto *src = tiles + tileIndex * TILE_BUF_SIZE;
+    for(;src->type != vgerCmdEnd;++src) {
+        float d;
+        switch(src->type) {
+            case vgerCmdBezier:
+                d = sdBezier(pos, src->cvs[0], src->cvs[1], src->cvs[2]);
+                break;
+            case vgerCmdCircle:
+                d = sdCircle(pos - src->cvs[0], src->radius);
+                break;
+            default:
+                d = FLT_MAX;
+                break;
+        }
+        float alpha = src->rgba.a * (1.0-smoothstep(0,1,d));
+        rgb = mix(rgb, src->rgba.rgb, alpha);
+    }
+
     outTexture.write(float4(rgb, 1.0), gid);
 
 }
