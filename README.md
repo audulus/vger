@@ -2,7 +2,7 @@
 
 vger is a vector graphics renderer which renders a limited set of primitives, but does so almost entirely on the GPU using a single draw call. Works on iOS and macOS.
 
-![demo](demo.png)
+<img src="demo.png" alt="demo" width="256" height="256">
 
 Each primitive can be filled with a solid color, or a texture (gradients are forthcoming).
 
