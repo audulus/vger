@@ -7,12 +7,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define GLYPH_MARGIN 2
+#define GLYPH_MARGIN 10
 
 struct GlyphInfo {
     float size = 0.0;
     int regionIndex = -1;
-    CGSize glyphSize = CGSizeZero;
+    int textureWidth = 0;
+    int textureHeight = 0;
+    CGRect glyphBounds = CGRectZero;
 };
 
 @interface vgerGlyphCache : NSObject

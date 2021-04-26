@@ -99,7 +99,13 @@
 
     auto region = [mgr addRegion:imageData.data() width:width height:height bytesPerRow:width];
 
-    GlyphInfo info = {size, region, .glyphSize=boundingRect.size};
+    GlyphInfo info = {
+        .size=size,
+        .regionIndex=region,
+        .textureWidth=width,
+        .textureHeight=height,
+        .glyphBounds=boundingRect
+    };
 
     v.push_back(info);
 

@@ -126,18 +126,22 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
                 };
 
                 if(vg->primCount < MAX_PRIMS) {
-                    float w = info.glyphSize.width+2;
-                    float h = info.glyphSize.height+2;
 
                     prim.verts[0] = vgerTransform(vg, a);
                     prim.verts[1] = vgerTransform(vg, float2{b.x, a.y});
                     prim.verts[2] = vgerTransform(vg, float2{a.x, b.y});
                     prim.verts[3] = vgerTransform(vg, b);
 
-                    prim.texcoords[0] = float2{0,h};
-                    prim.texcoords[1] = float2{w,h};
-                    prim.texcoords[2] = float2{0,0};
-                    prim.texcoords[3] = float2{w,0};
+                    auto bounds = info.glyphBounds;
+                    float w = info.glyphBounds.size.width+2;
+                    float h = info.glyphBounds.size.height+2;
+
+                    float originY = info.textureHeight-GLYPH_MARGIN;
+
+                    prim.texcoords[0] = float2{GLYPH_MARGIN,   originY};
+                    prim.texcoords[1] = float2{GLYPH_MARGIN+w, originY};
+                    prim.texcoords[2] = float2{GLYPH_MARGIN,   originY-h};
+                    prim.texcoords[3] = float2{GLYPH_MARGIN+w, originY-h};
 
                     *vg->p = prim;
 
@@ -176,7 +180,7 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
         } else if(prim.paint == vgerGlyph) {
             auto r = glyphRects[prim.texture-1];
             for(int i=0;i<4;++i) {
-                prim.texcoords[i] += float2{float(r.x+GLYPH_MARGIN-1), float(r.y+GLYPH_MARGIN-1)};
+                prim.texcoords[i] += float2{float(r.x), float(r.y)};
             }
         }
     }
