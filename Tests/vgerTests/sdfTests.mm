@@ -12,4 +12,17 @@
 
 @implementation sdfTests
 
+- (void) testWire {
+
+    float d = sdWire(float2{0,0}, float2{0,0}, float2{1,1});
+    XCTAssertEqualWithAccuracy(d, 0, 0.1);
+    
+    d = sdWire(float2{1,1}, float2{0,0}, float2{1,1});
+    XCTAssertEqualWithAccuracy(d, 0, 0.1);
+
+    d = sdWire(float2{0.5,0.5}, float2{0,0}, float2{1,1});
+    XCTAssertEqualWithAccuracy(d, 0, 0.1);
+
+}
+
 @end

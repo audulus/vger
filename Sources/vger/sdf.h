@@ -143,7 +143,7 @@ inline float sdWire(float2 p, float2 a, float2 b) {
     float2 uv = (p-a)/sz;
     float xscale = 5.0f;
     float x = uv.x - 0.5;
-    float y = tanh(xscale * x) + 1;
+    float y = 0.5*(tanh(xscale * x) + 1);
     float c = cosh(xscale * x);
     float dydx = xscale / (c * c);
     float dy = uv.y - y;
