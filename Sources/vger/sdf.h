@@ -244,4 +244,72 @@ inline float sdPrim(const DEVICE vgerPrim& prim, float2 p) {
     return d;
 }
 
+// Oriented bounding box.
+struct OBB {
+    float2 origin;
+    float2 u;
+    float2 v;
+
+    OBB inset(float d) const {
+        auto un = normalize(u);
+        auto vn = normalize(v);
+        return {origin+d*(un+vn), u-2*d*un, v-2*d*vn};
+    }
+};
+
+// Projection of b onto a.
+inline float2 proj(float2 a, float2 b) {
+    return normalize(a) * dot(a,b) / length(a);
+}
+
+inline float2 orth(float2 a, float2 b) {
+    return b - proj(a, b);
+}
+
+inline float2 rot90(float2 p) {
+    return {-p.y, p.x};
+}
+
+inline OBB sdPrimOBB(const DEVICE vgerPrim& prim) {
+    switch(prim.type) {
+        case vgerBezier: {
+            auto o = prim.cvs[0];
+            auto u = prim.cvs[2]-o;
+            auto v = orth(prim.cvs[2]-o, prim.cvs[1]-o);
+            return { o, u, v };
+        }
+        case vgerCircle: {
+            auto d = 2*prim.radius;
+            return { prim.cvs[0] - prim.radius, {d,0}, {0,d} };
+        }
+        case vgerRect: {
+            auto sz = prim.cvs[1]-prim.cvs[0];
+            return { prim.cvs[0], {sz.x,0}, {0,sz.y} };
+        }
+        case vgerSegment: {
+            auto a = prim.cvs[0];
+            auto u = prim.cvs[1] - prim.cvs[0];
+            auto v = rot90(u)*.001;
+            return { a, u, v };
+        }
+        case vgerCurve: {
+            // XXX: not oriented
+            float2 lo = FLT_MAX;
+            float2 hi = FLT_MIN;
+            for(int i=0;i<prim.count;++i) {
+                lo = min(lo, prim.cvs[i]);
+                hi = max(hi, prim.cvs[i]);
+            }
+            auto sz = hi-lo;
+            return {lo, {sz.x,0}, {0,sz.y}};
+        }
+        case vgerArc: {
+            auto o = prim.cvs[0];
+            auto r = prim.radius;
+            return { o-r, {2*r, 0}, {0, 2*r}};
+        }
+    }
+    return {0,0};
+}
+
 #endif /* sdf_h */
