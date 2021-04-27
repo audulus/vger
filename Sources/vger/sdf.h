@@ -137,7 +137,7 @@ inline float sdBezierApprox(float2 p, float2 b0, float2 b1, float2 b2) {
     return length(get_distance_vector(b0-p, b1-p, b2-p));
 }
 
-float sdWire(float2 p, float2 a, float2 b) {
+inline float sdWire(float2 p, float2 a, float2 b) {
 
     float2 sz = b-a;
     float2 uv = (p-a)/sz;
