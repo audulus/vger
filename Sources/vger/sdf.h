@@ -137,6 +137,20 @@ inline float sdBezierApprox(float2 p, float2 b0, float2 b1, float2 b2) {
     return length(get_distance_vector(b0-p, b1-p, b2-p));
 }
 
+float sdWire(float2 p, float2 a, float2 b) {
+
+    float2 sz = b-a;
+    float2 uv = (p-a)/sz;
+    float xscale = 5.0f;
+    float x = uv.x - 0.5;
+    float y = tanh(xscale * x) + 1;
+    float c = cosh(xscale * x);
+    float dydx = xscale / (c * c);
+    float dy = uv.y - y;
+
+    return dy * dydx;
+}
+
 #if 0
 template<class T>
 float sdPolygon(float2 p, T v, int num)
