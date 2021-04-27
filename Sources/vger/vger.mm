@@ -12,7 +12,7 @@
 using namespace simd;
 #import "sdf.h"
 
-#define MAX_PRIMS 16384
+#define MAX_BUFFER_SIZE (256*1024*1024)
 
 struct vger {
 
@@ -23,6 +23,7 @@ struct vger {
     int curPrims = 0;
     vgerPrim* p;
     int primCount = 0;
+    int maxPrims = MAX_BUFFER_SIZE / sizeof(vgerPrim);
     vgerTextureManager* texMgr;
     vgerGlyphCache* glyphCache;
     float2 windowSize;
@@ -36,7 +37,8 @@ struct vger {
         texMgr = [[vgerTextureManager alloc] initWithDevice:device pixelFormat:MTLPixelFormatRGBA8Unorm];
         glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
         for(int i=0;i<3;++i) {
-            prims[i] = [device newBufferWithLength:MAX_PRIMS*sizeof(vgerPrim) options:MTLResourceStorageModeShared];
+            prims[i] = [device newBufferWithLength:MAX_BUFFER_SIZE
+                                           options:MTLResourceStorageModeShared];
         }
         txStack.push_back(matrix_identity_float3x3);
     }
@@ -91,7 +93,7 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
                 }
                 p.xform = vg->txStack.back();
 
-                if(vg->primCount < MAX_PRIMS) {
+                if(vg->primCount < vg->maxPrims) {
                     *vg->p = p;
 
                     vg->p++;
@@ -103,7 +105,7 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
 
     } else {
 
-        if(vg->primCount < MAX_PRIMS) {
+        if(vg->primCount < vg->maxPrims) {
             *vg->p = *prim;
 
             auto bounds = sdPrimBounds(*prim).inset(-1);
@@ -164,7 +166,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
                     .colors = {color, 0, 0},
                 };
 
-                if(vg->primCount < MAX_PRIMS) {
+                if(vg->primCount < vg->maxPrims) {
 
                     prim.verts[0] = a;
                     prim.verts[1] = float2{b.x, a.y};
