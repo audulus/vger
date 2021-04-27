@@ -199,6 +199,24 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
 
 }
 
+void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max) {
+
+    CFRange entire = CFRangeMake(0, 0);
+
+    NSDictionary *attributes = @{ NSFontAttributeName : (__bridge id)[vg->glyphCache getFont] };
+    NSString* string = [NSString stringWithUTF8String:str];
+    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
+    auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
+    auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
+
+    auto bounds = CTLineGetImageBounds(line, nil);
+    min->x = bounds.origin.x;
+    min->y = bounds.origin.y;
+    max->x = bounds.origin.x + bounds.size.width;
+    max->y = bounds.origin.x + bounds.size.height;
+
+}
+
 void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
     
     [vg->texMgr update:buf];
