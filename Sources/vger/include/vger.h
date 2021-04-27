@@ -50,6 +50,9 @@ void vgerScale(vger*, vector_float2 s);
 /// Transforms a point according to the current transformation.
 vector_float2 vgerTransform(vger*, vector_float2 p);
 
+/// Returns current transformation matrix.
+simd_float3x2 vgerCurrentTransform(vger*);
+
 /// Saves the render state.
 void vgerSave(vger*);
 

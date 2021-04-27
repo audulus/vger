@@ -281,6 +281,13 @@ vector_float2 vgerTransform(vger* vg, vector_float2 p) {
     return {q.x/q.z, q.y/q.z};
 }
 
+simd_float3x2 vgerCurrentTransform(vger* vg) {
+    auto& M = vg->txStack.back();
+    return {
+        M.columns[0].xy, M.columns[1].xy, M.columns[2].xy
+    };
+}
+
 void vgerSave(vger* vg) {
     vg->txStack.push_back(vg->txStack.back());
 }
