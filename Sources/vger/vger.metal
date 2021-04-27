@@ -6,6 +6,8 @@ using namespace metal;
 #include "include/vger_types.h"
 #include "sdf.h"
 
+#define SQRT_2 1.414213562373095
+
 struct VertexOut {
     float4 position  [[ position ]];
     float2 p;
@@ -81,6 +83,30 @@ OBB sdPrimOBB(const device vgerPrim& prim) {
     return {0,0};
 }
 
+kernel void vger_prune(uint gid [[thread_position_in_grid]],
+                       device vgerPrim* prims,
+                       constant uint& primCount) {
+
+    if(gid < primCount) {
+        device auto& prim = prims[gid];
+
+        if(prim.type == vgerBezier or prim.type == vgerCurve) {
+
+            auto center = 0.5 * (prim.texcoords[0] + prim.texcoords[3]);
+            auto tile_size = prim.texcoords[3] - prim.texcoords[0];
+
+            if(sdPrim(prim, center) > max(tile_size.x, tile_size.y) * 0.5 * SQRT_2) {
+                float2 big = {FLT_MAX, FLT_MAX};
+                prim.verts[0] = big;
+                prim.verts[1] = big;
+                prim.verts[2] = big;
+                prim.verts[3] = big;
+            }
+
+        }
+    }
+}
+
 vertex VertexOut vger_vertex(uint vid [[vertex_id]],
                              uint iid [[instance_id]],
                              const device vgerPrim* prims,
@@ -143,7 +169,6 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 #define TILE_BUF_SIZE 4096
 #define MAX_TILES_WIDTH 256
 #define TILE_PIXEL_SIZE 16
-#define SQRT_2 1.414213562373095
 
 enum vgerCmdType {
     vgerCmdEnd,
