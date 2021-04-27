@@ -26,6 +26,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
 @interface vgerRenderer() {
     id<MTLRenderPipelineState> pipeline;
+    id<MTLComputePipelineState> prunePipeline;
 }
 @end
 
@@ -55,6 +56,13 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
             NSLog(@"error creating pipline state: %@", error);
             abort();
         }
+
+        auto pruneFunc = [lib newFunctionWithName:@"vger_prune"];
+        prunePipeline = [device newComputePipelineStateWithFunction:pruneFunc error:&error];
+        if(error) {
+            NSLog(@"error creating pipline state: %@", error);
+            abort();
+        }
     }
     return self;
 }
@@ -67,6 +75,15 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
      glyphTexture:(id<MTLTexture>)glyphTexture
        windowSize:(vector_float2)windowSize
 {
+
+    auto prune = [buffer computeCommandEncoder];
+    [prune setComputePipelineState:prunePipeline];
+    [prune setBuffer:primBuffer offset:0 atIndex:0];
+    [prune setBytes:&n length:sizeof(uint) atIndex:1];
+    [prune dispatchThreadgroups:MTLSizeMake(n/128+1, 1, 1)
+          threadsPerThreadgroup:MTLSizeMake(128, 1, 1)];
+    [prune endEncoding];
+
     auto enc = [buffer renderCommandEncoderWithDescriptor:pass];
     
     [enc setRenderPipelineState:pipeline];
