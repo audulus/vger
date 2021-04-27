@@ -254,6 +254,9 @@ inline float sdPrim(const DEVICE vgerPrim& prim, float2 p) {
                                           prim.cvs[i+2]));
             }
             break;
+        case vgerWire:
+            d = sdWire(p, prim.cvs[0], prim.cvs[1]);
+            break;
     }
     return d;
 }
