@@ -71,11 +71,13 @@ int vgerAddMTLTexture(vger* vg, id<MTLTexture> tex) {
 
 void vgerRender(vger* vg, const vgerPrim* prim) {
 
+    }
+
     if(prim->type == vgerBezier or prim->type == vgerCurve) {
 
         auto bounds = sdPrimBounds(*prim).inset(-1);
 
-        float2 tiles = {8,8};
+        float2 tiles = {2,2};
         auto tile_size = bounds.size() / tiles;
 
         for(float y=0;y<tiles.y;++y) {
