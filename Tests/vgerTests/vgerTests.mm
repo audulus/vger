@@ -118,6 +118,12 @@ simd_float4 magenta = {1,0,1,1};
             .cvs = {{100, 400}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
             .radius= 30,
             .colors = {white},
+        },
+        {
+            .type = vgerWire,
+            .width = 3,
+            .cvs = {{200, 100}, {300, 200}},
+            .colors = {white},
         }
     };
     
