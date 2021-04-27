@@ -6,6 +6,12 @@ vger is a vector graphics renderer which renders a limited set of primitives, bu
 
 Each primitive can be filled with a solid color, or a texture (gradients are forthcoming).
 
+Here's an early screenshot from vger in use for Audulus:
+
+<img src="bootstrap.png">
+
+The rectangles around primitives are for debugging drawing areas.
+
 ## Usage
 
 Create a rendering context using `vgerNew()`.
