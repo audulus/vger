@@ -75,6 +75,9 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
      glyphTexture:(id<MTLTexture>)glyphTexture
        windowSize:(vector_float2)windowSize
 {
+    if(n == 0) {
+        return;
+    }
 
     auto prune = [buffer computeCommandEncoder];
     [prune setComputePipelineState:prunePipeline];
