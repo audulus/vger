@@ -57,7 +57,7 @@ typedef struct {
     float radius;
     
     /// Control vertices.
-    vector_float2 cvs[16];
+    vector_float2 cvs[8];
     
     /// Number of control vertices (only for vgerCurve)
     int count;
