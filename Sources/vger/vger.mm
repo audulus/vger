@@ -84,10 +84,6 @@ int vgerAddMTLTexture(vger* vg, id<MTLTexture> tex) {
 
 void vgerRender(vger* vg, const vgerPrim* prim) {
 
-    if(prim->type == vgerArc) {
-        return;
-    }
-
     if(prim->type == vgerBezier or prim->type == vgerCurve) {
 
         auto bounds = sdPrimBounds(*prim).inset(-1);

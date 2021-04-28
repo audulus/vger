@@ -84,5 +84,11 @@ bool checkTexture(id<MTLTexture> texture, NSString* name) {
     NSBundle* bundle = [NSBundle bundleForClass:checkTextureBundleFinder.class];
     auto baselineURL = [bundle.bundleURL URLByAppendingPathComponent:path];
 
-    return [NSFileManager.defaultManager contentsEqualAtPath:baselineURL.path andPath:tmpURL.path];
+    bool equal = [NSFileManager.defaultManager contentsEqualAtPath:baselineURL.path andPath:tmpURL.path];
+
+    if(!equal) {
+        system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
+    }
+
+    return equal;
 }
