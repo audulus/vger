@@ -63,3 +63,26 @@ void showTexture(id<MTLTexture> texture, NSString* name) {
     system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
 
 }
+
+@interface checkTextureBundleFinder : NSObject
+
+@end
+
+@implementation checkTextureBundleFinder
+
+@end
+
+bool checkTexture(id<MTLTexture> texture, NSString* name) {
+
+    auto tmpURL = [NSFileManager.defaultManager.temporaryDirectory URLByAppendingPathComponent:name];
+    NSLog(@"saving to %@", tmpURL);
+    writeCGImage(getTextureImage(texture), (__bridge CFURLRef)tmpURL);
+
+    // Get URL for baseline.
+    NSString* path = @"Contents/Resources/vger_vgerTests.bundle/Contents/Resources/images/";
+    path = [path stringByAppendingString:name];
+    NSBundle* bundle = [NSBundle bundleForClass:checkTextureBundleFinder.class];
+    auto baselineURL = [bundle.bundleURL URLByAppendingPathComponent:path];
+
+    return [NSFileManager.defaultManager contentsEqualAtPath:baselineURL.path andPath:tmpURL.path];
+}

@@ -156,7 +156,7 @@ simd_float4 magenta = {1,0,1,1};
     [commandBuffer commit];
     [commandBuffer waitUntilCompleted];
 
-    showTexture(texture, @"vger_basics.png");
+    XCTAssertTrue(checkTexture(texture, @"vger_basics.png"));
 
 }
 
