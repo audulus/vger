@@ -168,9 +168,9 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
 
     CFRange entire = CFRangeMake(0, 0);
 
-    NSDictionary *attributes = @{ NSFontAttributeName : (__bridge id)[vg->glyphCache getFont] };
-    NSString* string = [NSString stringWithUTF8String:str];
-    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
+    auto attributes = @{ NSFontAttributeName : (__bridge id)[vg->glyphCache getFont] };
+    auto string = [NSString stringWithUTF8String:str];
+    auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
     auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
     auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
 
@@ -242,9 +242,9 @@ void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max) {
 
     CFRange entire = CFRangeMake(0, 0);
 
-    NSDictionary *attributes = @{ NSFontAttributeName : (__bridge id)[vg->glyphCache getFont] };
-    NSString* string = [NSString stringWithUTF8String:str];
-    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
+    auto attributes = @{ NSFontAttributeName : (__bridge id)[vg->glyphCache getFont] };
+    auto string = [NSString stringWithUTF8String:str];
+    auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
     auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
     auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
 
