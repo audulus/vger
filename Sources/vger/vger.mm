@@ -16,6 +16,11 @@ using namespace simd;
 
 #define MAX_BUFFER_SIZE (256*1024*1024)
 
+struct TextLayoutInfo {
+    uint64_t lastFrame = 0;
+    std::vector<vgerPrim> prims;
+};
+
 struct vger {
 
     id<MTLDevice> device;
@@ -34,7 +39,10 @@ struct vger {
     std::vector<CGGlyph> glyphs;
 
     // Cache of text layout by strings.
-    std::unordered_map<std::string, std::vector<vgerPrim> > textCache;
+    std::unordered_map<std::string, TextLayoutInfo > textCache;
+
+    /// Determines whether we prune cached text.
+    uint64_t currentFrame = 1;
 
     vger() {
         device = MTLCreateSystemDefaultDevice();
@@ -143,8 +151,9 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
     auto iter = vg->textCache.find(std::string(str));
     if(iter != vg->textCache.end()) {
         // Copy prims to output.
-        auto& v = iter->second;
-        for(auto& prim : v) {
+        auto& info = iter->second;
+        info.lastFrame = vg->currentFrame;
+        for(auto& prim : info.prims) {
             if(vg->primCount < vg->maxPrims) {
                 *vg->p = prim;
                 vg->p->xform = vg->txStack.back();
@@ -165,7 +174,8 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
     auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
     auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
 
-    auto& cacheVector = vg->textCache[str];
+    auto& textInfo = vg->textCache[str];
+    textInfo.lastFrame = vg->currentFrame;
 
     NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
     for(id r in runs) {
@@ -212,7 +222,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
                 prim.texcoords[2] = float2{GLYPH_MARGIN-1,   originY-h-1};
                 prim.texcoords[3] = float2{GLYPH_MARGIN+w+1, originY-h-1};
 
-                cacheVector.push_back(prim);
+                textInfo.prims.push_back(prim);
 
                 if(vg->primCount < vg->maxPrims) {
                     *vg->p = prim;
@@ -247,6 +257,15 @@ void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max) {
 }
 
 void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
+
+    // Prune the text cache.
+    for(auto it = begin(vg->textCache); it != end(vg->textCache);) {
+        if (it->second.lastFrame != vg->currentFrame) {
+            it = vg->textCache.erase(it);
+        } else {
+            ++it;
+        }
+    }
     
     [vg->texMgr update:buf];
     [vg->glyphCache update:buf];
@@ -283,6 +302,8 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
                    texture:vg->texMgr.atlas
               glyphTexture:[vg->glyphCache getAltas]
                 windowSize:vg->windowSize];
+
+    vg->currentFrame++;
 }
 
 void vgerTranslate(vger* vg, vector_float2 t) {
