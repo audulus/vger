@@ -44,10 +44,10 @@
     CGRect boundingRect;
     CTFontGetBoundingRectsForGlyphs(ctFont, kCTFontOrientationHorizontal, &glyph, &boundingRect, 1);
 
-    CGAffineTransform glyphTransform = CGAffineTransformMake(1, 0, 0, 1,
-                                                             -boundingRect.origin.x + GLYPH_MARGIN,
-                                                             -boundingRect.origin.y + GLYPH_MARGIN);
-    CGPathRef path = CTFontCreatePathForGlyph(ctFont, glyph, &glyphTransform);
+    auto glyphTransform = CGAffineTransformMake(1, 0, 0, 1,
+                                                -boundingRect.origin.x + GLYPH_MARGIN,
+                                                -boundingRect.origin.y + GLYPH_MARGIN);
+    auto path = CTFontCreatePathForGlyph(ctFont, glyph, &glyphTransform);
 
     if(path == 0) {
         //NSLog(@"no path for glyph index %d\n", (int)glyph);
@@ -61,9 +61,9 @@
 
     std::vector<uint8_t> imageData(width*height);
 
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
-    CGBitmapInfo bitmapInfo = (kCGBitmapAlphaInfoMask & kCGImageAlphaNone);
-    CGContextRef context = CGBitmapContextCreate(imageData.data(),
+    auto colorSpace = CGColorSpaceCreateDeviceGray();
+    auto bitmapInfo = (kCGBitmapAlphaInfoMask & kCGImageAlphaNone);
+    auto context = CGBitmapContextCreate(imageData.data(),
                                                  width,
                                                  height,
                                                  8,
