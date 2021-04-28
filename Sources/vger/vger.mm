@@ -8,6 +8,8 @@
 #import "vgerTextureManager.h"
 #import "vgerGlyphCache.h"
 #include <vector>
+#include <unordered_map>
+#include <string>
 
 using namespace simd;
 #import "sdf.h"
@@ -30,6 +32,9 @@ struct vger {
 
     // Glyph scratch space (avoid malloc).
     std::vector<CGGlyph> glyphs;
+
+    // Cache of text layout by strings.
+    std::unordered_map<std::string, std::vector<vgerPrim> > textCache;
 
     vger() {
         device = MTLCreateSystemDefaultDevice();
@@ -71,6 +76,8 @@ int vgerAddMTLTexture(vger* vg, id<MTLTexture> tex) {
 
 void vgerRender(vger* vg, const vgerPrim* prim) {
 
+    if(prim->type == vgerArc) {
+        return;
     }
 
     if(prim->type == vgerBezier or prim->type == vgerCurve) {
@@ -132,6 +139,24 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
 
 void vgerRenderText(vger* vg, const char* str, float4 color) {
 
+    // Do we already have text in the cache?
+    auto iter = vg->textCache.find(std::string(str));
+    if(iter != vg->textCache.end()) {
+        // Copy prims to output.
+        auto& v = iter->second;
+        for(auto& prim : v) {
+            if(vg->primCount < vg->maxPrims) {
+                *vg->p = prim;
+                vg->p->xform = vg->txStack.back();
+                vg->p++;
+                vg->primCount++;
+            }
+        }
+        return;
+    }
+
+    // Text cache miss, do more expensive typesetting.
+
     CFRange entire = CFRangeMake(0, 0);
 
     NSDictionary *attributes = @{ NSFontAttributeName : (__bridge id)[vg->glyphCache getFont] };
@@ -139,6 +164,8 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
     NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
     auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
     auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
+
+    auto& cacheVector = vg->textCache[str];
 
     NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
     for(id r in runs) {
@@ -168,27 +195,27 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
                     .colors = {color, 0, 0},
                 };
 
+                prim.verts[0] = a;
+                prim.verts[1] = float2{b.x, a.y};
+                prim.verts[2] = float2{a.x, b.y};
+                prim.verts[3] = b;
+                prim.xform = vg->txStack.back();
+
+                auto bounds = info.glyphBounds;
+                float w = info.glyphBounds.size.width+2;
+                float h = info.glyphBounds.size.height+2;
+
+                float originY = info.textureHeight-GLYPH_MARGIN;
+
+                prim.texcoords[0] = float2{GLYPH_MARGIN-1,   originY+1};
+                prim.texcoords[1] = float2{GLYPH_MARGIN+w+1, originY+1};
+                prim.texcoords[2] = float2{GLYPH_MARGIN-1,   originY-h-1};
+                prim.texcoords[3] = float2{GLYPH_MARGIN+w+1, originY-h-1};
+
+                cacheVector.push_back(prim);
+
                 if(vg->primCount < vg->maxPrims) {
-
-                    prim.verts[0] = a;
-                    prim.verts[1] = float2{b.x, a.y};
-                    prim.verts[2] = float2{a.x, b.y};
-                    prim.verts[3] = b;
-                    prim.xform = vg->txStack.back();
-
-                    auto bounds = info.glyphBounds;
-                    float w = info.glyphBounds.size.width+2;
-                    float h = info.glyphBounds.size.height+2;
-
-                    float originY = info.textureHeight-GLYPH_MARGIN;
-
-                    prim.texcoords[0] = float2{GLYPH_MARGIN-1,   originY+1};
-                    prim.texcoords[1] = float2{GLYPH_MARGIN+w+1, originY+1};
-                    prim.texcoords[2] = float2{GLYPH_MARGIN-1,   originY-h-1};
-                    prim.texcoords[3] = float2{GLYPH_MARGIN+w+1, originY-h-1};
-
                     *vg->p = prim;
-
                     vg->p++;
                     vg->primCount++;
                 }
