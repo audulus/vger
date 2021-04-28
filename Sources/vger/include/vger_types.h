@@ -63,7 +63,7 @@ typedef struct {
     int count;
     
     /// Colors for gradients.
-    vector_float4 colors[3];
+    vector_float4 colors[2];
 
     /// Read from texture?
     vgerPaintType paint;

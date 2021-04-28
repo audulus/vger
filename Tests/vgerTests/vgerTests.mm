@@ -91,26 +91,26 @@ simd_float4 magenta = {1,0,1,1};
             .width = 10,
             .radius = 40,
             .cvs = {256, 256},
-            .colors = {cyan, 0, 0},
+            .colors = {cyan},
         },
         {
             .type = vgerCurve,
             .width = 1,
             .count = 5,
-            .colors = {white, 0, 0},
+            .colors = {white},
         },
         {
             .type = vgerSegment,
             .width = 10,
             .cvs = {{100,100}, {200,200}},
-            .colors = {magenta, 0, 0},
+            .colors = {magenta},
         },
         {
             .type = vgerRect,
             .width = 0.01,
             .cvs = {{400,100}, {450,156}},
             .radius=0.04,
-            .colors = {{1,1,1,.5}, 0, 0},
+            .colors = {{1,1,1,.5}},
         },
         {
             .type = vgerArc,
@@ -171,7 +171,7 @@ simd_float4 magenta = {1,0,1,1};
         .width = 0.00,
         .radius = 10,
         .cvs = { {20, 20}},
-        .colors = {cyan, 0, 0},
+        .colors = {cyan},
     };
 
     XCTAssertTrue(simd_equal(vgerTransform(vger, float2{0,0}), float2{0, 0}));
@@ -219,7 +219,7 @@ simd_float4 magenta = {1,0,1,1};
         .width = 0.01,
         .cvs = { {20,20}, {40,40}},
         .radius=0.3,
-        .colors = {{1,1,1,.5}, 0, 0},
+        .colors = {{1,1,1,.5}},
     };
 
     for(int i=0;i<10;++i) {
@@ -278,7 +278,7 @@ simd_float4 magenta = {1,0,1,1};
         .width = 0.01,
         .cvs = { {20,20}, {100,100}},
         .radius=0.3,
-        .colors = {{1,1,1,.5}, 0, 0},
+        .colors = {{1,1,1,.5}},
         .paint = vgerTexture,
         .texture = idx
     };
@@ -399,7 +399,7 @@ vector_float4 rand_color() {
             .type = vgerBezier,
             .width = 1,
             .cvs ={ 512*rand2(), 512*rand2(), 512*rand2() },
-            .colors = {rand_color(), 0, 0},
+            .colors = {rand_color()},
         };
         primArray.push_back(p);
     }
@@ -446,12 +446,12 @@ vector_float4 rand_color() {
             {
                 .type = vgerBezier,
                 .width = 0.01,
-                .colors = {c, 0, 0},
+                .colors = {c},
             },
             {
                 .type = vgerBezier,
                 .width = 0.01,
-                .colors = {c, 0, 0},
+                .colors = {c},
             }
         };
         SplitBezier(.5, cvs, p[0].cvs, p[1].cvs);
@@ -516,7 +516,7 @@ void renderPaths(NVGcontext* vg, const std::vector<vgerPrim>& primArray) {
             .type = vgerBezier,
             .width = 0.01f*w,
             .cvs ={ rand2()*sz, rand2()*sz, rand2()*sz },
-            .colors = {c, 0, 0}
+            .colors = {c}
         };
         primArray.push_back(p);
     }
