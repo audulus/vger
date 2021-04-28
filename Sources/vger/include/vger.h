@@ -70,10 +70,11 @@ vector_float2 vgerTransform(vger*, vector_float2 p);
 /// Returns current transformation matrix.
 simd_float3x2 vgerCurrentTransform(vger*);
 
-/// Saves the render state.
+/// Pushes and saves the current transform onto a transform stack. A matching vgerRestore must
+/// be used to restore the state.
 void vgerSave(vger*);
 
-/// Restores the render state.
+/// Pops and restores the current transform.
 void vgerRestore(vger*);
 
 #ifdef __OBJC__
