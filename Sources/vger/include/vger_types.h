@@ -31,6 +31,20 @@ typedef enum {
     vgerGlyph
 } vgerPrimType;
 
+typedef struct {
+
+#ifdef __METAL_VERSION__
+    float3x3 xform;
+#else
+    matrix_float3x3 xform;
+#endif
+
+    vector_float4 innerColor;
+
+    vector_float4 outerColor;
+
+} vgerPaint;
+
 typedef enum {
 
     /// Solid colors.

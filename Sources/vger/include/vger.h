@@ -85,6 +85,13 @@ void vgerEncode(vger*, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 id<MTLTexture> vgerGetGlyphAtlas(vger*);
 #endif
 
+/// Create a paint for a constant color.
+vgerPaint vgerColorPaint(vector_float4 color);
+
+/// Create a paint for a linear gradient.
+vgerPaint vgerLinearGradient(vector_float2 start, vector_float2 end,
+                             vector_float4 innerColor, vector_float4 outerColor);
+
 #ifdef __cplusplus
 }
 #endif

@@ -346,3 +346,41 @@ void vgerRestore(vger* vg) {
 id<MTLTexture> vgerGetGlyphAtlas(vger* vg) {
     return [vg->glyphCache getAltas];
 }
+
+vgerPaint vgerColorPaint(vector_float4 color) {
+
+    vgerPaint p;
+    p.xform = matrix_identity_float3x3;
+    p.innerColor = color;
+    p.outerColor = color;
+
+    return p;
+}
+
+vgerPaint vgerLinearGradient(vector_float2 start, vector_float2 end,
+                             vector_float4 innerColor, vector_float4 outerColor) {
+
+    vgerPaint p;
+    const float large = 1e5;
+
+    // Calculate transform aligned to the line
+    vector_float2 d = end - start;
+    float length = simd_length(d);
+    if(length > 0.0001f) {
+        d /= length;
+    } else {
+        d = float2{0,1};
+    }
+
+    p.xform = matrix_float3x3{
+        float3{d.y, -d.x, 0},
+        float3{d.x, d.y, 0},
+        float3{start.x - d.x*large, start.y - d.y*large, 0}
+    };
+
+    p.innerColor = innerColor;
+    p.outerColor = outerColor;
+
+    return p;
+
+}
