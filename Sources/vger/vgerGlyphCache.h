@@ -3,6 +3,8 @@
 #import <Foundation/Foundation.h>
 #include <simd/simd.h>
 #import <Metal/Metal.h>
+#import <CoreGraphics/CoreGraphics.h>
+#import <CoreText/CoreText.h>
 #include "stb_rect_pack.h"
 
 NS_ASSUME_NONNULL_BEGIN

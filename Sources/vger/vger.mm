@@ -3,7 +3,13 @@
 #import "vger.h"
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
+
+#if TARGET_OS_OSX
 #import <Cocoa/Cocoa.h>
+#else
+#import <UIKit/UIKit.h>
+#endif
+
 #import "vgerRenderer.h"
 #import "vgerTextureManager.h"
 #import "vgerGlyphCache.h"
@@ -74,7 +80,7 @@ void vgerBegin(vger* vg, float windowWidth, float windowHeight, float devicePxRa
 
 int  vgerAddTexture(vger* vg, const uint8_t* data, int width, int height) {
     assert(data);
-    return [vg->texMgr addRegion:data width:width height:height bytesPerRow:width*sizeof(uint32)];
+    return [vg->texMgr addRegion:data width:width height:height bytesPerRow:width*sizeof(uint32_t)];
 }
 
 int vgerAddMTLTexture(vger* vg, id<MTLTexture> tex) {
