@@ -20,8 +20,6 @@
 using namespace simd;
 #import "sdf.h"
 
-#define MAX_BUFFER_SIZE (256*1024*1024)
-
 struct TextLayoutInfo {
     uint64_t lastFrame = 0;
     std::vector<vgerPrim> prims;
@@ -36,7 +34,7 @@ struct vger {
     int curPrims = 0;
     vgerPrim* p;
     int primCount = 0;
-    int maxPrims = MAX_BUFFER_SIZE / sizeof(vgerPrim);
+    int maxPrims = 16384;
     vgerTextureManager* texMgr;
     vgerGlyphCache* glyphCache;
     float2 windowSize;
