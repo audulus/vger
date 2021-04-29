@@ -72,9 +72,9 @@ static void SplitBezier(float t,
 
 }
 
-simd_float4 white = {1,1,1,1};
-simd_float4 cyan = {0,1,1,1};
-simd_float4 magenta = {1,0,1,1};
+auto white = vgerColorPaint(float4{1,1,1,1});
+auto cyan = vgerColorPaint(float4{0,1,1,1});
+auto magenta = vgerColorPaint(float4{1,0,1,1});
 
 - (void) testBasic {
 
@@ -93,39 +93,39 @@ simd_float4 magenta = {1,0,1,1};
             .width = 10,
             .radius = 40,
             .cvs = {256, 256},
-            .colors = {cyan},
+            .paint = cyan
         },
         {
             .type = vgerCurve,
             .width = 1,
             .count = 5,
-            .colors = {white},
+            .paint = white,
         },
         {
             .type = vgerSegment,
             .width = 10,
             .cvs = {{100,100}, {200,200}},
-            .colors = {magenta},
+            .paint = magenta,
         },
         {
             .type = vgerRect,
             .width = 0.01,
             .cvs = {{400,100}, {450,156}},
             .radius=0.04,
-            .colors = {{1,1,1,.5}},
+            .paint = white
         },
         {
             .type = vgerArc,
             .width = 3,
             .cvs = {{100, 400}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
             .radius= 30,
-            .colors = {white},
+            .paint = white
         },
         {
             .type = vgerWire,
             .width = 3,
             .cvs = {{200, 100}, {300, 200}},
-            .colors = {white},
+            .paint = white
         }
     };
     
@@ -173,7 +173,7 @@ simd_float4 magenta = {1,0,1,1};
         .width = 0.00,
         .radius = 10,
         .cvs = { {20, 20}},
-        .colors = {cyan},
+        .paint = cyan
     };
 
     XCTAssertTrue(simd_equal(vgerTransform(vger, float2{0,0}), float2{0, 0}));
@@ -221,7 +221,7 @@ simd_float4 magenta = {1,0,1,1};
         .width = 0.01,
         .cvs = { {20,20}, {40,40}},
         .radius=0.3,
-        .colors = {{1,1,1,.5}},
+        .paint = white
     };
 
     for(int i=0;i<10;++i) {
@@ -266,6 +266,7 @@ simd_float4 magenta = {1,0,1,1};
     return tex;
 }
 
+#if 0
 - (void) testRenderTexture {
 
     auto vger = vgerNew();
@@ -305,6 +306,7 @@ simd_float4 magenta = {1,0,1,1};
 
     showTexture(texture, @"texture.png");
 }
+#endif
 
 - (void) testText {
 
@@ -401,7 +403,7 @@ vector_float4 rand_color() {
             .type = vgerBezier,
             .width = 1,
             .cvs ={ 512*rand2(), 512*rand2(), 512*rand2() },
-            .colors = {rand_color()},
+            .paint = vgerColorPaint(rand_color()),
         };
         primArray.push_back(p);
     }
@@ -443,17 +445,17 @@ vector_float4 rand_color() {
 
     for(int i=0;i<N;++i) {
         simd_float2 cvs[3] = { 512*rand2(), 512*rand2(), 512*rand2() };
-        auto c = rand_color();
+        auto c = vgerColorPaint(rand_color());
         vgerPrim p[2] = {
             {
                 .type = vgerBezier,
                 .width = 0.01,
-                .colors = {c},
+                .paint = c
             },
             {
                 .type = vgerBezier,
                 .width = 0.01,
-                .colors = {c},
+                .paint = c
             }
         };
         SplitBezier(.5, cvs, p[0].cvs, p[1].cvs);
@@ -492,7 +494,7 @@ void renderPaths(NVGcontext* vg, const std::vector<vgerPrim>& primArray) {
 
     for(auto& prim : primArray) {
         nvgStrokeWidth(vg, prim.width);
-        auto c = prim.colors[0];
+        auto c = prim.paint.innerColor;
         nvgStrokeColor(vg, nvgRGBAf(c.x, c.y, c.z, c.w));
         nvgBeginPath(vg);
         auto& cvs = prim.cvs;
@@ -513,12 +515,12 @@ void renderPaths(NVGcontext* vg, const std::vector<vgerPrim>& primArray) {
     int N = 10000;
 
     for(int i=0;i<N;++i) {
-        auto c = rand_color();
+        auto c = vgerColorPaint(rand_color());
         vgerPrim p = {
             .type = vgerBezier,
             .width = 0.01f*w,
             .cvs ={ rand2()*sz, rand2()*sz, rand2()*sz },
-            .colors = {c}
+            .paint = c
         };
         primArray.push_back(p);
     }
@@ -584,7 +586,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
         .type = vgerBezier,
         .width = 1.0,
         .cvs = {{50, 450}, {100,450}, {100,500}},
-        .colors = {{1,0,1,1}}
+        .paint = magenta
     };
 
     vgerRender(vger, &bez);
@@ -595,7 +597,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
         .width = 0.0,
         .radius = 10,
         .cvs = {{50, 350}, {100,400}},
-        .colors = {{1,0,1,1}}
+        .paint = magenta
     };
     vgerRender(vger, &rect);
     textAt(vger, 150, 350, "Rounded rectangle");
@@ -605,7 +607,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
         .width = 0.0,
         .radius = 25,
         .cvs = {{75, 275}},
-        .colors = {{1,0,1,1}}
+        .paint = magenta
     };
     vgerRender(vger, &circle);
     textAt(vger, 150, 250, "Circle");
@@ -614,7 +616,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
         .type = vgerSegment,
         .width = 10.0,
         .cvs = {{50, 150}, {100,200}},
-        .colors = {{1,0,1,1}}
+        .paint = magenta
     };
     vgerRender(vger, &line);
     textAt(vger, 150, 150, "Line segment");
@@ -626,7 +628,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
         .width = 10.0,
         .cvs = {{75, 75}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
         .radius=25,
-        .colors = {magenta}
+        .paint = magenta
     };
     vgerRender(vger, &arc);
     textAt(vger, 150, 050, "Arc");

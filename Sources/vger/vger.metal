@@ -70,7 +70,8 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                                       coord::pixel);
 
     if(prim.type == vgerGlyph) {
-        return float4(prim.colors[0].rgb, prim.colors[0].a * glyphs.sample(textureSampler, in.t).a);
+        auto c = prim.paint.innerColor;
+        return float4(c.rgb, c.a * glyphs.sample(textureSampler, in.t).a);
     }
     
     float d = sdPrim(prim, in.t);
@@ -81,18 +82,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 
     float fw = length(fwidth(in.t));
 
-    float4 color;
-    switch(prim.paint) {
-        case vgerColor:
-            color = prim.colors[0];
-            break;
-        case vgerTexture:
-            color = tex.sample(textureSampler, in.t);
-            break;
-        case vgerGradient:
-            color = prim.colors[0]; // XXX
-            break;
-    }
+    float4 color = applyPaint(prim.paint, in.t);
 
     return mix(float4(color.rgb,0.1), color, 1.0-smoothstep(0,fw,d) );
 

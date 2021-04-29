@@ -45,19 +45,6 @@ typedef struct {
 
 } vgerPaint;
 
-typedef enum {
-
-    /// Solid colors.
-    vgerColor,
-
-    /// Texture fill.
-    vgerTexture,
-
-    /// Gradient fill.
-    vgerGradient
-
-} vgerPaintType;
-
 /// Primitive rendered by the GPU.
 typedef struct {
     
@@ -75,12 +62,9 @@ typedef struct {
     
     /// Number of control vertices (only for vgerCurve)
     int count;
-    
-    /// Colors for gradients.
-    vector_float4 colors[2];
 
-    /// Read from texture?
-    vgerPaintType paint;
+    /// How to shade the primitive.
+    vgerPaint paint;
 
     /// The texture region.
     int texture;
