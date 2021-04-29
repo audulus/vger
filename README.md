@@ -4,7 +4,7 @@ vger is a vector graphics renderer which renders a limited set of primitives, bu
 
 <img src="demo.png" alt="demo" width="256" height="256">
 
-Each primitive can be filled with a solid color, or a texture (gradients are forthcoming).
+Each primitive can be filled with a solid color, gradient, or texture.
 
 Here's an early screenshot from vger in use for Audulus:
 
