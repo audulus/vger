@@ -71,7 +71,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
              pass:(MTLRenderPassDescriptor*) pass
             prims:(id<MTLBuffer>) primBuffer
             count:(int)n
-          texture:(id<MTLTexture>)texture
+         textures:(NSArray<id<MTLTexture>>*)textures
      glyphTexture:(id<MTLTexture>)glyphTexture
        windowSize:(vector_float2)windowSize
 {
@@ -93,9 +93,32 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
     [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:1];
     [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
-    [enc setFragmentTexture:texture atIndex:0];
     [enc setFragmentTexture:glyphTexture atIndex:1];
-    [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:n];
+
+    vgerPrim* p = (vgerPrim*) primBuffer.contents;
+    int currentTexture = -1;
+    int m = 0;
+    for(int i=0;i<n;++i) {
+
+        // Texture ID changed, render.
+        if(p->type != vgerGlyph and p->texture != currentTexture) {
+
+            if(m) {
+                [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:m];
+            }
+
+            [enc setFragmentTexture:[textures objectAtIndex:p->texture] atIndex:0];
+            currentTexture = p->texture;
+            m = 0;
+        }
+
+        p++; m++;
+    }
+
+    if(m) {
+        [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:m];
+    }
+
     [enc endEncoding];
     
 }

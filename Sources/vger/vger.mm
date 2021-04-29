@@ -48,6 +48,9 @@ struct vger {
     /// Determines whether we prune cached text.
     uint64_t currentFrame = 1;
 
+    /// User-created textures.
+    NSMutableArray< id<MTLTexture> >* textures;
+
     vger() {
         device = MTLCreateSystemDefaultDevice();
         renderer = [[vgerRenderer alloc] initWithDevice:device];
@@ -85,7 +88,8 @@ int  vgerAddTexture(vger* vg, const uint8_t* data, int width, int height) {
 
 int vgerAddMTLTexture(vger* vg, id<MTLTexture> tex) {
     assert(tex);
-    return [vg->texMgr addRegion:tex];
+    [vg->textures addObject:tex];
+    return vg->textures.count-1;
 }
 
 void vgerRender(vger* vg, const vgerPrim* prim) {
@@ -306,7 +310,7 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
                       pass:pass
                      prims:vg->prims[vg->curPrims]
                      count:vg->primCount
-                   texture:vg->texMgr.atlas
+                  textures:vg->textures
               glyphTexture:[vg->glyphCache getAltas]
                 windowSize:vg->windowSize];
 
