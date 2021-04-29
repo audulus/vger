@@ -331,9 +331,7 @@ inline OBB sdPrimOBB(const DEVICE vgerPrim& prim) {
 
 inline float4 applyPaint(const DEVICE vgerPaint& paint, float2 p) {
 
-    // Transform to paint coordinates.
-    p = (paint.xform * float3{p.x, p.y, 1.0}).xy;
-    float d = clamp(p.x, 0.0, 1.0);
+    float d = clamp((paint.xform * float3{p.x, p.y, 1.0}).x, 0.0, 1.0);
 
 #ifdef __METAL_VERSION__
     return mix(paint.innerColor, paint.outerColor, d);

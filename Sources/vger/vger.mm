@@ -361,7 +361,6 @@ vgerPaint vgerLinearGradient(vector_float2 start, vector_float2 end,
                              vector_float4 innerColor, vector_float4 outerColor) {
 
     vgerPaint p;
-    const float large = 1e5;
 
     // Calculate transform aligned to the line
     vector_float2 d = end - start;
@@ -372,11 +371,11 @@ vgerPaint vgerLinearGradient(vector_float2 start, vector_float2 end,
         d = float2{0,1};
     }
 
-    p.xform = matrix_float3x3{
-        float3{d.y, -d.x, 0},
+    p.xform = simd_inverse(matrix_float3x3{
         float3{d.x, d.y, 0},
-        float3{start.x - d.x*large, start.y - d.y*large, 1}
-    };
+        float3{-d.y, d.x, 0},
+        float3{start.x, start.y, 1}
+    });
 
     p.innerColor = innerColor;
     p.outerColor = outerColor;

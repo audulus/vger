@@ -663,6 +663,28 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     auto c = applyPaint(p, float2{5,7});
 
     XCTAssertTrue(simd_equal(c, float4{.1,.2,.3,.4}));
+
+    p = vgerLinearGradient(float2{0,0}, float2{1,0}, float4(0), float4(1));
+
+    XCTAssertTrue(simd_equal(applyPaint(p, float2{0,0}), float4(0)));
+    XCTAssertTrue(simd_equal(applyPaint(p, float2{.5,0}), float4(.5)));
+    XCTAssertTrue(simd_equal(applyPaint(p, float2{1,0}), float4(1)));
+
+    p = vgerLinearGradient(float2{0,0}, float2{0,1}, float4(0), float4(1));
+
+    XCTAssertTrue(simd_equal(applyPaint(p, float2{0,0}), float4(0)));
+    XCTAssertTrue(simd_equal(applyPaint(p, float2{0,1}), float4(1)));
+
+    p = vgerLinearGradient(float2{1,0}, float2{2,0}, float4(0), float4(1));
+    XCTAssertTrue(simd_equal(applyPaint(p, float2{0,0}), float4(0)));
+    XCTAssertTrue(simd_equal(applyPaint(p, float2{1,0}), float4(0)));
+    XCTAssertTrue(simd_equal(applyPaint(p, float2{1.5,0}), float4(.5)));
+    XCTAssertTrue(simd_equal(applyPaint(p, float2{2,0}), float4(1)));
+    XCTAssertTrue(simd_equal(applyPaint(p, float2{3,0}), float4(1)));
+
+    p = vgerLinearGradient(float2{1,2}, float2{2,3}, float4(0), float4(1));
+    XCTAssertTrue(simd_equal(applyPaint(p, float2{1,2}), float4(0)));
+    XCTAssertTrue(simd_equal(applyPaint(p, float2{2,3}), float4(1)));
 }
 
 @end
