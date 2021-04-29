@@ -576,6 +576,9 @@ static void textAt(vger* vger, float x, float y, const char* str) {
 
 - (void) testPrimDemo {
 
+    auto cyan = float4{0,1,1,1};
+    auto magenta = float4{1,0,1,1};
+
     auto vger = vgerNew();
 
     vgerBegin(vger, 512, 512, 1.0);
@@ -586,7 +589,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
         .type = vgerBezier,
         .width = 1.0,
         .cvs = {{50, 450}, {100,450}, {100,500}},
-        .paint = magenta
+        .paint = vgerLinearGradient(float2{50,450}, float2{100,450}, cyan, magenta)
     };
 
     vgerRender(vger, &bez);
@@ -597,7 +600,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
         .width = 0.0,
         .radius = 10,
         .cvs = {{50, 350}, {100,400}},
-        .paint = magenta
+        .paint = vgerLinearGradient(float2{50,350}, float2{100,400}, cyan, magenta)
     };
     vgerRender(vger, &rect);
     textAt(vger, 150, 350, "Rounded rectangle");
@@ -607,7 +610,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
         .width = 0.0,
         .radius = 25,
         .cvs = {{75, 275}},
-        .paint = magenta
+        .paint = vgerLinearGradient(float2{50,250}, float2{100,300}, cyan, magenta)
     };
     vgerRender(vger, &circle);
     textAt(vger, 150, 250, "Circle");
@@ -616,7 +619,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
         .type = vgerSegment,
         .width = 10.0,
         .cvs = {{50, 150}, {100,200}},
-        .paint = magenta
+        .paint = vgerLinearGradient(float2{50,150}, float2{100,200}, cyan, magenta)
     };
     vgerRender(vger, &line);
     textAt(vger, 150, 150, "Line segment");
@@ -628,7 +631,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
         .width = 10.0,
         .cvs = {{75, 75}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
         .radius=25,
-        .paint = magenta
+        .paint = vgerLinearGradient(float2{50,50}, float2{100,100}, cyan, magenta)
     };
     vgerRender(vger, &arc);
     textAt(vger, 150, 050, "Arc");
