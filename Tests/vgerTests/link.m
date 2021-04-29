@@ -1,8 +1,3 @@
-//
-//  File.m
-//  
-//
-//  Created by Taylor Holliday on 4/22/21.
-//
+//  Copyright © 2021 Audulus LLC. All rights reserved.
 
 @import MetalKit;
