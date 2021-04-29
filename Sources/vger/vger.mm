@@ -58,6 +58,8 @@ struct vger {
                                            options:MTLResourceStorageModeShared];
         }
         txStack.push_back(matrix_identity_float3x3);
+
+        assert(device.argumentBuffersSupport == MTLArgumentBuffersTier2);
     }
 };
 
