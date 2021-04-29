@@ -375,7 +375,7 @@ vgerPaint vgerLinearGradient(vector_float2 start, vector_float2 end,
     p.xform = matrix_float3x3{
         float3{d.y, -d.x, 0},
         float3{d.x, d.y, 0},
-        float3{start.x - d.x*large, start.y - d.y*large, 0}
+        float3{start.x - d.x*large, start.y - d.y*large, 1}
     };
 
     p.innerColor = innerColor;
