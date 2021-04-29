@@ -41,10 +41,10 @@ struct vger {
     vgerGlyphCache* glyphCache;
     float2 windowSize;
 
-    // Glyph scratch space (avoid malloc).
+    /// Glyph scratch space (avoid malloc).
     std::vector<CGGlyph> glyphs;
 
-    // Cache of text layout by strings.
+    /// Cache of text layout by strings.
     std::unordered_map<std::string, TextLayoutInfo > textCache;
 
     /// Determines whether we prune cached text.
