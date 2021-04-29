@@ -10,6 +10,8 @@
 #include "nanovg_mtl.h"
 #include <vector>
 
+#import "../../Sources/vger/sdf.h"
+
 using namespace simd;
 
 @interface vgerTests : XCTestCase {
@@ -652,6 +654,15 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     showTexture(texture, @"demo.png");
     showTexture(atlas, @"glyph_atlas.png");
 
+}
+
+- (void) testPaint {
+
+    auto p = vgerColorPaint(float4{.1,.2,.3,.4});
+
+    auto c = applyPaint(p, float2{5,7});
+
+    XCTAssertTrue(simd_equal(c, float4{.1,.2,.3,.4}));
 }
 
 @end
