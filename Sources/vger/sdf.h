@@ -228,13 +228,13 @@ inline float sdPrim(const DEVICE vgerPrim& prim, float2 p) {
     switch(prim.type) {
         case vgerBezier:
             // d = sdBezier(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]);
-            d = sdBezierApprox(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]);
+            d = sdBezierApprox(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]) - prim.width;
             break;
         case vgerCircle:
             d = sdCircle(p - prim.cvs[0], prim.radius);
             break;
         case vgerArc:
-            d = sdArc(p - prim.cvs[0], prim.cvs[1], prim.cvs[2], prim.radius, 0.002);
+            d = sdArc(p - prim.cvs[0], prim.cvs[1], prim.cvs[2], prim.radius, prim.width);
             break;
         case vgerRect:
         case vgerGlyph: {
@@ -244,7 +244,7 @@ inline float sdPrim(const DEVICE vgerPrim& prim, float2 p) {
         }
             break;
         case vgerSegment:
-            d = sdSegment(p, prim.cvs[0], prim.cvs[1]);
+            d = sdSegment(p, prim.cvs[0], prim.cvs[1]) - prim.width;
             break;
         case vgerCurve:
             for(int i=0;i<prim.count-2;i+=2) {

@@ -617,18 +617,18 @@ static void textAt(vger* vger, float x, float y, const char* str) {
 
     vgerPrim line = {
         .type = vgerSegment,
-        .width = 10.0,
+        .width = 2.0,
         .cvs = {{50, 150}, {100,200}},
         .paint = vgerLinearGradient(float2{50,150}, float2{100,200}, cyan, magenta)
     };
     vgerRender(vger, &line);
     textAt(vger, 150, 150, "Line segment");
 
-    float theta = 0;
-    float ap = .5 * M_PI;
+    float theta = 0;      // orientation
+    float ap = .5 * M_PI; // aperture size
     vgerPrim arc = {
         .type = vgerArc,
-        .width = 10.0,
+        .width = 1.0,
         .cvs = {{75, 75}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
         .radius=25,
         .paint = vgerLinearGradient(float2{50,50}, float2{100,100}, cyan, magenta)
