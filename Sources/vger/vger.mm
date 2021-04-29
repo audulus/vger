@@ -56,7 +56,7 @@ struct vger {
         texMgr = [[vgerTextureManager alloc] initWithDevice:device pixelFormat:MTLPixelFormatRGBA8Unorm];
         glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
         for(int i=0;i<3;++i) {
-            prims[i] = [device newBufferWithLength:MAX_BUFFER_SIZE
+            prims[i] = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
                                            options:MTLResourceStorageModeShared];
         }
         txStack.push_back(matrix_identity_float3x3);
