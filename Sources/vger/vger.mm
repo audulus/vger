@@ -369,10 +369,7 @@ vgerPaint vgerLinearGradient(vector_float2 start, vector_float2 end,
 
     // Calculate transform aligned to the line
     vector_float2 d = end - start;
-    float length = simd_length(d);
-    if(length > 0.0001f) {
-        d /= length;
-    } else {
+    if(simd_length(d) < 0.0001f) {
         d = float2{0,1};
     }
 
