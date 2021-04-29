@@ -104,7 +104,10 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
         if(p->type != vgerGlyph and p->texture != currentTexture) {
 
             if(m) {
-                [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:m];
+                [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip
+                        vertexStart:0
+                        vertexCount:4
+                      instanceCount:m];
             }
 
             [enc setFragmentTexture:[textures objectAtIndex:p->texture] atIndex:0];
@@ -116,7 +119,10 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     }
 
     if(m) {
-        [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:m];
+        [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip
+                vertexStart:0
+                vertexCount:4
+              instanceCount:m];
     }
 
     [enc endEncoding];
