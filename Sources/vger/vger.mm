@@ -29,13 +29,29 @@ struct vger {
 
     id<MTLDevice> device;
     vgerRenderer* renderer;
+
+    /// Transform matrix stack.
     std::vector<matrix_float3x3> txStack;
+
+    /// We cycle through three prim buffers for streaming.
     id<MTLBuffer> prims[3];
+
+    /// The prim buffer we're currently using.
     int curPrims = 0;
+
+    /// Pointer to the next prim to be saved in the buffer.
     vgerPrim* p;
+
+    /// Number of prims we've saved in the buffer.
     int primCount = 0;
+
+    /// Prim buffer capacity.
     int maxPrims = 16384;
+
+    /// Atlas for finding glyph images.
     vgerGlyphCache* glyphCache;
+
+    /// Size of rendering window (for conversion from pixel to NDC)
     float2 windowSize;
 
     /// Glyph scratch space (avoid malloc).
