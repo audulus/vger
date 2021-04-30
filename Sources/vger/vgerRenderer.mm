@@ -80,6 +80,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     }
 
     auto bounds = [buffer computeCommandEncoder];
+    bounds.label = @"bounds encoder";
     [bounds setComputePipelineState:boundsPipeline];
     [bounds setBuffer:primBuffer offset:0 atIndex:0];
     [bounds setBytes:&n length:sizeof(uint) atIndex:1];
@@ -88,6 +89,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [bounds endEncoding];
 
     auto enc = [buffer renderCommandEncoderWithDescriptor:pass];
+    enc.label = @"render encoder";
     
     [enc setRenderPipelineState:pipeline];
     [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:1];

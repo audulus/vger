@@ -82,6 +82,7 @@ struct vger {
         for(int i=0;i<3;++i) {
             prims[i] = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
                                            options:MTLResourceStorageModeShared];
+            prims[i].label = @"prim buffer";
         }
         txStack.push_back(matrix_identity_float3x3);
 
@@ -121,6 +122,7 @@ int  vgerAddTexture(vger* vg, const uint8_t* data, int width, int height) {
 #endif
     auto tex = [vg->device newTextureWithDescriptor:desc];
     assert(tex);
+    tex.label = @"user texture";
 
     [tex replaceRegion:MTLRegionMake2D(0, 0, width, height) mipmapLevel:0 withBytes:data bytesPerRow:width*sizeof(uint32_t)];
 
