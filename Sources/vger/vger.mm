@@ -441,9 +441,9 @@ vgerPaint vgerImagePattern(vector_float2 origin, vector_float2 size, float angle
     p.image = image;
 
     matrix_float3x3 R = {
-        float3{ cosf(alpha), sinf(alpha), 0 },
-        float3{ -sinf(alpha), cosf(alpha), 0 },
-        float3{ origin.x, origin.y, 1}
+        float3{ cosf(angle), sinf(angle), 0 },
+        float3{ -sinf(angle), cosf(angle), 0 },
+        float3{ -origin.x, -origin.y, 1}
     };
 
     matrix_float3x3 S = {
@@ -452,7 +452,7 @@ vgerPaint vgerImagePattern(vector_float2 origin, vector_float2 size, float angle
         float3{ 0, 0, 1}
     };
 
-    p.xform = matrix_identity_float3x3;
+    p.xform = R;
 
     p.innerColor = p.outerColor = float4{1,1,1,alpha};
 
