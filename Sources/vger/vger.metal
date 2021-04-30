@@ -39,6 +39,29 @@ kernel void vger_prune(uint gid [[thread_position_in_grid]],
     }
 }
 
+kernel void vger_bounds(uint gid [[thread_position_in_grid]],
+                       device vgerPrim* prims,
+                       constant uint& primCount) {
+
+    if(gid < primCount) {
+        device auto& p = prims[gid];
+
+        if(p.type != vgerGlyph) {
+
+            auto bounds = sdPrimBounds(p).inset(-1);
+            p.texcoords[0] = bounds.min;
+            p.texcoords[1] = float2{bounds.max.x, bounds.min.y};
+            p.texcoords[2] = float2{bounds.min.x, bounds.max.y};
+            p.texcoords[3] = bounds.max;
+
+            for(int i=0;i<4;++i) {
+                p.verts[i] = p.texcoords[i];
+            }
+
+        }
+    }
+}
+
 vertex VertexOut vger_vertex(uint vid [[vertex_id]],
                              uint iid [[instance_id]],
                              const device vgerPrim* prims,
