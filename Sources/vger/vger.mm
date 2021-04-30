@@ -136,6 +136,12 @@ void vgerDeleteTexture(vger* vg, int texID) {
     [vg->textures setObject:vg->nullTexture atIndexedSubscript:texID];
 }
 
+
+vector_int2 vgerTextureSize(vger* vg, int texID) {
+    auto tex = [vg->textures objectAtIndex:texID];
+    return {int(tex.width), int(tex.height)};
+}
+
 void vgerRender(vger* vg, const vgerPrim* prim) {
 
     if(prim->type == vgerBezier or prim->type == vgerCurve) {

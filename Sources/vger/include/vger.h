@@ -52,6 +52,9 @@ int vgerAddMTLTexture(vger*, id<MTLTexture>);
 /// Remove a texture.
 void vgerDeleteTexture(vger* vg, int texID);
 
+/// Get the size of a texture.
+vector_int2 vgerTextureSize(vger* vg, int texID);
+
 /// Render a prim.
 void vgerRender(vger*, const vgerPrim* prim);
 
