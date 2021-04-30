@@ -102,7 +102,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
         int imageID = p->paint.image;
 
         // Texture ID changed, render.
-        if(p->type != vgerGlyph and imageID != currentTexture) {
+        if(p->type != vgerGlyph and imageID != -1 and imageID != currentTexture) {
 
             if(m) {
                 [enc setVertexBuffer:primBuffer offset:offset atIndex:0];
