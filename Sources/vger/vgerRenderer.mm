@@ -79,14 +79,6 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
         return;
     }
 
-    auto prune = [buffer computeCommandEncoder];
-    [prune setComputePipelineState:prunePipeline];
-    [prune setBuffer:primBuffer offset:0 atIndex:0];
-    [prune setBytes:&n length:sizeof(uint) atIndex:1];
-    [prune dispatchThreadgroups:MTLSizeMake(n/128+1, 1, 1)
-          threadsPerThreadgroup:MTLSizeMake(128, 1, 1)];
-    [prune endEncoding];
-
     auto enc = [buffer renderCommandEncoderWithDescriptor:pass];
     
     [enc setRenderPipelineState:pipeline];

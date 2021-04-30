@@ -146,59 +146,23 @@ vector_int2 vgerTextureSize(vger* vg, int texID) {
 
 void vgerRender(vger* vg, const vgerPrim* prim) {
 
-    if(prim->type == vgerBezier or prim->type == vgerCurve) {
+    if(vg->primCount < vg->maxPrims) {
+        *vg->p = *prim;
 
         auto bounds = sdPrimBounds(*prim).inset(-1);
+        vg->p->texcoords[0] = bounds.min;
+        vg->p->texcoords[1] = float2{bounds.max.x, bounds.min.y};
+        vg->p->texcoords[2] = float2{bounds.min.x, bounds.max.y};
+        vg->p->texcoords[3] = bounds.max;
 
-        float2 tiles = {2,2};
-        auto tile_size = bounds.size() / tiles;
-
-        for(float y=0;y<tiles.y;++y) {
-            for(float x=0;x<tiles.x;++x) {
-
-                float2 c = bounds.min + tile_size * float2{x+.5f, y+.5f};
-                vgerPrim p = *prim;
-                p.texcoords[0] = bounds.min + tile_size * float2{x,y};
-                p.texcoords[1] = bounds.min + tile_size * float2{x+1,y};
-                p.texcoords[2] = bounds.min + tile_size * float2{x,y+1};
-                p.texcoords[3] = bounds.min + tile_size * float2{x+1,y+1};
-
-                for(int i=0;i<4;++i) {
-                    p.verts[i] = p.texcoords[i];
-                }
-                p.xform = vg->txStack.back();
-
-                if(vg->primCount < vg->maxPrims) {
-                    *vg->p = p;
-
-                    vg->p++;
-                    vg->primCount++;
-                }
-
-            }
+        for(int i=0;i<4;++i) {
+            vg->p->verts[i] = vg->p->texcoords[i];
         }
 
-    } else {
+        vg->p->xform = vg->txStack.back();
 
-        if(vg->primCount < vg->maxPrims) {
-            *vg->p = *prim;
-
-            auto bounds = sdPrimBounds(*prim).inset(-1);
-            vg->p->texcoords[0] = bounds.min;
-            vg->p->texcoords[1] = float2{bounds.max.x, bounds.min.y};
-            vg->p->texcoords[2] = float2{bounds.min.x, bounds.max.y};
-            vg->p->texcoords[3] = bounds.max;
-
-            for(int i=0;i<4;++i) {
-                vg->p->verts[i] = vg->p->texcoords[i];
-            }
-
-            vg->p->xform = vg->txStack.back();
-
-            vg->p++;
-            vg->primCount++;
-        }
-
+        vg->p++;
+        vg->primCount++;
     }
 
 }
