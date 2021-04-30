@@ -275,6 +275,9 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
     auto tex = [self getTexture:@"icon-mac-256.png"];
     auto idx = vgerAddMTLTexture(vger, tex);
 
+    auto sz = vgerTextureSize(vger, idx);
+    XCTAssert(simd_equal(sz, simd_int2(256)));
+
     vgerPrim p = {
         .type = vgerRect,
         .width = 0.01,

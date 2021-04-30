@@ -88,6 +88,8 @@ struct vger {
         auto desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm width:1 height:1 mipmapped:NO];
         nullTexture = [device newTextureWithDescriptor:desc];
 
+        textures = [NSMutableArray new];
+
         assert(device.argumentBuffersSupport == MTLArgumentBuffersTier2);
     }
 };
