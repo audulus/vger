@@ -283,7 +283,7 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
         .width = 0.01,
         .cvs = { {0,0}, {256,256}},
         .radius=0.3,
-        .paint = vgerImagePattern(float2{40,40}, float2{80,80}, 0, idx, 1),
+        .paint = vgerImagePattern(float2{0,0}, float2{256,256}, 0, idx, 1),
     };
 
     vgerRender(vger, &p);

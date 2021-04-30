@@ -65,13 +65,16 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 
     device auto& prim = prims[in.primIndex];
 
-    constexpr sampler textureSampler (mag_filter::linear,
-                                      min_filter::linear,
-                                      coord::pixel);
+
 
     if(prim.type == vgerGlyph) {
+
+        constexpr sampler glyphSampler (mag_filter::linear,
+                                          min_filter::linear,
+                                          coord::pixel);
+
         auto c = prim.paint.innerColor;
-        return float4(c.rgb, c.a * glyphs.sample(textureSampler, in.t).a);
+        return float4(c.rgb, c.a * glyphs.sample(glyphSampler, in.t).a);
     }
     
     float d = sdPrim(prim, in.t);
@@ -87,9 +90,12 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
     if(prim.paint.image == -1) {
         color = applyPaint(prim.paint, in.t);
     } else {
-        auto h = tex.get_height();
+
+        constexpr sampler textureSampler (mag_filter::linear,
+                                          min_filter::linear);
+
         auto t = (prim.paint.xform * float3(in.t,1)).xy;
-        t.y = h - t.y;
+        t.y = 1.0 - t.y;
         color = tex.sample(textureSampler, t);
     }
 
