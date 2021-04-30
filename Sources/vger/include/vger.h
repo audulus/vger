@@ -49,6 +49,9 @@ int  vgerAddTexture(vger*, const uint8_t* data, int width, int height);
 int vgerAddMTLTexture(vger*, id<MTLTexture>);
 #endif
 
+/// Remove a texture.
+void vgerDeleteTexture(vger* vg, int texID);
+
 /// Render a prim.
 void vgerRender(vger*, const vgerPrim* prim);
 

@@ -51,6 +51,9 @@ struct vger {
     /// User-created textures.
     NSMutableArray< id<MTLTexture> >* textures;
 
+    /// We can't insert nil into textures, so use a tiny texture instead.
+    id<MTLTexture> nullTexture;
+
     vger() {
         device = MTLCreateSystemDefaultDevice();
         renderer = [[vgerRenderer alloc] initWithDevice:device];
@@ -61,6 +64,9 @@ struct vger {
                                            options:MTLResourceStorageModeShared];
         }
         txStack.push_back(matrix_identity_float3x3);
+
+        auto desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm width:1 height:1 mipmapped:NO];
+        nullTexture = [device newTextureWithDescriptor:desc];
 
         assert(device.argumentBuffersSupport == MTLArgumentBuffersTier2);
     }
@@ -90,6 +96,11 @@ int vgerAddMTLTexture(vger* vg, id<MTLTexture> tex) {
     assert(tex);
     [vg->textures addObject:tex];
     return vg->textures.count-1;
+}
+
+void vgerDeleteTexture(vger* vg, int texID) {
+    assert(vg);
+    [vg->textures setObject:vg->nullTexture atIndexedSubscript:texID];
 }
 
 void vgerRender(vger* vg, const vgerPrim* prim) {
