@@ -334,21 +334,6 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
     auto primp = (vgerPrim*) vg->prims[vg->curPrims].contents;
     for(int i=0;i<vg->primCount;++i) {
         auto& prim = primp[i];
-
-        /*
-        if(prim.paint == vgerTexture) {
-            auto r = texRects[prim.texture-1];
-            float w = r.w; float h = r.h;
-            float2 t = float2{float(r.x), float(r.y)};
-
-            prim.texcoords[0] = float2{0,h} + t;
-            prim.texcoords[1] = float2{w,h} + t;
-            prim.texcoords[2] = float2{0,0} + t;
-            prim.texcoords[3] = float2{w,0} + t;
-
-        }
-*/
-        
         if(prim.type == vgerGlyph) {
             auto r = glyphRects[prim.paint.image-1];
             for(int i=0;i<4;++i) {
