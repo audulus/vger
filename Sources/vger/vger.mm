@@ -20,11 +20,17 @@
 using namespace simd;
 #import "sdf.h"
 
+/// For caching the layout of strings.
 struct TextLayoutInfo {
+    /// The frame in which the string was last rendered. If not the current frame,
+    /// then the string is pruned from the cache.
     uint64_t lastFrame = 0;
+
+    /// Prims are copied to output.
     std::vector<vgerPrim> prims;
 };
 
+/// Main state object. This is not ObjC to avoid call overhead for each prim.
 struct vger {
 
     id<MTLDevice> device;
