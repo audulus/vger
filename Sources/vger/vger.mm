@@ -452,7 +452,7 @@ vgerPaint vgerImagePattern(vector_float2 origin, vector_float2 size, float angle
         float3{ 0, 0, 1}
     };
 
-    p.xform = S;
+    p.xform = matrix_multiply(R, S);
 
     p.innerColor = p.outerColor = float4{1,1,1,alpha};
 
