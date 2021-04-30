@@ -94,6 +94,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [enc setRenderPipelineState:pipeline];
     [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:1];
     [enc setFragmentTexture:glyphTexture atIndex:1];
+    [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
+    [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
 
     vgerPrim* p = (vgerPrim*) primBuffer.contents;
     int currentTexture = -1;
@@ -107,8 +109,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
         if(p->type != vgerGlyph and imageID != -1 and imageID != currentTexture) {
 
             if(m) {
-                [enc setVertexBuffer:primBuffer offset:offset atIndex:0];
-                [enc setFragmentBuffer:primBuffer offset:offset atIndex:0];
+                [enc setVertexBufferOffset:offset atIndex:0];
+                [enc setFragmentBufferOffset:offset atIndex:0];
                 [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip
                         vertexStart:0
                         vertexCount:4
@@ -130,8 +132,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     }
 
     if(m) {
-        [enc setVertexBuffer:primBuffer offset:offset atIndex:0];
-        [enc setFragmentBuffer:primBuffer offset:offset atIndex:0];
+        [enc setVertexBufferOffset:offset atIndex:0];
+        [enc setFragmentBufferOffset:offset atIndex:0];
         [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip
                 vertexStart:0
                 vertexCount:4
