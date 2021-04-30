@@ -68,9 +68,6 @@ typedef struct {
 
     /// How to shade the primitive.
     vgerPaint paint;
-
-    /// The texture region.
-    int texture;
     
     /// Vertices of the quad we're rendering.
     vector_float2 verts[4];

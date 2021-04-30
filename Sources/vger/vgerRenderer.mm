@@ -101,7 +101,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     for(int i=0;i<n;++i) {
 
         // Texture ID changed, render.
-        if(p->type != vgerGlyph and p->texture != currentTexture) {
+        if(p->type != vgerGlyph and p->paint.image != currentTexture) {
 
             if(m) {
                 [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip
@@ -110,8 +110,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
                       instanceCount:m];
             }
 
-            [enc setFragmentTexture:[textures objectAtIndex:p->texture] atIndex:0];
-            currentTexture = p->texture;
+            [enc setFragmentTexture:[textures objectAtIndex:p->paint.image] atIndex:0];
+            currentTexture = p->paint.image;
             m = 0;
         }
 
