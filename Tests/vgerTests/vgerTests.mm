@@ -266,7 +266,6 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
     return tex;
 }
 
-#if 0
 - (void) testRenderTexture {
 
     auto vger = vgerNew();
@@ -281,9 +280,7 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
         .width = 0.01,
         .cvs = { {20,20}, {100,100}},
         .radius=0.3,
-        .colors = {{1,1,1,.5}},
-        .paint = vgerTexture,
-        .texture = idx
+        .paint = vgerImagePattern(float2{20,20}, float2{80,80}, 0, idx, 1),
     };
 
     vgerRender(vger, &p);
@@ -306,7 +303,6 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
 
     showTexture(texture, @"texture.png");
 }
-#endif
 
 - (void) testText {
 
