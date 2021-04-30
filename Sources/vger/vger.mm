@@ -35,7 +35,6 @@ struct vger {
     vgerPrim* p;
     int primCount = 0;
     int maxPrims = 16384;
-    vgerTextureManager* texMgr;
     vgerGlyphCache* glyphCache;
     float2 windowSize;
 
@@ -57,7 +56,6 @@ struct vger {
     vger() {
         device = MTLCreateSystemDefaultDevice();
         renderer = [[vgerRenderer alloc] initWithDevice:device];
-        texMgr = [[vgerTextureManager alloc] initWithDevice:device pixelFormat:MTLPixelFormatRGBA8Unorm];
         glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
         for(int i=0;i<3;++i) {
             prims[i] = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
@@ -89,7 +87,20 @@ void vgerBegin(vger* vg, float windowWidth, float windowHeight, float devicePxRa
 
 int  vgerAddTexture(vger* vg, const uint8_t* data, int width, int height) {
     assert(data);
-    return [vg->texMgr addRegion:data width:width height:height bytesPerRow:width*sizeof(uint32_t)];
+
+    auto desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm width:width height:height mipmapped:NO];
+    desc.usage = MTLTextureUsageShaderRead;
+#if TARGET_OS_OSX
+    desc.storageMode = MTLStorageModeManaged;
+#else
+    desc.storageMode = MTLStorageModeShared;
+#endif
+    auto tex = [vg->device newTextureWithDescriptor:desc];
+    assert(tex);
+
+    [tex replaceRegion:MTLRegionMake2D(0, 0, width, height) mipmapLevel:0 withBytes:data bytesPerRow:width*sizeof(uint32_t)];
+
+    return vgerAddMTLTexture(vg, tex);
 }
 
 int vgerAddMTLTexture(vger* vg, id<MTLTexture> tex) {
@@ -286,10 +297,8 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
         }
     }
     
-    [vg->texMgr update:buf];
     [vg->glyphCache update:buf];
 
-    auto texRects = [vg->texMgr getRects];
     auto glyphRects = [vg->glyphCache getRects];
     auto primp = (vgerPrim*) vg->prims[vg->curPrims].contents;
     for(int i=0;i<vg->primCount;++i) {
