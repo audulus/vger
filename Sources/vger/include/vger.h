@@ -95,6 +95,10 @@ vgerPaint vgerColorPaint(vector_float4 color);
 vgerPaint vgerLinearGradient(vector_float2 start, vector_float2 end,
                              vector_float4 innerColor, vector_float4 outerColor);
 
+/// Create a paint using a texture image.
+vgerPaint vgerImagePattern(vector_float2 origin, vector_float2 size, float angle,
+                           int image, float alpha);
+
 #ifdef __cplusplus
 }
 #endif

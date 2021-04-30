@@ -440,3 +440,27 @@ vgerPaint vgerLinearGradient(vector_float2 start, vector_float2 end,
     return p;
 
 }
+
+vgerPaint vgerImagePattern(vector_float2 origin, vector_float2 size, float angle,
+                           int image, float alpha) {
+
+    vgerPaint p;
+    p.image = image;
+
+    matrix_float3x3 R = {
+        float3{ cosf(alpha), sinf(alpha), 0 },
+        float3{ -sinf(alpha), cosf(alpha), 0 },
+        float3{ origin.x, origin.y, 1}
+    };
+
+    matrix_float3x3 S = {
+        float3{ 1/size.x, 0, 0 },
+        float3{ 0, 1/size.y, 0},
+        float3{ 0, 0, 1}
+    };
+
+    p.xform = matrix_multiply(S, R);
+
+    p.innerColor = p.outerColor = float4{1,1,1,alpha};
+
+}
