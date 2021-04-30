@@ -148,19 +148,7 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
 
     if(vg->primCount < vg->maxPrims) {
         *vg->p = *prim;
-
-        auto bounds = sdPrimBounds(*prim).inset(-1);
-        vg->p->texcoords[0] = bounds.min;
-        vg->p->texcoords[1] = float2{bounds.max.x, bounds.min.y};
-        vg->p->texcoords[2] = float2{bounds.min.x, bounds.max.y};
-        vg->p->texcoords[3] = bounds.max;
-
-        for(int i=0;i<4;++i) {
-            vg->p->verts[i] = vg->p->texcoords[i];
-        }
-
         vg->p->xform = vg->txStack.back();
-
         vg->p++;
         vg->primCount++;
     }
