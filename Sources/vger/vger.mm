@@ -410,6 +410,7 @@ vgerPaint vgerColorPaint(vector_float4 color) {
     p.xform = matrix_identity_float3x3;
     p.innerColor = color;
     p.outerColor = color;
+    p.image = -1;
 
     return p;
 }
@@ -433,6 +434,7 @@ vgerPaint vgerLinearGradient(vector_float2 start, vector_float2 end,
 
     p.innerColor = innerColor;
     p.outerColor = outerColor;
+    p.image = -1;
 
     return p;
 

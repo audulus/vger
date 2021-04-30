@@ -43,6 +43,9 @@ typedef struct {
 
     vector_float4 outerColor;
 
+    /// Image if we're texturing.
+    int image;
+
 } vgerPaint;
 
 /// Primitive rendered by the GPU.
