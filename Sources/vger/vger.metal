@@ -87,7 +87,10 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
     if(prim.paint.image == -1) {
         color = applyPaint(prim.paint, in.t);
     } else {
-        color = tex.sample(textureSampler, (prim.paint.xform * float3(in.t,1)).xy);
+        auto h = tex.get_height();
+        auto t = (prim.paint.xform * float3(in.t,1)).xy;
+        t.y = h - t.y;
+        color = tex.sample(textureSampler, t);
     }
 
     return mix(float4(color.rgb,0.1), color, 1.0-smoothstep(0,fw,d) );

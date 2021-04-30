@@ -281,7 +281,7 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
     vgerPrim p = {
         .type = vgerRect,
         .width = 0.01,
-        .cvs = { {20,20}, {100,100}},
+        .cvs = { {0,0}, {256,256}},
         .radius=0.3,
         .paint = vgerImagePattern(float2{20,20}, float2{80,80}, 0, idx, 1),
     };
