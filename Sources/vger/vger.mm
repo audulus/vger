@@ -170,13 +170,7 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
 
 static float averageScale(const float3x3& M)
 {
-    float t[4] = {
-        M.columns[0].x, M.columns[0].y,
-        M.columns[1].x, M.columns[1].y
-    };
-    float sx = sqrtf(t[0]*t[0] + t[2]*t[2]);
-    float sy = sqrtf(t[1]*t[1] + t[3]*t[3]);
-    return (sx + sy) * 0.5f;
+    return 0.5f * (length(M.columns[0].xy) + length(M.columns[1].xy));
 }
 
 void vgerRenderText(vger* vg, const char* str, float4 color) {
