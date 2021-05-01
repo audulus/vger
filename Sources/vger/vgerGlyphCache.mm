@@ -17,7 +17,20 @@
     self = [super init];
     if (self) {
         mgr = [[vgerTextureManager alloc] initWithDevice:device pixelFormat:MTLPixelFormatA8Unorm];
-        ctFont = CTFontCreateWithName((__bridge CFStringRef)@"Avenir-light", /*fontPointSize*/24, NULL);
+
+        auto bundle = [NSBundle bundleForClass:self.class];
+        assert(bundle);
+
+#if TARGET_OS_OSX
+        auto fontURL = [bundle.bundleURL URLByAppendingPathComponent:@"Contents/Resources/vger_vger.bundle/Contents/Resources/fonts/Anodina-Regular.ttf"];
+#else
+        auto fontURL = [bundle.bundleURL URLByAppendingPathComponent:@"vger_vger.bundle/fonts/Anodina-Regular.ttf"];
+#endif
+
+        auto fd = CTFontManagerCreateFontDescriptorsFromURL( (__bridge CFURLRef) fontURL);
+        ctFont = CTFontCreateWithFontDescriptor( (CTFontDescriptorRef) CFArrayGetValueAtIndex(fd, 0), 24.0, nil);
+        assert(ctFont);
+        //ctFont = CTFontCreateWithName((__bridge CFStringRef)@"Avenir-light", /*fontPointSize*/24, NULL);
     }
     return self;
 }

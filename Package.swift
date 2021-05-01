@@ -22,7 +22,8 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "vger",
-            dependencies: []),
+            dependencies: [],
+            resources: [.copy("fonts")]),
         .testTarget(
             name: "vgerTests",
             dependencies: ["vger", "MetalNanoVG"],
