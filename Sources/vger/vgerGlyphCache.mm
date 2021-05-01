@@ -45,14 +45,18 @@
     CTFontGetBoundingRectsForGlyphs(ctFont, kCTFontOrientationHorizontal, &glyph, &boundingRect, 1);
 
     auto glyphTransform = CGAffineTransformMake(1, 0, 0, 1,
-                                                -boundingRect.origin.x + GLYPH_MARGIN,
-                                                -boundingRect.origin.y + GLYPH_MARGIN);
+                                                -boundingRect.origin.x,
+                                                -boundingRect.origin.y);
     auto path = CTFontCreatePathForGlyph(ctFont, glyph, &glyphTransform);
 
     if(path == 0) {
         //NSLog(@"no path for glyph index %d\n", (int)glyph);
         return GlyphInfo();
     }
+
+    float scale = 2.0f;
+    boundingRect.size.width *= scale;
+    boundingRect.size.height *= scale;
 
     int width = ceilf(boundingRect.size.width) + 2*GLYPH_MARGIN;
     int height = ceilf(boundingRect.size.height) + 2*GLYPH_MARGIN;
@@ -70,6 +74,9 @@
                                                  width,
                                                  colorSpace,
                                                  bitmapInfo);
+
+    CGContextTranslateCTM(context, GLYPH_MARGIN, GLYPH_MARGIN);
+    CGContextScaleCTM(context, scale, scale);
 
     // Fill the context with an opaque black color
     CGContextSetRGBFillColor(context, 0, 0, 0, 1);
