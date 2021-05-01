@@ -21,6 +21,8 @@ struct GlyphInfo {
 
 @interface vgerGlyphCache : NSObject
 
+@property (nonatomic, readonly) float usage;
+
 - (instancetype)initWithDevice:(id<MTLDevice>) device;
 
 - (GlyphInfo) getGlyph:(CGGlyph)glyph scale:(float)scale;

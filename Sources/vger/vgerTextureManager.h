@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface vgerTextureManager : NSObject
 
 @property (nonatomic, retain, readonly) id<MTLTexture> atlas;
+@property (nonatomic, readonly) float usage;
 
 - (instancetype)initWithDevice:(id<MTLDevice>) device pixelFormat:(MTLPixelFormat)format;
 

@@ -122,4 +122,8 @@
     return ctFont;
 }
 
+- (float) usage {
+    return mgr.usage;
+}
+
 @end

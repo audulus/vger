@@ -176,7 +176,7 @@ static float averageScale(const float3x3& M)
 void vgerRenderText(vger* vg, const char* str, float4 color) {
 
     auto paint = vgerColorPaint(color);
-    auto scale = 1.0f; //averageScale(vg->txStack.back());
+    auto scale = averageScale(vg->txStack.back());
     auto key = std::make_pair(std::string(str), scale);
 
     // Do we already have text in the cache?
@@ -322,6 +322,12 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
                 windowSize:vg->windowSize];
 
     vg->currentFrame++;
+
+    // Do we need to create a new glyph cache?
+    if(vg->glyphCache.usage > 0.8f) {
+        vg->glyphCache = [[vgerGlyphCache alloc] initWithDevice:vg->device];
+        vg->textCache.clear();
+    }
 }
 
 void vgerTranslate(vger* vg, vector_float2 t) {

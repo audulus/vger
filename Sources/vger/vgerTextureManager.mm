@@ -14,6 +14,7 @@
     std::vector<stbrp_rect> regions;
     stbrp_context ctx;
     NSMutableArray< id<MTLTexture> >* newTextures;
+    size_t areaUsed;
 }
 @end
 
@@ -83,26 +84,30 @@
             r.w = tex.width;
             r.h = tex.height;
             newRegions.push_back(r);
+            areaUsed += r.w*r.h;
         }
-        stbrp_pack_rects(&ctx, newRegions.data(), newRegions.size());
 
-        auto e = [buffer blitCommandEncoder];
-        for(int i=0;i<newRegions.size();++i) {
-            auto r = newRegions[i];
-            auto tex = newTextures[i];
-            assert(tex);
-            [e copyFromTexture:tex
-                   sourceSlice:0
-                   sourceLevel:0
-                  sourceOrigin:MTLOriginMake(0, 0, 0)
-                    sourceSize:MTLSizeMake(tex.width, tex.height, 1)
-                     toTexture:self.atlas
-              destinationSlice:0
-              destinationLevel:0
-             destinationOrigin:MTLOriginMake(r.x, r.y, 0)];
-            regions.push_back(r);
+        if(stbrp_pack_rects(&ctx, newRegions.data(), newRegions.size())) {
+
+            auto e = [buffer blitCommandEncoder];
+            for(int i=0;i<newRegions.size();++i) {
+                auto r = newRegions[i];
+                auto tex = newTextures[i];
+                assert(tex);
+                [e copyFromTexture:tex
+                       sourceSlice:0
+                       sourceLevel:0
+                      sourceOrigin:MTLOriginMake(0, 0, 0)
+                        sourceSize:MTLSizeMake(tex.width, tex.height, 1)
+                         toTexture:self.atlas
+                  destinationSlice:0
+                  destinationLevel:0
+                 destinationOrigin:MTLOriginMake(r.x, r.y, 0)];
+                regions.push_back(r);
+            }
+            [e endEncoding];
+
         }
-        [e endEncoding];
 
         [newTextures removeAllObjects];
     }
@@ -111,6 +116,10 @@
 /// Get a pointer to the first rectangle.
 - (stbrp_rect*) getRects {
     return regions.data();
+}
+
+- (float) usage {
+    return float(areaUsed) / (ATLAS_SIZE*ATLAS_SIZE);
 }
 
 @end
