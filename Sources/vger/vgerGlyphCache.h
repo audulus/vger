@@ -23,7 +23,7 @@ struct GlyphInfo {
 
 - (instancetype)initWithDevice:(id<MTLDevice>) device;
 
-- (GlyphInfo) getGlyph:(CGGlyph)glyph size:(float)size;
+- (GlyphInfo) getGlyph:(CGGlyph)glyph scale:(float)scale;
 
 - (void) update:(id<MTLCommandBuffer>) buffer;
 

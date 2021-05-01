@@ -30,6 +30,17 @@ struct TextLayoutInfo {
     std::vector<vgerPrim> prims;
 };
 
+struct text_hash {
+
+    std::hash<std::string> strHash;
+    std::hash<float> floatHash;
+
+    inline size_t operator() (const std::pair<std::string, float>& pair) const {
+        auto seed = strHash(pair.first);
+        return seed ^= floatHash(pair.second) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+    }
+};
+
 /// Main state object. This is not ObjC to avoid call overhead for each prim.
 struct vger {
 
@@ -64,7 +75,7 @@ struct vger {
     std::vector<CGGlyph> glyphs;
 
     /// Cache of text layout by strings.
-    std::unordered_map<std::string, TextLayoutInfo > textCache;
+    std::unordered_map< std::pair<std::string, float>, TextLayoutInfo, text_hash > textCache;
 
     /// Determines whether we prune cached text.
     uint64_t currentFrame = 1;
@@ -157,12 +168,25 @@ void vgerRender(vger* vg, const vgerPrim* prim) {
 
 }
 
+static float averageScale(const float3x3& M)
+{
+    float t[4] = {
+        M.columns[0].x, M.columns[0].y,
+        M.columns[1].x, M.columns[1].y
+    };
+    float sx = sqrtf(t[0]*t[0] + t[2]*t[2]);
+    float sy = sqrtf(t[1]*t[1] + t[3]*t[3]);
+    return (sx + sy) * 0.5f;
+}
+
 void vgerRenderText(vger* vg, const char* str, float4 color) {
 
     auto paint = vgerColorPaint(color);
+    auto scale = 1.0f; //averageScale(vg->txStack.back());
+    auto key = std::make_pair(std::string(str), scale);
 
     // Do we already have text in the cache?
-    auto iter = vg->textCache.find(std::string(str));
+    auto iter = vg->textCache.find(key);
     if(iter != vg->textCache.end()) {
         // Copy prims to output.
         auto& info = iter->second;
@@ -188,7 +212,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
     auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
     auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
 
-    auto& textInfo = vg->textCache[str];
+    auto& textInfo = vg->textCache[key];
     textInfo.lastFrame = vg->currentFrame;
 
     NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
@@ -201,7 +225,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
 
         for(int i=0;i<glyphCount;++i) {
 
-            auto info = [vg->glyphCache getGlyph:vg->glyphs[i] size:12];
+            auto info = [vg->glyphCache getGlyph:vg->glyphs[i] scale:scale];
             if(info.regionIndex != -1) {
 
                 CGRect r = CTRunGetImageBounds(run, nil, CFRangeMake(i, 1));

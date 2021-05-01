@@ -26,7 +26,7 @@
     CFRelease(ctFont);
 }
 
-- (GlyphInfo) getGlyph:(CGGlyph)glyph size:(float) size {
+- (GlyphInfo) getGlyph:(CGGlyph)glyph scale:(float) scale {
 
     if(glyph >= glyphs.size()) {
         glyphs.resize(glyph+1);
@@ -35,7 +35,7 @@
     auto& v = glyphs[glyph];
 
     for(auto& info : v) {
-        if(info.size == size) {
+        if(info.size == scale) {
             return info;
         }
     }
@@ -54,7 +54,6 @@
         return GlyphInfo();
     }
 
-    float scale = 2.0f;
     boundingRect.size.width *= scale;
     boundingRect.size.height *= scale;
 
@@ -91,7 +90,7 @@
     auto region = [mgr addRegion:imageData.data() width:width height:height bytesPerRow:width];
 
     GlyphInfo info = {
-        .size=size,
+        .size=scale,
         .regionIndex=region,
         .textureWidth=width,
         .textureHeight=height,
