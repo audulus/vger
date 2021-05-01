@@ -226,7 +226,6 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
                 prim.verts[3] = b;
                 prim.xform = vg->txStack.back();
 
-                auto bounds = info.glyphBounds;
                 float w = info.glyphBounds.size.width+2;
                 float h = info.glyphBounds.size.height+2;
 
