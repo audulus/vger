@@ -24,7 +24,7 @@
     auto cache = [[vgerGlyphCache alloc] initWithDevice:device];
 
     for(int i=0;i<100;++i) {
-        [cache getGlyph:i size:12];
+        [cache getGlyph:i scale:1.0f];
     }
 
     id<MTLCommandBuffer> buf = [queue commandBuffer];
