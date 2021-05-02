@@ -704,12 +704,13 @@ static void textAt(vger* vger, float x, float y, const char* str) {
 
     vgerBegin(vger, 512, 512, 1.0);
 
-    auto str = "Center | Middle";
+    auto str = "This is center middle aligned.";
 
     auto commandBuffer = [queue commandBuffer];
 
     vgerSave(vger);
     vgerTranslate(vger, float2{256, 256});
+    vgerScale(vger, float2{2,2});
 
     float2 cvs[2];
     vgerTextBounds(vger, str, cvs, cvs+1, VGER_ALIGN_CENTER | VGER_ALIGN_MIDDLE);
@@ -724,7 +725,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
 
     vgerPrim dot = {
         .type = vgerCircle,
-        .radius = 5,
+        .radius = 1,
         .cvs = { {0,0} },
         .paint = magenta
     };
