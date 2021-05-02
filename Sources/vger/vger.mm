@@ -30,6 +30,34 @@ struct TextLayoutInfo {
     std::vector<vgerPrim> prims;
 };
 
+struct TextLayoutKey {
+    std::string str;
+    float size;
+    int align;
+};
+
+inline void hash_combine(size_t& seed) { }
+
+template <typename T, typename... Rest>
+inline void hash_combine(size_t& seed, const T& v, Rest... rest) {
+  std::hash<T> hasher;
+  seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+  hash_combine(seed, rest...);
+}
+
+#define MAKE_HASHABLE(type, ...) \
+namespace std {\
+  template<> struct hash<type> {\
+    size_t operator()(const type &t) const {\
+      size_t ret = 0;\
+      hash_combine(ret, __VA_ARGS__);\
+      return ret;\
+    }\
+  };\
+}
+
+MAKE_HASHABLE(TextLayoutKey, t.str, t.size, t.align);
+
 struct text_hash {
 
     std::hash<std::string> strHash;
