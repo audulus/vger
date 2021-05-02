@@ -258,14 +258,15 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
 
                 vgerPrim prim = {
                     .type = vgerGlyph,
-                    .paint = paint
+                    .paint = paint,
+                    .verts = {
+                        a + offset,
+                        float2{b.x, a.y} + offset,
+                        float2{a.x, b.y} + offset,
+                        b + offset,
+                    },
+                    .xform = vg->txStack.back()
                 };
-
-                prim.verts[0] = a + offset;
-                prim.verts[1] = float2{b.x, a.y} + offset;
-                prim.verts[2] = float2{a.x, b.y} + offset;
-                prim.verts[3] = b + offset;
-                prim.xform = vg->txStack.back();
 
                 float w = info.glyphBounds.size.width+2;
                 float h = info.glyphBounds.size.height+2;
