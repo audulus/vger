@@ -173,6 +173,30 @@ static float averageScale(const float3x3& M)
     return 0.5f * (length(M.columns[0].xy) + length(M.columns[1].xy));
 }
 
+static float2 alignOffset(CTLineRef line, int align) {
+
+    float2 t = {0,0};
+    auto lineBounds = CTLineGetImageBounds(line, nil);
+
+    if(align & VGER_ALIGN_RIGHT) {
+        t.x = -lineBounds.size.width;
+    } else if(align & VGER_ALIGN_CENTER) {
+        t.x = -0.5 * lineBounds.size.width;
+    }
+
+    CGFloat ascent, descent;
+    CTLineGetTypographicBounds(line, &ascent, &descent, nullptr);
+    if(align & VGER_ALIGN_TOP) {
+        t.y -= ascent;
+    } else if(align & VGER_ALIGN_MIDDLE) {
+        t.y -= 0.5 * (ascent + descent);
+    } else if(align & VGER_ALIGN_BOTTOM) {
+        t.y -= descent;
+    }
+
+    return t;
+}
+
 void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
 
     auto paint = vgerColorPaint(color);
@@ -209,15 +233,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
     auto& textInfo = vg->textCache[key];
     textInfo.lastFrame = vg->currentFrame;
 
-    float2 t = {0,0};
-
-    if(align & VGER_ALIGN_RIGHT) {
-        auto lineBounds = CTLineGetImageBounds(line, nil);
-        t.x = -lineBounds.size.width;
-    } else if(align & VGER_ALIGN_CENTER) {
-        auto lineBounds = CTLineGetImageBounds(line, nil);
-        t.x = -0.5 * lineBounds.size.width;
-    }
+    auto offset = alignOffset(line, align);
 
     NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
     for(id r in runs) {
@@ -248,10 +264,10 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
 
                 prim.paint.image = info.regionIndex;
 
-                prim.verts[0] = a + t;
-                prim.verts[1] = float2{b.x, a.y} + t;
-                prim.verts[2] = float2{a.x, b.y} + t;
-                prim.verts[3] = b + t;
+                prim.verts[0] = a + offset;
+                prim.verts[1] = float2{b.x, a.y} + offset;
+                prim.verts[2] = float2{a.x, b.y} + offset;
+                prim.verts[3] = b + offset;
                 prim.xform = vg->txStack.back();
 
                 float w = info.glyphBounds.size.width+2;
@@ -280,7 +296,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
 
 }
 
-void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max) {
+void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max, int align) {
 
     CFRange entire = CFRangeMake(0, 0);
 
@@ -295,6 +311,10 @@ void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max) {
     min->y = bounds.origin.y;
     max->x = bounds.origin.x + bounds.size.width;
     max->y = bounds.origin.x + bounds.size.height;
+
+    auto offset = alignOffset(line, align);
+    *min += offset;
+    *max += offset;
 
 }
 

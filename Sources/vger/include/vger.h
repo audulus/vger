@@ -62,7 +62,7 @@ void vgerRender(vger*, const vgerPrim* prim);
 void vgerRenderText(vger*, const char* str, vector_float4 color, int align);
 
 /// Return bounds for text in local coordinates.
-void vgerTextBounds(vger* vg, const char* str, vector_float2* min, vector_float2* max);
+void vgerTextBounds(vger* vg, const char* str, vector_float2* min, vector_float2* max, int align);
 
 /// Translates current coordinate system.
 void vgerTranslate(vger*, vector_float2 t);
