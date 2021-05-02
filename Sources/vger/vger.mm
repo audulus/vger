@@ -256,9 +256,6 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
 
                 vgerPrim prim = {
                     .type = vgerGlyph,
-                    .cvs = {a, b},
-                    .width = 0.01,
-                    .radius = 0,
                     .paint = paint
                 };
 
