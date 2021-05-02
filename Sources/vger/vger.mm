@@ -252,10 +252,10 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
                 float2 p = {float(r.origin.x), float(r.origin.y)};
                 float2 sz = {float(r.size.width), float(r.size.height)};
 
-                float2 a = p-1, b = p+sz+2;
+                float2 a = p, b = p+sz;
 
-                float w = info.glyphBounds.size.width+2;
-                float h = info.glyphBounds.size.height+2;
+                float w = info.glyphBounds.size.width;
+                float h = info.glyphBounds.size.height;
 
                 float originY = info.textureHeight-GLYPH_MARGIN;
 
@@ -271,10 +271,10 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
                         b + offset,
                     },
                     .texcoords = {
-                        float2{GLYPH_MARGIN-1,   originY+1},
-                        float2{GLYPH_MARGIN+w+1, originY+1},
-                        float2{GLYPH_MARGIN-1,   originY-h-1},
-                        float2{GLYPH_MARGIN+w+1, originY-h-1},
+                        float2{GLYPH_MARGIN,   originY},
+                        float2{GLYPH_MARGIN+w, originY},
+                        float2{GLYPH_MARGIN,   originY-h},
+                        float2{GLYPH_MARGIN+w, originY-h},
                     },
                     .xform = vg->txStack.back()
                 };
