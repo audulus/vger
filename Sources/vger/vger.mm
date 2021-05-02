@@ -254,6 +254,11 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
 
                 float2 a = p-1, b = p+sz+2;
 
+                float w = info.glyphBounds.size.width+2;
+                float h = info.glyphBounds.size.height+2;
+
+                float originY = info.textureHeight-GLYPH_MARGIN;
+
                 paint.image = info.regionIndex;
 
                 vgerPrim prim = {
@@ -265,18 +270,14 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
                         float2{a.x, b.y} + offset,
                         b + offset,
                     },
+                    .texcoords = {
+                        float2{GLYPH_MARGIN-1,   originY+1},
+                        float2{GLYPH_MARGIN+w+1, originY+1},
+                        float2{GLYPH_MARGIN-1,   originY-h-1},
+                        float2{GLYPH_MARGIN+w+1, originY-h-1},
+                    },
                     .xform = vg->txStack.back()
                 };
-
-                float w = info.glyphBounds.size.width+2;
-                float h = info.glyphBounds.size.height+2;
-
-                float originY = info.textureHeight-GLYPH_MARGIN;
-
-                prim.texcoords[0] = float2{GLYPH_MARGIN-1,   originY+1};
-                prim.texcoords[1] = float2{GLYPH_MARGIN+w+1, originY+1};
-                prim.texcoords[2] = float2{GLYPH_MARGIN-1,   originY-h-1};
-                prim.texcoords[3] = float2{GLYPH_MARGIN+w+1, originY-h-1};
 
                 textInfo.prims.push_back(prim);
 
