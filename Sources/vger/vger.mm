@@ -310,7 +310,7 @@ void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max, int ali
     min->x = bounds.origin.x;
     min->y = bounds.origin.y;
     max->x = bounds.origin.x + bounds.size.width;
-    max->y = bounds.origin.x + bounds.size.height;
+    max->y = bounds.origin.y + bounds.size.height;
 
     auto offset = alignOffset(line, align);
     *min += offset;
