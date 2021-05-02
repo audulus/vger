@@ -254,12 +254,12 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
 
                 float2 a = p-1, b = p+sz+2;
 
+                paint.image = info.regionIndex;
+
                 vgerPrim prim = {
                     .type = vgerGlyph,
                     .paint = paint
                 };
-
-                prim.paint.image = info.regionIndex;
 
                 prim.verts[0] = a + offset;
                 prim.verts[1] = float2{b.x, a.y} + offset;
