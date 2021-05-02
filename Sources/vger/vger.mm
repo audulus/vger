@@ -187,11 +187,11 @@ static float2 alignOffset(CTLineRef line, int align) {
     CGFloat ascent, descent;
     CTLineGetTypographicBounds(line, &ascent, &descent, nullptr);
     if(align & VGER_ALIGN_TOP) {
-        t.y -= ascent;
+        t.y = -ascent;
     } else if(align & VGER_ALIGN_MIDDLE) {
-        t.y += 0.5 * (descent - ascent);
+        t.y = 0.5 * (descent - ascent);
     } else if(align & VGER_ALIGN_BOTTOM) {
-        t.y += descent;
+        t.y = descent;
     }
 
     return t;
