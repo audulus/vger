@@ -316,6 +316,9 @@ void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max, int ali
     *min += offset;
     *max += offset;
 
+    CFRelease(line);
+    CFRelease(typesetter);
+
 }
 
 void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
