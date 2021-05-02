@@ -45,10 +45,13 @@ inline void hash_combine(size_t& seed, const T& v, Rest... rest) {
   hash_combine(seed, rest...);
 }
 
-#define MAKE_HASHABLE(type, ...) \
+#define MAKE_HASHABLE(Type, ...) \
+inline auto __tie(const Type& t) { return std::tie(__VA_ARGS__); }                              \
+inline bool operator==(const Type& lhs, const Type& rhs) { return __tie(lhs) == __tie(rhs); } \
+inline bool operator!=(const Type& lhs, const Type& rhs) { return __tie(lhs) != __tie(rhs); } \
 namespace std {\
-  template<> struct hash<type> {\
-    size_t operator()(const type &t) const {\
+  template<> struct hash<Type> {\
+    size_t operator()(const Type &t) const {\
       size_t ret = 0;\
       hash_combine(ret, __VA_ARGS__);\
       return ret;\
@@ -57,17 +60,6 @@ namespace std {\
 }
 
 MAKE_HASHABLE(TextLayoutKey, t.str, t.size, t.align);
-
-struct text_hash {
-
-    std::hash<std::string> strHash;
-    std::hash<float> floatHash;
-
-    inline size_t operator() (const std::pair<std::string, float>& pair) const {
-        auto seed = strHash(pair.first);
-        return seed ^= floatHash(pair.second) + 0x9e3779b9 + (seed<<6) + (seed>>2);
-    }
-};
 
 /// Main state object. This is not ObjC to avoid call overhead for each prim.
 struct vger {
@@ -103,7 +95,7 @@ struct vger {
     std::vector<CGGlyph> glyphs;
 
     /// Cache of text layout by strings.
-    std::unordered_map< std::pair<std::string, float>, TextLayoutInfo, text_hash > textCache;
+    std::unordered_map< TextLayoutKey, TextLayoutInfo > textCache;
 
     /// Determines whether we prune cached text.
     uint64_t currentFrame = 1;
@@ -229,7 +221,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
 
     auto paint = vgerColorPaint(color);
     auto scale = averageScale(vg->txStack.back());
-    auto key = std::make_pair(std::string(str), scale);
+    auto key = TextLayoutKey{std::string(str), scale, align};
 
     // Do we already have text in the cache?
     auto iter = vg->textCache.find(key);
