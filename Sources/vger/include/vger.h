@@ -59,7 +59,7 @@ vector_int2 vgerTextureSize(vger* vg, int texID);
 void vgerRender(vger*, const vgerPrim* prim);
 
 /// Render text.
-void vgerRenderText(vger*, const char* str, vector_float4 color, vgerAlign align);
+void vgerRenderText(vger*, const char* str, vector_float4 color, int align);
 
 /// Return bounds for text in local coordinates.
 void vgerTextBounds(vger* vg, const char* str, vector_float2* min, vector_float2* max);

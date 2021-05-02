@@ -173,7 +173,7 @@ static float averageScale(const float3x3& M)
     return 0.5f * (length(M.columns[0].xy) + length(M.columns[1].xy));
 }
 
-void vgerRenderText(vger* vg, const char* str, float4 color, vgerAlign align) {
+void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
 
     auto paint = vgerColorPaint(color);
     auto scale = averageScale(vg->txStack.back());
