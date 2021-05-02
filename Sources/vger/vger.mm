@@ -71,7 +71,7 @@ struct vger {
     std::vector<matrix_float3x3> txStack;
 
     /// We cycle through three prim buffers for streaming.
-    id<MTLBuffer> prims[3];
+    id<MTLBuffer> primBuffers[3];
 
     /// The prim buffer we're currently using.
     int curPrimBuffer = 0;
@@ -111,9 +111,9 @@ struct vger {
         renderer = [[vgerRenderer alloc] initWithDevice:device];
         glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
         for(int i=0;i<3;++i) {
-            prims[i] = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
+            primBuffers[i] = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
                                            options:MTLResourceStorageModeShared];
-            prims[i].label = @"prim buffer";
+            primBuffers[i].label = @"prim buffer";
         }
         txStack.push_back(matrix_identity_float3x3);
 
@@ -136,7 +136,7 @@ void vgerDelete(vger* vg) {
 
 void vgerBegin(vger* vg, float windowWidth, float windowHeight, float devicePxRatio) {
     vg->curPrimBuffer = (vg->curPrimBuffer+1)%3;
-    vg->p = (vgerPrim*) vg->prims[vg->curPrimBuffer].contents;
+    vg->p = (vgerPrim*) vg->primBuffers[vg->curPrimBuffer].contents;
     vg->primCount = 0;
     vg->windowSize = {windowWidth, windowHeight};
 }
@@ -354,7 +354,7 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
     [vg->glyphCache update:buf];
 
     auto glyphRects = [vg->glyphCache getRects];
-    auto primp = (vgerPrim*) vg->prims[vg->curPrimBuffer].contents;
+    auto primp = (vgerPrim*) vg->primBuffers[vg->curPrimBuffer].contents;
     for(int i=0;i<vg->primCount;++i) {
         auto& prim = primp[i];
         if(prim.type == vgerGlyph) {
@@ -367,7 +367,7 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
 
     [vg->renderer encodeTo:buf
                       pass:pass
-                     prims:vg->prims[vg->curPrimBuffer]
+                     prims:vg->primBuffers[vg->curPrimBuffer]
                      count:vg->primCount
                   textures:vg->textures
               glyphTexture:[vg->glyphCache getAltas]
