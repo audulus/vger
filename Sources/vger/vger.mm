@@ -74,7 +74,7 @@ struct vger {
     id<MTLBuffer> prims[3];
 
     /// The prim buffer we're currently using.
-    int curPrims = 0;
+    int curPrimBuffer = 0;
 
     /// Pointer to the next prim to be saved in the buffer.
     vgerPrim* p;
@@ -135,8 +135,8 @@ void vgerDelete(vger* vg) {
 }
 
 void vgerBegin(vger* vg, float windowWidth, float windowHeight, float devicePxRatio) {
-    vg->curPrims = (vg->curPrims+1)%3;
-    vg->p = (vgerPrim*) vg->prims[vg->curPrims].contents;
+    vg->curPrimBuffer = (vg->curPrimBuffer+1)%3;
+    vg->p = (vgerPrim*) vg->prims[vg->curPrimBuffer].contents;
     vg->primCount = 0;
     vg->windowSize = {windowWidth, windowHeight};
 }
@@ -354,7 +354,7 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
     [vg->glyphCache update:buf];
 
     auto glyphRects = [vg->glyphCache getRects];
-    auto primp = (vgerPrim*) vg->prims[vg->curPrims].contents;
+    auto primp = (vgerPrim*) vg->prims[vg->curPrimBuffer].contents;
     for(int i=0;i<vg->primCount;++i) {
         auto& prim = primp[i];
         if(prim.type == vgerGlyph) {
@@ -367,7 +367,7 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
 
     [vg->renderer encodeTo:buf
                       pass:pass
-                     prims:vg->prims[vg->curPrims]
+                     prims:vg->prims[vg->curPrimBuffer]
                      count:vg->primCount
                   textures:vg->textures
               glyphTexture:[vg->glyphCache getAltas]
