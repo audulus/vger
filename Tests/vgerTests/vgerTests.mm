@@ -698,4 +698,46 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     XCTAssertTrue(simd_equal(applyPaint(p, float2{450,150}), float4{1,0,1,1}));
 }
 
+- (void) testTextAlgin {
+
+    auto vger = vgerNew();
+
+    vgerBegin(vger, 512, 512, 1.0);
+
+    auto commandBuffer = [queue commandBuffer];
+
+    float2 p{256,256};
+
+    vgerPrim dot = {
+        .type = vgerCircle,
+        .radius = 5,
+        .cvs = {p},
+        .paint = magenta
+    };
+
+    vgerRender(vger, &dot);
+
+    vgerSave(vger);
+    vgerTranslate(vger, p);
+    vgerRenderText(vger, "Center|Middle", float4(1), VGER_ALIGN_CENTER | VGER_ALIGN_MIDDLE);
+    vgerRestore(vger);
+
+    vgerEncode(vger, commandBuffer, pass);
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder endEncoding];
+    #endif
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    vgerDelete(vger);
+
+    showTexture(texture, @"text_align.png");
+
+}
+
 @end
