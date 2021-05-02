@@ -706,19 +706,28 @@ static void textAt(vger* vger, float x, float y, const char* str) {
 
     auto commandBuffer = [queue commandBuffer];
 
-    float2 p{256,256};
+    vgerSave(vger);
+    vgerTranslate(vger, float2{256, 256});
+
+    float2 cvs[2];
+    vgerTextBounds(vger, "Center|Middle", cvs, cvs+1, VGER_ALIGN_CENTER | VGER_ALIGN_MIDDLE);
+    vgerPrim rect = {
+        .type = vgerRect,
+        .width = 0.0,
+        .radius = 0,
+        .cvs = {cvs[0], cvs[1]},
+        .paint = cyan
+    };
+    vgerRender(vger, &rect);
 
     vgerPrim dot = {
         .type = vgerCircle,
         .radius = 5,
-        .cvs = {p},
+        .cvs = { {0,0} },
         .paint = magenta
     };
-
     vgerRender(vger, &dot);
 
-    vgerSave(vger);
-    vgerTranslate(vger, p);
     vgerRenderText(vger, "Center|Middle", float4(1), VGER_ALIGN_CENTER | VGER_ALIGN_MIDDLE);
     vgerRestore(vger);
 
