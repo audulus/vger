@@ -315,7 +315,7 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
 
     vgerSave(vger);
     vgerTranslate(vger, float2{100,100});
-    vgerRenderText(vger, "This is a test.", float4{0,1,1,1});
+    vgerRenderText(vger, "This is a test.", float4{0,1,1,1}, VGER_ALIGN_LEFT);
     vgerRestore(vger);
 
     auto commandBuffer = [queue commandBuffer];
@@ -350,7 +350,7 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
     vgerSave(vger);
     vgerTranslate(vger, float2{100,100});
     vgerScale(vger, float2{10,10});
-    vgerRenderText(vger, "This is a test.", float4{0,1,1,1});
+    vgerRenderText(vger, "This is a test.", float4{0,1,1,1}, VGER_ALIGN_LEFT);
     vgerRestore(vger);
 
     auto commandBuffer = [queue commandBuffer];
@@ -569,7 +569,7 @@ void renderPaths(NVGcontext* vg, const std::vector<vgerPrim>& primArray) {
 static void textAt(vger* vger, float x, float y, const char* str) {
     vgerSave(vger);
     vgerTranslate(vger, float2{x, y});
-    vgerRenderText(vger, str, float4{0,1,1,1});
+    vgerRenderText(vger, str, float4{0,1,1,1}, VGER_ALIGN_LEFT);
     vgerRestore(vger);
 }
 

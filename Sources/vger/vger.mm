@@ -173,7 +173,7 @@ static float averageScale(const float3x3& M)
     return 0.5f * (length(M.columns[0].xy) + length(M.columns[1].xy));
 }
 
-void vgerRenderText(vger* vg, const char* str, float4 color) {
+void vgerRenderText(vger* vg, const char* str, float4 color, vgerAlign align) {
 
     auto paint = vgerColorPaint(color);
     auto scale = averageScale(vg->txStack.back());
@@ -209,6 +209,16 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
     auto& textInfo = vg->textCache[key];
     textInfo.lastFrame = vg->currentFrame;
 
+    float2 t = {0,0};
+
+    if(align & VGER_ALIGN_RIGHT) {
+        auto lineBounds = CTLineGetImageBounds(line, nil);
+        t.x = -lineBounds.size.width;
+    } else if(align & VGER_ALIGN_CENTER) {
+        auto lineBounds = CTLineGetImageBounds(line, nil);
+        t.x = -0.5 * lineBounds.size.width;
+    }
+
     NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
     for(id r in runs) {
         CTRunRef run = (__bridge CTRunRef)r;
@@ -238,10 +248,10 @@ void vgerRenderText(vger* vg, const char* str, float4 color) {
 
                 prim.paint.image = info.regionIndex;
 
-                prim.verts[0] = a;
-                prim.verts[1] = float2{b.x, a.y};
-                prim.verts[2] = float2{a.x, b.y};
-                prim.verts[3] = b;
+                prim.verts[0] = a + t;
+                prim.verts[1] = float2{b.x, a.y} + t;
+                prim.verts[2] = float2{a.x, b.y} + t;
+                prim.verts[3] = b + t;
                 prim.xform = vg->txStack.back();
 
                 float w = info.glyphBounds.size.width+2;
