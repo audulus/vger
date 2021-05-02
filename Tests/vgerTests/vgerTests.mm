@@ -569,6 +569,7 @@ void renderPaths(NVGcontext* vg, const std::vector<vgerPrim>& primArray) {
 static void textAt(vger* vger, float x, float y, const char* str) {
     vgerSave(vger);
     vgerTranslate(vger, float2{x, y});
+    vgerScale(vger, float2{2,2});
     vgerRenderText(vger, str, float4{0,1,1,1}, VGER_ALIGN_LEFT);
     vgerRestore(vger);
 }
