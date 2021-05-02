@@ -15,6 +15,14 @@ inline float min(float a, float b) {
     return a > b ? b : a;
 }
 
+inline float max(float a, float b) {
+    return a > b ? a : b;
+}
+
+inline float2 max(float2 a, float b) {
+    return simd_max(a, float2{b,b});
+}
+
 inline float clamp(float x, float a, float b) {
     if(x > b) x = b;
     if(x < a) x = a;
@@ -61,6 +69,16 @@ inline float sdArc(float2 p, float2 sca, float2 scb, float ra, float rb )
     p.x = abs(p.x);
     float k = (scb.y*p.x>scb.x*p.y) ? dot(p,scb) : length(p);
     return sqrt( dot(p,p) + ra*ra - 2.0*ra*k ) - rb;
+}
+
+inline float sdHorseshoe(float2 p, float2 c, float r, float2 w )
+{
+    p.x = abs(p.x);
+    float l = length(p);
+    p = float2x2{float2{-c.x, c.y},float2{c.y, c.x}}*p;
+    p = float2{(p.y>0.0)?p.x:l*sign(-c.x), (p.x>0.0)?p.y:l };
+    p = float2{p.x,abs(p.y-r)}-w;
+    return length(max(p,0.0f)) + min(0.0f,max(p.x,p.y));
 }
 
 inline float dot2(float2 v) {
