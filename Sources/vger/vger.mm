@@ -252,7 +252,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
                 float2 p = {float(r.origin.x), float(r.origin.y)};
                 float2 sz = {float(r.size.width), float(r.size.height)};
 
-                float2 a = p, b = p+sz;
+                float2 a = p+offset, b = a+sz;
 
                 float w = info.glyphBounds.size.width;
                 float h = info.glyphBounds.size.height;
@@ -265,10 +265,10 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
                     .type = vgerGlyph,
                     .paint = paint,
                     .verts = {
-                        a + offset,
-                        float2{b.x, a.y} + offset,
-                        float2{a.x, b.y} + offset,
-                        b + offset,
+                        a,
+                        float2{b.x, a.y},
+                        float2{a.x, b.y},
+                        b,
                     },
                     .texcoords = {
                         float2{GLYPH_MARGIN,   originY},
