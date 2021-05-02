@@ -65,7 +65,7 @@ inline float sdSegment(float2 p, float2 a, float2 b )
 
 inline float sdArc(float2 p, float2 sca, float2 scb, float ra, float rb )
 {
-    p *= float2x2{float2{sca.x,sca.y},float2{-sca.y,sca.x}};
+    p = p * float2x2{float2{sca.x,sca.y},float2{-sca.y,sca.x}};
     p.x = abs(p.x);
     float k = (scb.y*p.x>scb.x*p.y) ? dot(p,scb) : length(p);
     return sqrt( dot(p,p) + ra*ra - 2.0*ra*k ) - rb;
