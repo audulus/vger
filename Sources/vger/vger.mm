@@ -189,9 +189,9 @@ static float2 alignOffset(CTLineRef line, int align) {
     if(align & VGER_ALIGN_TOP) {
         t.y -= ascent;
     } else if(align & VGER_ALIGN_MIDDLE) {
-        t.y -= 0.5 * (ascent + descent);
+        t.y += 0.5 * (descent - ascent);
     } else if(align & VGER_ALIGN_BOTTOM) {
-        t.y -= descent;
+        t.y += descent;
     }
 
     return t;
