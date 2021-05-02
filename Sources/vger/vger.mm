@@ -143,7 +143,7 @@ int  vgerAddTexture(vger* vg, const uint8_t* data, int width, int height) {
 int vgerAddMTLTexture(vger* vg, id<MTLTexture> tex) {
     assert(tex);
     [vg->textures addObject:tex];
-    return vg->textures.count-1;
+    return int(vg->textures.count)-1;
 }
 
 void vgerDeleteTexture(vger* vg, int texID) {
