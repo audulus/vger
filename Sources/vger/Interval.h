@@ -15,7 +15,7 @@ struct Interval {
 
     bool intersects(Interval I) const
     {
-        return b >= I.a and a <= I.b;
+        return b > I.a and a < I.b;
     }
 
 };
