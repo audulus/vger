@@ -124,8 +124,9 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 
     if(prim.type == vgerPathFill) {
         int n = 0;
-        for(int i=prim.start;i<prim.start+prim.count-2;i+=2) {
-            n += bezierTest(cvs[i], cvs[i+1], cvs[i+2], in.t);
+        for(int i=0; i<prim.count; i++) {
+            int j = prim.start + 3*i;
+            n += bezierTest(cvs[j], cvs[j+1], cvs[j+2], in.t);
         }
         // XXX: no AA!
         return n % 2 ? color : 0;

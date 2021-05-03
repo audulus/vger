@@ -5,13 +5,13 @@
 
 #include <simd/simd.h>
 #include <vector>
+#include "Interval.h"
 
 struct vgerPathScanner {
 
     struct BezierSegment {
         vector_float2 cvs[3];
-        float yMin;
-        float yMax;
+        Interval yInterval;
 
         BezierSegment(vector_float2 a, vector_float2 b, vector_float2 c);
     };
@@ -19,8 +19,7 @@ struct vgerPathScanner {
     std::vector<BezierSegment> segments;
     std::vector<int> active;
     int index;
-    float yBegin;
-    float yEnd;
+    Interval yInterval;
 
     void begin(vector_float2* cvs, int count);
     bool next();

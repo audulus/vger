@@ -28,7 +28,7 @@
     XCTAssertEqual(scan.segments.size(), 4);
 
     while(scan.next()) {
-        if(scan.yEnd != FLT_MAX) {
+        if(scan.yInterval.b != FLT_MAX) {
             printf("active: ");
             for(int a : scan.active) {
                 printf("%d ", a);

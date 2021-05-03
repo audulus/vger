@@ -13,6 +13,7 @@
 #import "vgerRenderer.h"
 #import "vgerTextureManager.h"
 #import "vgerGlyphCache.h"
+#import "vgerPathScanner.h"
 #include <vector>
 #include <unordered_map>
 #include <string>
@@ -120,6 +121,9 @@ struct vger {
 
     /// Content scale factor.
     float devicePxRatio = 1.0;
+
+    /// For speeding up path rendering.
+    vgerPathScanner scan;
 
     vger() {
         device = MTLCreateSystemDefaultDevice();
@@ -361,26 +365,51 @@ void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max, int ali
 
 }
 
+bool scanPaths = false;
+
 void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
 
-    vgerPrim prim = {
-        .type = vgerPathFill,
-        .paint = paint,
-        .xform = vg->txStack.back(),
-        .start = vg->cvCount,
-        .count = count
-    };
+    if(scanPaths) {
 
-    if(vg->primCount < vg->maxPrims and vg->cvCount+count < vg->maxCvs) {
-        *vg->p = prim;
-        vg->p++;
-        vg->primCount++;
+        vg->scan.begin(cvs, count);
 
-        for(int i=0;i<count;++i) {
-            *vg->cv = cvs[i];
-            vg->cv++;
+        while(vg->scan.next()) {
+            if(vg->scan.yInterval.b != FLT_MAX) {
+                printf("active: %d\n", (int) vg->scan.active.size());
+            }
+
+            int n = vg->scan.active.size();
+
+            vgerPrim prim = {
+                .type = vgerPathFill,
+                .paint = paint,
+                .xform = vg->txStack.back(),
+                .start = vg->cvCount,
+                .count = n*3
+            };
         }
-        vg->cvCount += count;
+
+    } else {
+        vgerPrim prim = {
+            .type = vgerPathFill,
+            .paint = paint,
+            .xform = vg->txStack.back(),
+            .start = vg->cvCount,
+            .count = (count-1/2)
+        };
+
+        if(vg->primCount < vg->maxPrims and vg->cvCount+prim.count < vg->maxCvs) {
+            *vg->p = prim;
+            vg->p++;
+            vg->primCount++;
+
+            for(int i=0;i<count-2;i+=2) {
+                *vg->cv++ = cvs[i];
+                *vg->cv++ = cvs[i+1];
+                *vg->cv++ = cvs[i+2];
+            }
+            vg->cvCount += prim.count;
+        }
     }
 }
 

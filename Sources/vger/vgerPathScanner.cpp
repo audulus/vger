@@ -6,12 +6,12 @@
 
 vgerPathScanner::BezierSegment::BezierSegment(vector_float2 a, vector_float2 b, vector_float2 c) {
     cvs[0] = a; cvs[1] = b; cvs[2] = c;
-    yMin = std::min(a.y, std::min(b.y, c.y));
-    yMax = std::max(a.y, std::max(b.y, c.y));
+    yInterval.a = std::min(a.y, std::min(b.y, c.y));
+    yInterval.b = std::max(a.y, std::max(b.y, c.y));
 }
 
 bool operator<(const vgerPathScanner::BezierSegment& a, const vgerPathScanner::BezierSegment& b) {
-    return a.yMin < b.yMin;
+    return a.yInterval.a < b.yInterval.a;
 }
 
 void vgerPathScanner::begin(vector_float2 *cvs, int count) {
@@ -34,14 +34,15 @@ bool vgerPathScanner::next() {
     }
 
     active.clear();
-    active.push_back(index);
-    yBegin = segments[index].yMin;
-    yEnd = FLT_MAX;
+    yInterval.a = segments[index].yInterval.a;
+    yInterval.b = FLT_MAX;
 
     // Find segments which intersect.
-    for(int i = index+1; i < segments.size() and segments[i].yMin < segments[index].yMax; ++i) {
-        yEnd = std::min(yEnd, segments[i].yMax);
-        active.push_back(i);
+    for(int i = 0; i < segments.size(); ++i) {
+        if(segments[index].yInterval.intersects(segments[i].yInterval)) {
+            yInterval.b = std::min(yInterval.b, segments[i].yInterval.b);
+            active.push_back(i);
+        }
     }
 
     return true;
