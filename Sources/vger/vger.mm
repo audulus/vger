@@ -366,7 +366,9 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
     vgerPrim prim = {
         .type = vgerPathFill,
         .paint = paint,
-        .xform = vg->txStack.back()
+        .xform = vg->txStack.back(),
+        .start = vg->cvCount,
+        .count = count
     };
 
     if(vg->primCount < vg->maxPrims and vg->cvCount+count < vg->maxCvs) {
