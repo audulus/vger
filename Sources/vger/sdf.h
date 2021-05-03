@@ -359,4 +359,31 @@ inline float4 applyPaint(const DEVICE vgerPaint& paint, float2 p) {
 
 }
 
+// Intersect a bezier with a horizontal line.
+inline float2 bezierIntersect(float2 A, float2 B, float2 C, float y) {
+
+    // Quadratic bezier:
+    // f(t) = (1 - t) * (1 - t) * A + 2 * (1 - t) * t * B + t * t * C
+
+    // f(t).y = y. Solve for t:
+    // t = (-A + B +- Sqrt[B^2 - A C + A y - 2 B y + C y])/(-A + 2 B - C)
+
+    float a = A.y;
+    float b = B.y;
+    float c = C.y;
+
+    float d = b*b - a*c + a*y + 2*b*y + c*y;
+    if(d < 0) {
+        return float2{NAN, NAN};
+    }
+
+    float denom = -a + 2 * b + c;
+    if(denom == 0) {
+        return float2{NAN, NAN};
+    }
+
+    return float2{-a + b - sqrt(d), -a + b + sqrt(d)}/denom;
+
+}
+
 #endif /* sdf_h */
