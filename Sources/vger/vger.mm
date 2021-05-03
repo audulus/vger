@@ -88,6 +88,9 @@ struct vger {
     /// Cycle through 3 cv buffers for streaming.
     id<MTLBuffer> cvBuffers[3];
 
+    /// Pointer to the next cv to be saved in the buffer.
+    float2* cv;
+
     /// Number of cvs we've saved in the current cv buffer.
     int cvCount = 0;
 
@@ -153,6 +156,8 @@ void vgerBegin(vger* vg, float windowWidth, float windowHeight, float devicePxRa
     vg->curBuffer = (vg->curBuffer+1)%3;
     vg->p = (vgerPrim*) vg->primBuffers[vg->curBuffer].contents;
     vg->primCount = 0;
+    vg->cv = (float2*) vg->cvBuffers[vg->curBuffer].contents;
+    vg->cvCount = 0;
     vg->windowSize = {windowWidth, windowHeight};
     vg->devicePxRatio = devicePxRatio;
 }
@@ -354,6 +359,27 @@ void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max, int ali
     CFRelease(line);
     CFRelease(typesetter);
 
+}
+
+void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
+
+    vgerPrim prim = {
+        .type = vgerPathFill,
+        .paint = paint,
+        .xform = vg->txStack.back()
+    };
+
+    if(vg->primCount < vg->maxPrims and vg->cvCount+count < vg->maxCvs) {
+        *vg->p = prim;
+        vg->p++;
+        vg->primCount++;
+
+        for(int i=0;i<count;++i) {
+            *vg->cv = cvs[i];
+            vg->cv++;
+        }
+        vg->cvCount += count;
+    }
 }
 
 void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
