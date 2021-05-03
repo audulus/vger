@@ -57,6 +57,26 @@ using namespace simd;
     // Put teardown code here. This method is called after the invocation of each test method in the class.
 }
 
+- (void) render:(vger*)vg name:(NSString*) name {
+
+    auto commandBuffer = [queue commandBuffer];
+
+    vgerEncode(vg, commandBuffer, pass);
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder endEncoding];
+    #endif
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    showTexture(texture, name);
+
+}
+
 static void SplitBezier(float t,
                         simd_float2 cv[3],
                         simd_float2 a[3],
@@ -194,23 +214,9 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
 
     vgerRestore(vger);
 
-    auto commandBuffer = [queue commandBuffer];
-
-    vgerEncode(vger, commandBuffer, pass);
-
-    // Sync texture on macOS
-    #if TARGET_OS_OSX
-    auto blitEncoder = [commandBuffer blitCommandEncoder];
-    [blitEncoder synchronizeResource:texture];
-    [blitEncoder endEncoding];
-    #endif
-
-    [commandBuffer commit];
-    [commandBuffer waitUntilCompleted];
+    [self render:vger name:@"xform.png"];
 
     vgerDelete(vger);
-
-    showTexture(texture, @"xform.png");
 }
 
 - (void) testRects {
@@ -777,21 +783,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     auto paint = vgerLinearGradient(0, sz, float4{0,1,1,1}, float4{1,0,1,1});
     vgerFillPath(vger, cvs, n, paint);
 
-    auto commandBuffer = [queue commandBuffer];
-
-    vgerEncode(vger, commandBuffer, pass);
-
-    // Sync texture on macOS
-    #if TARGET_OS_OSX
-    auto blitEncoder = [commandBuffer blitCommandEncoder];
-    [blitEncoder synchronizeResource:texture];
-    [blitEncoder endEncoding];
-    #endif
-
-    [commandBuffer commit];
-    [commandBuffer waitUntilCompleted];
-
-    showTexture(texture, @"path_fill.png");
+    [self render:vger name:@"path_fill.png"];
 
     vgerDelete(vger);
 
