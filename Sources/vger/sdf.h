@@ -363,7 +363,12 @@ inline float4 applyPaint(const DEVICE vgerPaint& paint, float2 p) {
 
 }
 
-// Intersect a bezier with a horizontal line.
+/// Quadratic bezier curve.
+inline float2 bezier(float2 A, float2 B, float2 C, float t) {
+    return (1 - t) * (1 - t) * A + 2 * (1 - t) * t * B + t * t * C;
+}
+
+/// Intersect a bezier with a horizontal line.
 inline float2 bezierIntersect(float2 A, float2 B, float2 C, float y) {
 
     // Quadratic bezier:
@@ -376,18 +381,31 @@ inline float2 bezierIntersect(float2 A, float2 B, float2 C, float y) {
     float b = B.y;
     float c = C.y;
 
-    float d = b*b - a*c + a*y + 2*b*y + c*y;
+    float d = b*b - a*c + a*y - 2*b*y + c*y;
     if(d < 0) {
         return float2{NAN, NAN};
     }
 
-    float denom = -a + 2 * b + c;
+    float denom = -a + 2 * b - c;
     if(denom == 0) {
         return float2{NAN, NAN};
     }
 
     return float2{-a + b - sqrt(d), -a + b + sqrt(d)}/denom;
 
+}
+
+/// Returns number of intersections between quadratic bezier and x-axis ray starting at p.
+inline int bezierTest(float2 A, float2 B, float2 C, float2 p) {
+
+    int c = 0;
+    auto t = bezierIntersect(A, B, C, p.y);
+
+    for(int i=0;i<2;++i) {
+        c += !isnan(t[i]) && (t[i] >= 0.0) && (t[i] <= 1.0) && (bezier(A, B, C, t[i]).x > p.x);
+    }
+
+    return c;
 }
 
 #endif /* sdf_h */

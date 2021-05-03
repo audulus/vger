@@ -33,10 +33,10 @@
     XCTAssertTrue(length(t) < epsilon);
 
     t = bezierIntersect(float2{0,0}, float2{0,0}, float2{1,1}, 1.0);
-    XCTAssertTrue(length(t - float2{-1.0, 1.0}) < epsilon);
+    XCTAssertTrue(length(t - float2{1.0, -1.0}) < epsilon);
 
     t = bezierIntersect(float2{0,0}, float2{0,0}, float2{1,1}, 0.5);
-    XCTAssertTrue(length(t - float2{-sqrtf(2)/2, sqrtf(2)/2}) < epsilon);
+    XCTAssertTrue(length(t - float2{sqrtf(2)/2, -sqrtf(2)/2}) < epsilon);
 
     t = bezierIntersect(float2{0,0}, float2{0,0}, float2{1,1}, -1);
     XCTAssertTrue(isnan(t.x));
@@ -46,7 +46,16 @@
     XCTAssertTrue(length(t) < epsilon);
 
     t = bezierIntersect(float2{0,0}, float2{1,0}, float2{1,1}, 1.0);
-    XCTAssertTrue(length(t - float2{-1.0, 1.0}) < epsilon);
+    XCTAssertTrue(length(t - float2{1.0, -1.0}) < epsilon);
+
+    t = bezierIntersect(float2{0,0}, float2{1,1}, float2{2,0}, 0.1);
+
+    float2 x = bezier(float2{0,0}, float2{1,1}, float2{2,0}, 0.5);
+
+    XCTAssertEqual(bezierTest(float2{0,0}, float2{1,0}, float2{1,1}, float2{0, .5}), 1);
+    XCTAssertEqual(bezierTest(float2{0,0}, float2{1,0}, float2{1,1}, float2{0, -1}), 0);
+    XCTAssertEqual(bezierTest(float2{0,0}, float2{1,0}, float2{1,1}, float2{0, 2}), 0);
+    XCTAssertEqual(bezierTest(float2{0,0}, float2{1,1}, float2{2,0}, float2{0, .1}), 2);
 }
 
 @end
