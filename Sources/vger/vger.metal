@@ -83,6 +83,7 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
 
 fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
+                              const device float2* cvs,
                               texture2d<float, access::sample> tex,
                               texture2d<float, access::sample> glyphs) {
 
@@ -106,8 +107,6 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
     //    discard_fragment();
     //}
 
-    float fw = length(fwidth(in.t));
-
     float4 color;
 
     if(prim.paint.image == -1) {
@@ -122,6 +121,16 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
         color = tex.sample(textureSampler, t);
     }
 
+    if(prim.type == vgerPathFill) {
+        int n = 0;
+        for(int i=prim.start;i<prim.start+prim.count-2;i+=2) {
+            n += bezierTest(cvs[i], cvs[i+1], cvs[i+2], in.t);
+        }
+        // XXX: no AA!
+        return n % 2 ? color : 0;
+    }
+
+    float fw = length(fwidth(in.t));
     return mix(float4(color.rgb,0.1), color, 1.0-smoothstep(0,fw,d) );
 
 }

@@ -384,6 +384,7 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
     [vg->renderer encodeTo:buf
                       pass:pass
                      prims:vg->primBuffers[vg->curBuffer]
+                       cvs:vg->cvBuffers[vg->curBuffer]
                      count:vg->primCount
                   textures:vg->textures
               glyphTexture:[vg->glyphCache getAltas]

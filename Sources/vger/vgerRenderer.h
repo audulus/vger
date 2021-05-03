@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) encodeTo:(id<MTLCommandBuffer>) buffer
              pass:(MTLRenderPassDescriptor*) pass
             prims:(id<MTLBuffer>) primBuffer
+              cvs:(id<MTLBuffer>) cvBuffer
             count:(int)n
          textures:(NSArray<id<MTLTexture>>*)textures
      glyphTexture:(id<MTLTexture>)glyphTexture

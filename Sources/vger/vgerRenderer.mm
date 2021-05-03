@@ -70,6 +70,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 - (void) encodeTo:(id<MTLCommandBuffer>) buffer
              pass:(MTLRenderPassDescriptor*) pass
             prims:(id<MTLBuffer>) primBuffer
+              cvs:(id<MTLBuffer>) cvBuffer
             count:(int)n
          textures:(NSArray<id<MTLTexture>>*)textures
      glyphTexture:(id<MTLTexture>)glyphTexture
@@ -96,6 +97,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [enc setFragmentTexture:glyphTexture atIndex:1];
     [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
     [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
+    [enc setFragmentBuffer:cvBuffer offset:0 atIndex:1];
 
     vgerPrim* p = (vgerPrim*) primBuffer.contents;
     int currentTexture = -1;
