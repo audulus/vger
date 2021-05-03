@@ -374,9 +374,9 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
         vg->scan.begin(cvs, count);
 
         while(vg->scan.next()) {
-            if(vg->scan.yInterval.b != FLT_MAX) {
-                printf("active: %d\n", (int) vg->scan.active.size());
-            }
+            if(vg->scan.yInterval.b == FLT_MAX) continue;
+
+            // printf("active: %d\n", (int) vg->scan.active.size());
 
             int n = vg->scan.active.size();
 
@@ -387,9 +387,51 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
                 .start = vg->cvCount,
                 .count = n*3
             };
+
+            if(vg->primCount < vg->maxPrims and vg->cvCount+prim.count < vg->maxCvs) {
+
+                Interval xInt{FLT_MAX, -FLT_MAX};
+
+                for(auto a : vg->scan.active) {
+
+                    for(int i=0;i<3;++i) {
+                        auto p = vg->scan.segments[a].cvs[i];
+                        *vg->cv++ = p;
+                        xInt.a = std::min(xInt.a, p.x);
+                        xInt.b = std::max(xInt.b, p.x);
+                    }
+
+                }
+
+                printf("yInterval: %f %f\n", vg->scan.yInterval.a, vg->scan.yInterval.b);
+
+                vg->cvCount += prim.count;
+
+                BBox bounds;
+                bounds.min.x = xInt.a;
+                bounds.max.x = xInt.b;
+                bounds.min.y = vg->scan.yInterval.a;
+                bounds.max.y = vg->scan.yInterval.b;
+
+                // Calculate the prim vertices at this stage,
+                // as we do for glyphs.
+                prim.texcoords[0] = bounds.min;
+                prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
+                prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
+                prim.texcoords[3] = bounds.max;
+
+                for(int i=0;i<4;++i) {
+                    prim.verts[i] = prim.texcoords[i];
+                }
+
+                *vg->p = prim;
+                vg->p++;
+                vg->primCount++;
+            }
         }
 
     } else {
+
         vgerPrim prim = {
             .type = vgerPathFill,
             .paint = paint,
