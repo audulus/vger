@@ -720,7 +720,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
         .width = 0.0,
         .radius = 0,
         .cvs = {cvs[0], cvs[1]},
-        .paint = cyan
+        .paint = vgerColorPaint(float4{.2,.2,.2,1.0})
     };
     vgerRender(vger, &rect);
 
