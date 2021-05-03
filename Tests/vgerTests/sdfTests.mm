@@ -41,6 +41,12 @@
     t = bezierIntersect(float2{0,0}, float2{0,0}, float2{1,1}, -1);
     XCTAssertTrue(isnan(t.x));
     XCTAssertTrue(isnan(t.y));
+
+    t = bezierIntersect(float2{0,0}, float2{1,0}, float2{1,1}, 0.0);
+    XCTAssertTrue(length(t) < epsilon);
+
+    t = bezierIntersect(float2{0,0}, float2{1,0}, float2{1,1}, 1.0);
+    XCTAssertTrue(length(t - float2{-1.0, 1.0}) < epsilon);
 }
 
 @end
