@@ -28,7 +28,11 @@ typedef enum {
     vgerWire,
 
     /// Text rendering.
-    vgerGlyph
+    vgerGlyph,
+
+    /// Path fills.
+    vgerPathFill
+
 } vgerPrimType;
 
 typedef struct {

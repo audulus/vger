@@ -275,6 +275,8 @@ inline float sdPrim(const DEVICE vgerPrim& prim, float2 p) {
         case vgerWire:
             d = sdWire(p, prim.cvs[0], prim.cvs[1]);
             break;
+        default:
+            break;
     }
     return d;
 }
@@ -343,6 +345,8 @@ inline OBB sdPrimOBB(const DEVICE vgerPrim& prim) {
             auto r = prim.radius;
             return { o-r, {2*r, 0}, {0, 2*r}};
         }
+        default:
+            break;
     }
     return {0,0};
 }
