@@ -19,6 +19,8 @@ struct vgerPathScanner {
     std::vector<BezierSegment> segments;
     std::vector<int> active;
     int index;
+    float yBegin;
+    float yEnd;
 
     void begin(vector_float2* cvs, int count);
     bool next();

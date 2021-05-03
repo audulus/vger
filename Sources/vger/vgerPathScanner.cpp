@@ -34,9 +34,13 @@ bool vgerPathScanner::next() {
     }
 
     active.clear();
+    active.push_back(index);
+    yBegin = segments[index].yMin;
+    yEnd = FLT_MAX;
 
     // Find segments which intersect.
-    for(int i = index; i < segments.size() and segments[i].yMin < segments[index].yMax; ++i) {
+    for(int i = index+1; i < segments.size() and segments[i].yMin < segments[index].yMax; ++i) {
+        yEnd = std::min(yEnd, segments[i].yMax);
         active.push_back(i);
     }
 

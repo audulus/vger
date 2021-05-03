@@ -28,14 +28,16 @@
     XCTAssertEqual(scan.segments.size(), 4);
 
     while(scan.next()) {
-        printf("active: ");
-        for(int a : scan.active) {
-            auto s = scan.segments[a];
-            printf("{ {%f %f} {%f %f} {%f %f} } ", s.cvs[0].x, s.cvs[0].y,
-                   s.cvs[1].x, s.cvs[1].y, s.cvs[2].x, s.cvs[2].y);
+        if(scan.yEnd != FLT_MAX) {
+            printf("active: ");
+            for(int a : scan.active) {
+                printf("%d ", a);
+            }
+            printf("\n");
         }
-        printf("\n");
     }
+
+    printf("done\n");
 }
 
 @end
