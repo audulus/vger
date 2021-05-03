@@ -47,7 +47,7 @@ kernel void vger_bounds(uint gid [[thread_position_in_grid]],
     if(gid < primCount) {
         device auto& p = prims[gid];
 
-        if(p.type != vgerGlyph) {
+        if(p.type != vgerGlyph and p.type != vgerPathFill) {
 
             auto bounds = sdPrimBounds(p, cvs).inset(-1);
             p.texcoords[0] = bounds.min;

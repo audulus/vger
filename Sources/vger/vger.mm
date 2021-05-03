@@ -441,9 +441,6 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
         };
 
         if(vg->primCount < vg->maxPrims and vg->cvCount+prim.count < vg->maxCvs) {
-            *vg->p = prim;
-            vg->p++;
-            vg->primCount++;
 
             for(int i=0;i<count-2;i+=2) {
                 *vg->cv++ = cvs[i];
@@ -451,6 +448,20 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
                 *vg->cv++ = cvs[i+2];
             }
             vg->cvCount += prim.count;
+
+            auto bounds = sdPrimBounds(prim, (float2*) vg->cvBuffers[vg->curBuffer].contents).inset(-1);
+            prim.texcoords[0] = bounds.min;
+            prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
+            prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
+            prim.texcoords[3] = bounds.max;
+
+            for(int i=0;i<4;++i) {
+                prim.verts[i] = prim.texcoords[i];
+            }
+
+            *vg->p = prim;
+            vg->p++;
+            vg->primCount++;
         }
     }
 }

@@ -770,11 +770,12 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     int w = 512, h = 512;
     float2 sz = {float(w),float(h)};
 
-    constexpr int n = 100;
+    constexpr int n = 15;
     float2 cvs[n];
-    for(int i=0;i<n;++i) {
+    for(int i=0;i<n-1;++i) {
         cvs[i] = sz * rand2();
     }
+    cvs[n-1] = cvs[0];
 
     auto vger = vgerNew();
 
