@@ -74,7 +74,7 @@ struct vger {
     id<MTLBuffer> primBuffers[3];
 
     /// The prim buffer we're currently using.
-    int curPrimBuffer = 0;
+    int curBuffer = 0;
 
     /// Pointer to the next prim to be saved in the buffer.
     vgerPrim* p;
@@ -84,6 +84,15 @@ struct vger {
 
     /// Prim buffer capacity.
     int maxPrims = 16384;
+
+    /// Cycle through 3 cv buffers for streaming.
+    id<MTLBuffer> cvBuffers[3];
+
+    /// Number of cvs we've saved in the current cv buffer.
+    int cvCount = 0;
+
+    /// CV buffer capacity.
+    int maxCvs = 16384;
 
     /// Atlas for finding glyph images.
     vgerGlyphCache* glyphCache;
@@ -117,6 +126,9 @@ struct vger {
             primBuffers[i] = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
                                            options:MTLResourceStorageModeShared];
             primBuffers[i].label = @"prim buffer";
+            cvBuffers[i] = [device newBufferWithLength:maxCvs * sizeof(float2)
+                                           options:MTLResourceStorageModeShared];
+            cvBuffers[i].label = @"cv buffer";
         }
         txStack.push_back(matrix_identity_float3x3);
 
@@ -138,8 +150,8 @@ void vgerDelete(vger* vg) {
 }
 
 void vgerBegin(vger* vg, float windowWidth, float windowHeight, float devicePxRatio) {
-    vg->curPrimBuffer = (vg->curPrimBuffer+1)%3;
-    vg->p = (vgerPrim*) vg->primBuffers[vg->curPrimBuffer].contents;
+    vg->curBuffer = (vg->curBuffer+1)%3;
+    vg->p = (vgerPrim*) vg->primBuffers[vg->curBuffer].contents;
     vg->primCount = 0;
     vg->windowSize = {windowWidth, windowHeight};
     vg->devicePxRatio = devicePxRatio;
@@ -358,7 +370,7 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
     [vg->glyphCache update:buf];
 
     auto glyphRects = [vg->glyphCache getRects];
-    auto primp = (vgerPrim*) vg->primBuffers[vg->curPrimBuffer].contents;
+    auto primp = (vgerPrim*) vg->primBuffers[vg->curBuffer].contents;
     for(int i=0;i<vg->primCount;++i) {
         auto& prim = primp[i];
         if(prim.type == vgerGlyph) {
@@ -371,7 +383,7 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
 
     [vg->renderer encodeTo:buf
                       pass:pass
-                     prims:vg->primBuffers[vg->curPrimBuffer]
+                     prims:vg->primBuffers[vg->curBuffer]
                      count:vg->primCount
                   textures:vg->textures
               glyphTexture:[vg->glyphCache getAltas]
