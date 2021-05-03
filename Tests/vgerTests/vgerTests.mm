@@ -144,6 +144,12 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
         vgerRender(vg, primArray+i);
     }
 
+    vgerSave(vg);
+    vgerScale(vg, float2{100, 100});
+    float2 cvs2[] = {0, {1,0}, {1,1}, {0,1}, {0, 2} };
+    vgerFillPath(vg, cvs2, 5, white);
+    vgerRestore(vg);
+
     auto commandBuffer = [queue commandBuffer];
 
     vgerEncode(vg, commandBuffer, pass);
