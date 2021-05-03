@@ -106,6 +106,9 @@ struct vger {
     /// We can't insert nil into textures, so use a tiny texture instead.
     id<MTLTexture> nullTexture;
 
+    /// Content scale factor.
+    float devicePxRatio = 1.0;
+
     vger() {
         device = MTLCreateSystemDefaultDevice();
         renderer = [[vgerRenderer alloc] initWithDevice:device];
@@ -139,6 +142,7 @@ void vgerBegin(vger* vg, float windowWidth, float windowHeight, float devicePxRa
     vg->p = (vgerPrim*) vg->primBuffers[vg->curPrimBuffer].contents;
     vg->primCount = 0;
     vg->windowSize = {windowWidth, windowHeight};
+    vg->devicePxRatio = devicePxRatio;
 }
 
 int  vgerAddTexture(vger* vg, const uint8_t* data, int width, int height) {
@@ -220,7 +224,7 @@ static float2 alignOffset(CTLineRef line, int align) {
 void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
 
     auto paint = vgerColorPaint(color);
-    auto scale = averageScale(vg->txStack.back());
+    auto scale = averageScale(vg->txStack.back()) * vg->devicePxRatio;
     auto key = TextLayoutKey{std::string(str), scale, align};
 
     // Do we already have text in the cache?
