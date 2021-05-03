@@ -84,7 +84,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     bounds.label = @"bounds encoder";
     [bounds setComputePipelineState:boundsPipeline];
     [bounds setBuffer:primBuffer offset:0 atIndex:0];
-    [bounds setBytes:&n length:sizeof(uint) atIndex:1];
+    [bounds setBuffer:cvBuffer offset:0 atIndex:1];
+    [bounds setBytes:&n length:sizeof(uint) atIndex:2];
     [bounds dispatchThreadgroups:MTLSizeMake(n/128+1, 1, 1)
           threadsPerThreadgroup:MTLSizeMake(128, 1, 1)];
     [bounds endEncoding];

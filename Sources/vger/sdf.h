@@ -206,7 +206,7 @@ struct BBox {
     float2 size() const { return max - min; }
 };
 
-inline BBox sdPrimBounds(const DEVICE vgerPrim& prim) {
+inline BBox sdPrimBounds(const DEVICE vgerPrim& prim, const DEVICE float2* cvs) {
     BBox b;
     switch(prim.type) {
         case vgerBezier:
@@ -236,6 +236,15 @@ inline BBox sdPrimBounds(const DEVICE vgerPrim& prim) {
                 b.min = min(b.min, prim.cvs[i]);
                 b.max = max(b.max, prim.cvs[i]);
             }
+            break;
+        }
+        case vgerPathFill: {
+            b = {FLT_MAX, -FLT_MAX};
+            for(int i=prim.start;i<prim.start+prim.count-2;i+=2) {
+                b.min = min(b.min, cvs[i]);
+                b.max = max(b.max, cvs[i]);
+            }
+            break;
         }
     }
     return b.inset(-prim.width);

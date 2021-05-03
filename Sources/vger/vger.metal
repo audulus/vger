@@ -40,15 +40,16 @@ kernel void vger_prune(uint gid [[thread_position_in_grid]],
 }
 
 kernel void vger_bounds(uint gid [[thread_position_in_grid]],
-                       device vgerPrim* prims,
-                       constant uint& primCount) {
+                        device vgerPrim* prims,
+                        const device float2* cvs,
+                        constant uint& primCount) {
 
     if(gid < primCount) {
         device auto& p = prims[gid];
 
         if(p.type != vgerGlyph) {
 
-            auto bounds = sdPrimBounds(p).inset(-1);
+            auto bounds = sdPrimBounds(p, cvs).inset(-1);
             p.texcoords[0] = bounds.min;
             p.texcoords[1] = float2{bounds.max.x, bounds.min.y};
             p.texcoords[2] = float2{bounds.min.x, bounds.max.y};
