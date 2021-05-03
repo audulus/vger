@@ -62,6 +62,9 @@ typedef struct {
     
     /// Control vertices.
     vector_float2 cvs[8];
+
+    /// Start of the control vertices, if they're in a separate buffer.
+    int start;
     
     /// Number of control vertices (only for vgerCurve)
     int count;
