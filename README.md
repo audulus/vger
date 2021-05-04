@@ -2,6 +2,8 @@
 
 vger is a vector graphics renderer which renders a limited set of primitives, but does so almost entirely on the GPU. Works on iOS and macOS.
 
+I was previously using nanovg for Audulus, but it was consuming too much CPU for an immediate mode UI.
+
 <img src="demo.png" alt="demo" width="256" height="256">
 
 Each primitive can be filled with a solid color, gradient, or texture.
@@ -11,6 +13,16 @@ Here's an early screenshot from vger in use for Audulus:
 <img src="bootstrap.png">
 
 The rectangles around primitives are for debugging drawing areas.
+
+## Status
+
+- Quadratic bezier strokes ✅
+- Round Rectangles ✅ (need strokes)
+- Circles ✅
+- Line segments ✅ (need square ends for Audulus)
+- Arcs ✅ (need square ends for Audulus)
+- Text ✅ (Audulus only uses one font, but could add support for more if anyone is interested)
+- Path Fills: need to fix some artifacts. Haven't done AA yet.
 
 ## Installation
 
