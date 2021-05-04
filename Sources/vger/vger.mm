@@ -436,7 +436,7 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
             .paint = paint,
             .xform = vg->txStack.back(),
             .start = vg->cvCount,
-            .count = (count-1/2),
+            .count = (count-1)/2,
             .width = 0
         };
 
