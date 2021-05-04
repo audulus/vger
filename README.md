@@ -2,7 +2,7 @@
 
 vger is a vector graphics renderer which renders a limited set of primitives, but does so almost entirely on the GPU. Works on iOS and macOS.
 
-I was previously using nanovg for Audulus, but it was consuming too much CPU for an immediate mode UI.
+I was previously using nanovg for Audulus, but it was consuming too much CPU for an immediate mode UI. I'd guess that for most workloads, nanovg would be faster and more capable, but for Audulus, vger maintains 60fps while nanovg falls to 30fps because of CPU-side path tessellation, and other overhead (vger renders analytically without tessellation, leaning heavily on the fragment shader).
 
 <img src="demo.png" alt="demo" width="256" height="256">
 
