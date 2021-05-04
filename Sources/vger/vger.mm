@@ -365,7 +365,7 @@ void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max, int ali
 
 }
 
-bool scanPaths = false;
+bool scanPaths = true;
 
 void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
 
@@ -384,15 +384,16 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
                 .paint = paint,
                 .xform = vg->txStack.back(),
                 .start = vg->cvCount,
-                .count = n*3
+                .count = n
             };
 
-            if(vg->primCount < vg->maxPrims and vg->cvCount+prim.count < vg->maxCvs) {
+            if(vg->primCount < vg->maxPrims and vg->cvCount+n*3 < vg->maxCvs) {
 
                 Interval xInt{FLT_MAX, -FLT_MAX};
 
                 for(auto a : vg->scan.active) {
 
+                    assert(a < vg->scan.segments.size());
                     for(int i=0;i<3;++i) {
                         auto p = vg->scan.segments[a].cvs[i];
                         *(vg->cv++) = p;
@@ -404,7 +405,7 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
 
                 printf("yInterval: %f %f\n", vg->scan.yInterval.a, vg->scan.yInterval.b);
 
-                vg->cvCount += prim.count;
+                vg->cvCount += n*3;
 
                 BBox bounds;
                 bounds.min.x = xInt.a;
