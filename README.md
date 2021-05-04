@@ -30,7 +30,7 @@ To add vger to your Xcode project, select File -> Swift Packages -> Add Package 
 
 Create a rendering context using `vgerNew()`.
 
-Then call `vgerRenderPrim` and `vgerRenderText` to store drawing commands. See `vger.h` for transformation functions.
+Then call `vgerRenderPrim` and `vgerRenderText` to store drawing commands. See [`vger.h`](https://github.com/audulus/vger/blob/main/Sources/vger/include/vger.h) for transformation functions.
 
 Finally, call `vgerEncode` to encode rendering commands to a `MTLCommandBuffer`.
 
