@@ -2,7 +2,7 @@
 
 vger is a vector graphics renderer which renders a limited set of primitives, but does so almost entirely on the GPU. Works on iOS and macOS.
 
-I was previously using nanovg for Audulus, but it was consuming too much CPU for an immediate mode UI. I'd guess that for most workloads, nanovg would be faster and more capable, but for Audulus, vger maintains 60fps while nanovg falls to 30fps because of CPU-side path tessellation, and other overhead (vger renders analytically without tessellation, leaning heavily on the fragment shader).
+I was previously using nanovg for Audulus, but it was consuming too much CPU for an immediate mode UI. I'd guess that for most workloads, nanovg would be faster and more capable, but for Audulus, vger maintains 60fps while nanovg falls to 30fps on my iPad because of CPU-side path tessellation, and other overhead (vger renders analytically without tessellation, leaning heavily on the fragment shader).
 
 <img src="demo.png" alt="demo" width="256" height="256">
 
@@ -30,7 +30,9 @@ To add vger to your Xcode project, select File -> Swift Packages -> Add Package 
 
 Create a rendering context using `vgerNew()`.
 
-Then call `vgerRenderPrim` and `vgerRenderText` to store drawing commands. See [`vger.h`](https://github.com/audulus/vger/blob/main/Sources/vger/include/vger.h) for transformation functions.
+Then call `vgerRenderPrim` and `vgerRenderText` to store drawing commands. vger doesn't support arbitrary path fills and strokes, instead focusing on primitives that can be easily rendered on the GPU.
+
+See [`vger.h`](https://github.com/audulus/vger/blob/main/Sources/vger/include/vger.h) for the complete API.
 
 Finally, call `vgerEncode` to encode rendering commands to a `MTLCommandBuffer`.
 
