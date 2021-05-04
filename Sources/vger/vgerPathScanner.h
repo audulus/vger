@@ -5,20 +5,28 @@
 
 #include <simd/simd.h>
 #include <vector>
+#include <set>
 #include "Interval.h"
 
 struct vgerPathScanner {
 
-    struct BezierSegment {
+    struct Segment {
         vector_float2 cvs[3];
         Interval yInterval;
 
-        BezierSegment(vector_float2 a, vector_float2 b, vector_float2 c);
+        Segment(vector_float2 a, vector_float2 b, vector_float2 c);
     };
 
-    std::vector<BezierSegment> segments;
-    std::vector<int> active;
-    int index;
+    struct Node {
+        float y;
+        int seg;
+        bool end;
+    };
+
+    std::vector<Segment> segments;
+    std::vector<Node> nodes;
+    std::set<int> active; // active segments
+    int index = 0; // current node index
     Interval yInterval;
 
     void begin(vector_float2* cvs, int count);
