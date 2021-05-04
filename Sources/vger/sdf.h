@@ -261,7 +261,7 @@ inline float sdPrim(const DEVICE vgerPrim& prim, float2 p) {
             d = sdCircle(p - prim.cvs[0], prim.radius);
             break;
         case vgerArc:
-            d = sdArc(p - prim.cvs[0], prim.cvs[1], prim.cvs[2], prim.radius, prim.width);
+            d = sdArc(p - prim.cvs[0], prim.cvs[1], prim.cvs[2], prim.radius, prim.width/2);
             break;
         case vgerRect:
         case vgerGlyph: {
