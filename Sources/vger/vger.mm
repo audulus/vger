@@ -436,17 +436,18 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
             .paint = paint,
             .xform = vg->txStack.back(),
             .start = vg->cvCount,
-            .count = (count-1/2)
+            .count = (count-1/2),
+            .width = 0
         };
 
-        if(vg->primCount < vg->maxPrims and vg->cvCount+prim.count < vg->maxCvs) {
+        if(vg->primCount < vg->maxPrims and vg->cvCount+3*prim.count < vg->maxCvs) {
 
             for(int i=0;i<count-2;i+=2) {
                 *(vg->cv++) = cvs[i];
                 *(vg->cv++) = cvs[i+1];
                 *(vg->cv++) = cvs[i+2];
             }
-            vg->cvCount += prim.count;
+            vg->cvCount += 3*prim.count;
 
             auto bounds = sdPrimBounds(prim, (float2*) vg->cvBuffers[vg->curBuffer].contents).inset(-1);
             prim.texcoords[0] = bounds.min;
