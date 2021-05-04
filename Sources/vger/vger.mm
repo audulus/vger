@@ -431,23 +431,34 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
 
     } else {
 
+        bool closed = simd_equal(cvs[0], cvs[count-1]);
+
         vgerPrim prim = {
             .type = vgerPathFill,
             .paint = paint,
             .xform = vg->txStack.back(),
             .start = vg->cvCount,
-            .count = (count-1)/2,
+            .count = (count-1)/2 + !closed,
             .width = 0
         };
 
-        if(vg->primCount < vg->maxPrims and vg->cvCount+3*prim.count < vg->maxCvs) {
+        if(vg->primCount < vg->maxPrims and vg->cvCount+3*prim.count+3*(!closed) < vg->maxCvs) {
 
             for(int i=0;i<count-2;i+=2) {
                 *(vg->cv++) = cvs[i];
                 *(vg->cv++) = cvs[i+1];
                 *(vg->cv++) = cvs[i+2];
             }
-            vg->cvCount += 3*prim.count;
+
+            if(!closed) {
+                auto end = cvs[count-1];
+                auto start = cvs[0];
+                *(vg->cv++) = end;
+                *(vg->cv++) = (start + end)/2;
+                *(vg->cv++) = start;
+            }
+
+            vg->cvCount += 3*prim.count + 3*(!closed);
 
             auto bounds = sdPrimBounds(prim, (float2*) vg->cvBuffers[vg->curBuffer].contents).inset(-1);
             prim.texcoords[0] = bounds.min;
