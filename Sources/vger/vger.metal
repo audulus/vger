@@ -129,7 +129,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
             n += bezierTest(cvs[j], cvs[j+1], cvs[j+2], in.t);
         }
         // XXX: no AA!
-        return n % 2 ? color : 0;
+        return n % 2 ? color : float4(color.rgb, 0.1);
     }
 
     float fw = length(fwidth(in.t));
