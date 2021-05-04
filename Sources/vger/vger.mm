@@ -395,7 +395,7 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
 
                     for(int i=0;i<3;++i) {
                         auto p = vg->scan.segments[a].cvs[i];
-                        *vg->cv++ = p;
+                        *(vg->cv++) = p;
                         xInt.a = std::min(xInt.a, p.x);
                         xInt.b = std::max(xInt.b, p.x);
                     }
@@ -423,8 +423,7 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
                     prim.verts[i] = prim.texcoords[i];
                 }
 
-                *vg->p = prim;
-                vg->p++;
+                *(vg->p++) = prim;
                 vg->primCount++;
             }
         }
@@ -442,9 +441,9 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
         if(vg->primCount < vg->maxPrims and vg->cvCount+prim.count < vg->maxCvs) {
 
             for(int i=0;i<count-2;i+=2) {
-                *vg->cv++ = cvs[i];
-                *vg->cv++ = cvs[i+1];
-                *vg->cv++ = cvs[i+2];
+                *(vg->cv++) = cvs[i];
+                *(vg->cv++) = cvs[i+1];
+                *(vg->cv++) = cvs[i+2];
             }
             vg->cvCount += prim.count;
 
@@ -458,8 +457,7 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
                 prim.verts[i] = prim.texcoords[i];
             }
 
-            *vg->p = prim;
-            vg->p++;
+            *(vg->p++) = prim;
             vg->primCount++;
         }
     }
