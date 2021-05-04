@@ -450,8 +450,6 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
         if(vg->primCount < vg->maxPrims and vg->cvCount+3*prim.count+3*(!closed) < vg->maxCvs) {
 
             for(int i=0;i<count-2;i+=2) {
-                *(vg->cv++) = cvs[i];
-                *(vg->cv++) = cvs[i+1];
                 vg->addCV(cvs[i]);
                 vg->addCV(cvs[i+1]);
                 vg->addCV(cvs[i+2]);
