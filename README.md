@@ -12,8 +12,6 @@ Here's an early screenshot from vger in use for Audulus:
 
 <img src="bootstrap.png">
 
-The rectangles around primitives are for debugging drawing areas.
-
 ## Status
 
 - Quadratic bezier strokes ✅
