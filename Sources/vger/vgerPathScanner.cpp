@@ -4,10 +4,6 @@
 #include <cmath>
 #include <cfloat>
 
-vgerPathScanner::Segment::Segment(vector_float2 a, vector_float2 b, vector_float2 c) {
-    cvs[0] = a; cvs[1] = b; cvs[2] = c;
-}
-
 Interval vgerPathScanner::Segment::yInterval() const {
     return { std::min(cvs[0].y, std::min(cvs[1].y, cvs[2].y)),
         std::max(cvs[0].y, std::max(cvs[1].y, cvs[2].y))
