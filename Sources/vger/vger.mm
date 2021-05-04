@@ -146,6 +146,11 @@ struct vger {
 
         assert(device.argumentBuffersSupport == MTLArgumentBuffersTier2);
     }
+
+    void addCV(float2 p) {
+        *(cv++) = p;
+        cvCount++;
+    }
 };
 
 vger* vgerNew() {
@@ -447,18 +452,18 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
             for(int i=0;i<count-2;i+=2) {
                 *(vg->cv++) = cvs[i];
                 *(vg->cv++) = cvs[i+1];
-                *(vg->cv++) = cvs[i+2];
+                vg->addCV(cvs[i]);
+                vg->addCV(cvs[i+1]);
+                vg->addCV(cvs[i+2]);
             }
 
             if(!closed) {
                 auto end = cvs[count-1];
                 auto start = cvs[0];
-                *(vg->cv++) = end;
-                *(vg->cv++) = (start + end)/2;
-                *(vg->cv++) = start;
+                vg->addCV(end);
+                vg->addCV((start+end)/2);
+                vg->addCV(start);
             }
-
-            vg->cvCount += 3*prim.count + 3*(!closed);
 
             auto bounds = sdPrimBounds(prim, (float2*) vg->cvBuffers[vg->curBuffer].contents).inset(-1);
             prim.texcoords[0] = bounds.min;
