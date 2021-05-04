@@ -155,6 +155,8 @@ struct vger {
     void fillPath(float2* cvs, int count, vgerPaint paint);
 
     void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
+
+    void renderText(const char* str, float4 color, int align);
 };
 
 vger* vgerNew() {
@@ -252,23 +254,27 @@ static float2 alignOffset(CTLineRef line, int align) {
 }
 
 void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
+    vg->renderText(str, color, align);
+}
+
+void vger::renderText(const char* str, float4 color, int align) {
 
     auto paint = vgerColorPaint(color);
-    auto scale = averageScale(vg->txStack.back()) * vg->devicePxRatio;
+    auto scale = averageScale(txStack.back()) * devicePxRatio;
     auto key = TextLayoutKey{std::string(str), scale, align};
 
     // Do we already have text in the cache?
-    auto iter = vg->textCache.find(key);
-    if(iter != vg->textCache.end()) {
+    auto iter = textCache.find(key);
+    if(iter != textCache.end()) {
         // Copy prims to output.
         auto& info = iter->second;
-        info.lastFrame = vg->currentFrame;
+        info.lastFrame = currentFrame;
         for(auto& prim : info.prims) {
-            if(vg->primCount < vg->maxPrims) {
-                *vg->p = prim;
-                vg->p->xform = vg->txStack.back();
-                vg->p++;
-                vg->primCount++;
+            if(primCount < maxPrims) {
+                *p = prim;
+                p->xform = txStack.back();
+                p++;
+                primCount++;
             }
         }
         return;
@@ -278,14 +284,14 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
 
     CFRange entire = CFRangeMake(0, 0);
 
-    auto attributes = @{ NSFontAttributeName : (__bridge id)[vg->glyphCache getFont] };
+    auto attributes = @{ NSFontAttributeName : (__bridge id)[glyphCache getFont] };
     auto string = [NSString stringWithUTF8String:str];
     auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
     auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
     auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
 
-    auto& textInfo = vg->textCache[key];
-    textInfo.lastFrame = vg->currentFrame;
+    auto& textInfo = textCache[key];
+    textInfo.lastFrame = currentFrame;
 
     auto offset = alignOffset(line, align);
 
@@ -294,12 +300,12 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
         CTRunRef run = (__bridge CTRunRef)r;
         size_t glyphCount = CTRunGetGlyphCount(run);
 
-        vg->glyphs.resize(glyphCount);
-        CTRunGetGlyphs(run, entire, vg->glyphs.data());
+        glyphs.resize(glyphCount);
+        CTRunGetGlyphs(run, entire, glyphs.data());
 
         for(int i=0;i<glyphCount;++i) {
 
-            auto info = [vg->glyphCache getGlyph:vg->glyphs[i] scale:scale];
+            auto info = [glyphCache getGlyph:glyphs[i] scale:scale];
             if(info.regionIndex != -1) {
 
                 CGRect r = CTRunGetImageBounds(run, nil, CFRangeMake(i, 1));
@@ -330,15 +336,15 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
                         float2{GLYPH_MARGIN,   originY-h},
                         float2{GLYPH_MARGIN+w, originY-h},
                     },
-                    .xform = vg->txStack.back()
+                    .xform = txStack.back()
                 };
 
                 textInfo.prims.push_back(prim);
 
-                if(vg->primCount < vg->maxPrims) {
-                    *vg->p = prim;
-                    vg->p++;
-                    vg->primCount++;
+                if(primCount < maxPrims) {
+                    *this->p = prim;
+                    this->p++;
+                    primCount++;
                 }
             }
         }
