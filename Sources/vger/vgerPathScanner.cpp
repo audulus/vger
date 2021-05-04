@@ -15,16 +15,25 @@ bool operator<(const vgerPathScanner::Segment& a, const vgerPathScanner::Segment
 }
 
 bool operator<(const vgerPathScanner::Node& a, const vgerPathScanner::Node& b) {
-    return a.y < b.y;
+    return std::tie(a.y, a.seg, a.end) < std::tie(b.y, b.seg, b.end);
 }
 
 void vgerPathScanner::begin(vector_float2 *cvs, int count) {
 
     segments.clear();
+    nodes.clear();
     index = 0;
+    active.clear();
 
     for(int i=0;i<count-2;i+=2) {
         segments.push_back({cvs[i], cvs[i+1], cvs[i+2]});
+    }
+
+    // Close the path if necessary.
+    auto start = segments.front().cvs[0];
+    auto end = segments.back().cvs[2];
+    if(!simd_equal(start, end)) {
+        segments.push_back({start, (start+end)/2, end});
     }
 
     for(int i=0;i<segments.size();++i) {

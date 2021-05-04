@@ -369,6 +369,10 @@ bool scanPaths = true;
 
 void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
 
+    if(count < 3) {
+        return;
+    }
+
     if(scanPaths) {
 
         vg->scan.begin(cvs, count);
