@@ -397,7 +397,7 @@ inline float2 bezierIntersect(float2 A, float2 B, float2 C, float y) {
 
     float denom = -a + 2 * b - c;
     if(denom == 0) {
-        return float2{NAN, NAN};
+        return float2{ -(-2*b + c + y) / (2 * (b-c)), NAN};
     }
 
     return float2{-a + b - sqrt(d), -a + b + sqrt(d)}/denom;

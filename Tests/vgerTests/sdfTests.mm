@@ -56,6 +56,9 @@
     XCTAssertEqual(bezierTest(float2{0,0}, float2{1,0}, float2{1,1}, float2{0, -1}), 0);
     XCTAssertEqual(bezierTest(float2{0,0}, float2{1,0}, float2{1,1}, float2{0, 2}), 0);
     XCTAssertEqual(bezierTest(float2{0,0}, float2{1,1}, float2{2,0}, float2{0, .1}), 2);
+
+    t = bezierIntersect(float2{0,0}, float2{0,1}, float2{0,2}, 1.0);
+    XCTAssertEqual(t[0], 0.5);
 }
 
 @end
