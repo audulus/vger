@@ -153,6 +153,8 @@ struct vger {
     }
 
     void fillPath(float2* cvs, int count, vgerPaint paint);
+
+    void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 };
 
 vger* vgerNew() {
@@ -484,21 +486,25 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint) {
 }
 
 void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
+    vg->encode(buf, pass);
+}
+
+void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
 
     // Prune the text cache.
-    for(auto it = begin(vg->textCache); it != end(vg->textCache);) {
-        if (it->second.lastFrame != vg->currentFrame) {
-            it = vg->textCache.erase(it);
+    for(auto it = begin(textCache); it != end(textCache);) {
+        if (it->second.lastFrame != currentFrame) {
+            it = textCache.erase(it);
         } else {
             ++it;
         }
     }
     
-    [vg->glyphCache update:buf];
+    [glyphCache update:buf];
 
-    auto glyphRects = [vg->glyphCache getRects];
-    auto primp = (vgerPrim*) vg->primBuffers[vg->curBuffer].contents;
-    for(int i=0;i<vg->primCount;++i) {
+    auto glyphRects = [glyphCache getRects];
+    auto primp = (vgerPrim*) primBuffers[curBuffer].contents;
+    for(int i=0;i<primCount;++i) {
         auto& prim = primp[i];
         if(prim.type == vgerGlyph) {
             auto r = glyphRects[prim.paint.image-1];
@@ -508,21 +514,21 @@ void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pas
         }
     }
 
-    [vg->renderer encodeTo:buf
+    [renderer encodeTo:buf
                       pass:pass
-                     prims:vg->primBuffers[vg->curBuffer]
-                       cvs:vg->cvBuffers[vg->curBuffer]
-                     count:vg->primCount
-                  textures:vg->textures
-              glyphTexture:[vg->glyphCache getAltas]
-                windowSize:vg->windowSize];
+                     prims:primBuffers[curBuffer]
+                       cvs:cvBuffers[curBuffer]
+                     count:primCount
+                  textures:textures
+              glyphTexture:[glyphCache getAltas]
+                windowSize:windowSize];
 
-    vg->currentFrame++;
+    currentFrame++;
 
     // Do we need to create a new glyph cache?
-    if(vg->glyphCache.usage > 0.8f) {
-        vg->glyphCache = [[vgerGlyphCache alloc] initWithDevice:vg->device];
-        vg->textCache.clear();
+    if(glyphCache.usage > 0.8f) {
+        glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
+        textCache.clear();
     }
 }
 
