@@ -151,6 +151,8 @@ struct vger {
         *(cv++) = p;
         cvCount++;
     }
+
+    void fillPath(float2* cvs, int count, vgerPaint paint);
 };
 
 vger* vgerNew() {
@@ -373,6 +375,10 @@ void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max, int ali
 bool scanPaths = true;
 
 void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
+    vg->fillPath(cvs, count, paint);
+}
+
+void vger::fillPath(float2* cvs, int count, vgerPaint paint) {
 
     if(count < 3) {
         return;
@@ -380,30 +386,30 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
 
     if(scanPaths) {
 
-        vg->scan.begin(cvs, count);
+        scan.begin(cvs, count);
 
-        while(vg->scan.next()) {
+        while(scan.next()) {
 
-            int n = vg->scan.active.size();
+            int n = scan.active.size();
 
             vgerPrim prim = {
                 .type = vgerPathFill,
                 .paint = paint,
-                .xform = vg->txStack.back(),
-                .start = vg->cvCount,
+                .xform = txStack.back(),
+                .start = cvCount,
                 .count = n
             };
 
-            if(vg->primCount < vg->maxPrims and vg->cvCount+n*3 < vg->maxCvs) {
+            if(primCount < maxPrims and cvCount+n*3 < maxCvs) {
 
                 Interval xInt{FLT_MAX, -FLT_MAX};
 
-                for(auto a : vg->scan.active) {
+                for(auto a : scan.active) {
 
-                    assert(a < vg->scan.segments.size());
+                    assert(a < scan.segments.size());
                     for(int i=0;i<3;++i) {
-                        auto p = vg->scan.segments[a].cvs[i];
-                        vg->addCV(p);
+                        auto p = scan.segments[a].cvs[i];
+                        addCV(p);
                         xInt.a = std::min(xInt.a, p.x);
                         xInt.b = std::max(xInt.b, p.x);
                     }
@@ -413,8 +419,8 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
                 BBox bounds;
                 bounds.min.x = xInt.a;
                 bounds.max.x = xInt.b;
-                bounds.min.y = vg->scan.yInterval.a;
-                bounds.max.y = vg->scan.yInterval.b;
+                bounds.min.y = scan.yInterval.a;
+                bounds.max.y = scan.yInterval.b;
 
                 // Calculate the prim vertices at this stage,
                 // as we do for glyphs.
@@ -427,8 +433,8 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
                     prim.verts[i] = prim.texcoords[i];
                 }
 
-                *(vg->p++) = prim;
-                vg->primCount++;
+                *(p++) = prim;
+                primCount++;
             }
         }
 
@@ -439,29 +445,29 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
         vgerPrim prim = {
             .type = vgerPathFill,
             .paint = paint,
-            .xform = vg->txStack.back(),
-            .start = vg->cvCount,
+            .xform = txStack.back(),
+            .start = cvCount,
             .count = (count-1)/2 + !closed,
             .width = 0
         };
 
-        if(vg->primCount < vg->maxPrims and vg->cvCount+3*prim.count+3*(!closed) < vg->maxCvs) {
+        if(primCount < maxPrims and cvCount+3*prim.count+3*(!closed) < maxCvs) {
 
             for(int i=0;i<count-2;i+=2) {
-                vg->addCV(cvs[i]);
-                vg->addCV(cvs[i+1]);
-                vg->addCV(cvs[i+2]);
+                addCV(cvs[i]);
+                addCV(cvs[i+1]);
+                addCV(cvs[i+2]);
             }
 
             if(!closed) {
                 auto end = cvs[count-1];
                 auto start = cvs[0];
-                vg->addCV(end);
-                vg->addCV((start+end)/2);
-                vg->addCV(start);
+                addCV(end);
+                addCV((start+end)/2);
+                addCV(start);
             }
 
-            auto bounds = sdPrimBounds(prim, (float2*) vg->cvBuffers[vg->curBuffer].contents).inset(-1);
+            auto bounds = sdPrimBounds(prim, (float2*) cvBuffers[curBuffer].contents).inset(-1);
             prim.texcoords[0] = bounds.min;
             prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
             prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
@@ -471,8 +477,8 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
                 prim.verts[i] = prim.texcoords[i];
             }
 
-            *(vg->p++) = prim;
-            vg->primCount++;
+            *(p++) = prim;
+            primCount++;
         }
     }
 }
