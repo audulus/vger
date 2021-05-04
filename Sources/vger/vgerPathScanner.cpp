@@ -6,12 +6,12 @@
 
 vgerPathScanner::Segment::Segment(vector_float2 a, vector_float2 b, vector_float2 c) {
     cvs[0] = a; cvs[1] = b; cvs[2] = c;
-    yInterval.a = std::min(a.y, std::min(b.y, c.y));
-    yInterval.b = std::max(a.y, std::max(b.y, c.y));
 }
 
-bool operator<(const vgerPathScanner::Segment& a, const vgerPathScanner::Segment& b) {
-    return a.yInterval.a < b.yInterval.a;
+Interval vgerPathScanner::Segment::yInterval() const {
+    return { std::min(cvs[0].y, std::min(cvs[1].y, cvs[2].y)),
+        std::max(cvs[0].y, std::max(cvs[1].y, cvs[2].y))
+    };
 }
 
 bool operator<(const vgerPathScanner::Node& a, const vgerPathScanner::Node& b) {
@@ -37,8 +37,9 @@ void vgerPathScanner::begin(vector_float2 *cvs, int count) {
     }
 
     for(int i=0;i<segments.size();++i) {
-        nodes.push_back({segments[i].yInterval.a, i, 0});
-        nodes.push_back({segments[i].yInterval.b, i, 1});
+        auto yInterval = segments[i].yInterval();
+        nodes.push_back({yInterval.a, i, 0});
+        nodes.push_back({yInterval.b, i, 1});
     }
 
     std::sort(nodes.begin(), nodes.end());

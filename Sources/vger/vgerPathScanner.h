@@ -12,9 +12,10 @@ struct vgerPathScanner {
 
     struct Segment {
         vector_float2 cvs[3];
-        Interval yInterval;
 
         Segment(vector_float2 a, vector_float2 b, vector_float2 c);
+
+        Interval yInterval() const;
     };
 
     struct Node {
