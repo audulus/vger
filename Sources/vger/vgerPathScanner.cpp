@@ -33,7 +33,7 @@ void vgerPathScanner::begin(vector_float2 *cvs, int count) {
     auto start = segments.front().cvs[0];
     auto end = segments.back().cvs[2];
     if(!simd_equal(start, end)) {
-        segments.push_back({start, (start+end)/2, end});
+        segments.push_back({end, (start+end)/2, start});
     }
 
     for(int i=0;i<segments.size();++i) {
