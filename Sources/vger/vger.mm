@@ -515,13 +515,13 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
     }
 
     [renderer encodeTo:buf
-                      pass:pass
-                     prims:primBuffers[curBuffer]
-                       cvs:cvBuffers[curBuffer]
-                     count:primCount
-                  textures:textures
-              glyphTexture:[glyphCache getAltas]
-                windowSize:windowSize];
+                  pass:pass
+                 prims:primBuffers[curBuffer]
+                   cvs:cvBuffers[curBuffer]
+                 count:primCount
+              textures:textures
+          glyphTexture:[glyphCache getAltas]
+            windowSize:windowSize];
 
     currentFrame++;
 
