@@ -12,6 +12,10 @@ Here's an early screenshot from vger in use for Audulus:
 
 The rectangles around primitives are for debugging drawing areas.
 
+## Installation
+
+To add vger to your Xcode project, select File -> Swift Packages -> Add Package Depedancy. Enter https://github.com/audulus/vger for the URL. Check the use branch option and enter `main`.
+
 ## Usage
 
 Create a rendering context using `vgerNew()`.
