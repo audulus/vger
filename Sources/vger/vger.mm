@@ -403,14 +403,12 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
                     assert(a < vg->scan.segments.size());
                     for(int i=0;i<3;++i) {
                         auto p = vg->scan.segments[a].cvs[i];
-                        *(vg->cv++) = p;
+                        vg->addCV(p);
                         xInt.a = std::min(xInt.a, p.x);
                         xInt.b = std::max(xInt.b, p.x);
                     }
 
                 }
-
-                vg->cvCount += n*3;
 
                 BBox bounds;
                 bounds.min.x = xInt.a;
