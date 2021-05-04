@@ -1,18 +1,14 @@
 // Copyright © 2021 Audulus LLC. All rights reserved.
 
 #import "vgerRenderer.h"
+#import "BundleHelper.h"
 
 static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
-    auto bundle = [NSBundle bundleForClass:vgerRenderer.class];
-
+    auto bundle = [BundleHelper moduleBundle];
     assert(bundle);
 
-#if TARGET_OS_OSX
-    auto libraryURL = [bundle.bundleURL URLByAppendingPathComponent:@"Contents/Resources/vger_vger.bundle/Contents/Resources/default.metallib"];
-#else
-    auto libraryURL = [bundle.bundleURL URLByAppendingPathComponent:@"vger_vger.bundle/default.metallib"];
-#endif
+    auto libraryURL = [bundle URLForResource:@"default" withExtension:@"metallib"];
 
     NSError* error;
     auto lib = [device newLibraryWithURL:libraryURL error:&error];
