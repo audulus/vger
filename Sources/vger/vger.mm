@@ -374,7 +374,6 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
         vg->scan.begin(cvs, count);
 
         while(vg->scan.next()) {
-            if(vg->scan.yInterval.b == FLT_MAX) continue;
 
             printf("active: %d\n", (int) vg->scan.active.size());
 
