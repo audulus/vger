@@ -2,6 +2,7 @@
 
 #import "vgerGlyphCache.h"
 #import "vgerTextureManager.h"
+#import "BundleHelper.h"
 #include <vector>
 
 @interface vgerGlyphCache() {
@@ -18,14 +19,10 @@
     if (self) {
         mgr = [[vgerTextureManager alloc] initWithDevice:device pixelFormat:MTLPixelFormatA8Unorm];
 
-        auto bundle = [NSBundle bundleForClass:self.class];
+        auto bundle = [BundleHelper moduleBundle];
         assert(bundle);
 
-#if TARGET_OS_OSX
-        auto fontURL = [bundle.bundleURL URLByAppendingPathComponent:@"Contents/Resources/vger_vger.bundle/Contents/Resources/fonts/Anodina-Regular.ttf"];
-#else
-        auto fontURL = [bundle.bundleURL URLByAppendingPathComponent:@"vger_vger.bundle/fonts/Anodina-Regular.ttf"];
-#endif
+        auto fontURL = [bundle URLForResource:@"Anodina-Regular" withExtension:@"ttf" subdirectory:@"fonts"];
 
         auto fd = CTFontManagerCreateFontDescriptorsFromURL( (__bridge CFURLRef) fontURL);
         ctFont = CTFontCreateWithFontDescriptor( (CTFontDescriptorRef) CFArrayGetValueAtIndex(fd, 0), 12.0, nil);
