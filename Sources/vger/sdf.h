@@ -241,8 +241,8 @@ inline BBox sdPrimBounds(const DEVICE vgerPrim& prim, const DEVICE float2* cvs) 
         case vgerPathFill: {
             b = {FLT_MAX, -FLT_MAX};
             for(int i=0;i<prim.count*3;++i) {
-                b.min = min(b.min, cvs[i]);
-                b.max = max(b.max, cvs[i]);
+                b.min = min(b.min, cvs[prim.start+i]);
+                b.max = max(b.max, cvs[prim.start+i]);
             }
             break;
         }
