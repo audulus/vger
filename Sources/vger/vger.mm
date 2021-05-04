@@ -379,8 +379,6 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
 
         while(vg->scan.next()) {
 
-            printf("active: %d\n", (int) vg->scan.active.size());
-
             int n = vg->scan.active.size();
 
             vgerPrim prim = {
@@ -406,8 +404,6 @@ void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
                     }
 
                 }
-
-                printf("yInterval: %f %f\n", vg->scan.yInterval.a, vg->scan.yInterval.b);
 
                 vg->cvCount += n*3;
 
