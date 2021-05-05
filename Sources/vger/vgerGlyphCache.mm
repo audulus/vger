@@ -2,7 +2,7 @@
 
 #import "vgerGlyphCache.h"
 #import "vgerTextureManager.h"
-#import "BundleHelper.h"
+#import "vgerBundleHelper.h"
 #include <vector>
 
 @interface vgerGlyphCache() {
@@ -19,7 +19,7 @@
     if (self) {
         mgr = [[vgerTextureManager alloc] initWithDevice:device pixelFormat:MTLPixelFormatA8Unorm];
 
-        auto bundle = [BundleHelper moduleBundle];
+        auto bundle = [vgerBundleHelper moduleBundle];
         assert(bundle);
 
         auto fontURL = [bundle URLForResource:@"Anodina-Regular" withExtension:@"ttf" subdirectory:@"fonts"];

@@ -1,8 +1,8 @@
 // Copyright © 2021 Audulus LLC. All rights reserved.
 
-#import "BundleHelper.h"
+#import "vgerBundleHelper.h"
 
-@implementation BundleHelper
+@implementation vgerBundleHelper
 
 + (NSBundle*) moduleBundle {
     return SWIFTPM_MODULE_BUNDLE;

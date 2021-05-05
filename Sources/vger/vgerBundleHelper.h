@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Accessing SWIFTPM_MODULE_BUNDLE from ObjC++ doesn't work for some reason.
 /// See https://forums.swift.org/t/undefined-symbol-package-module-swiftpm-module-bundle/45773
-@interface BundleHelper : NSObject
+@interface vgerBundleHelper : NSObject
 
 + (NSBundle*) moduleBundle;
 

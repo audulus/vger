@@ -1,11 +1,11 @@
 // Copyright © 2021 Audulus LLC. All rights reserved.
 
 #import "vgerRenderer.h"
-#import "BundleHelper.h"
+#import "vgerBundleHelper.h"
 
 static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
-    auto bundle = [BundleHelper moduleBundle];
+    auto bundle = [vgerBundleHelper moduleBundle];
     assert(bundle);
 
     auto libraryURL = [bundle URLForResource:@"default" withExtension:@"metallib"];
