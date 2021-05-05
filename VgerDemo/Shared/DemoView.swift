@@ -27,7 +27,6 @@ struct DemoView: View {
         bez.paint = vgerLinearGradient(.init(x: 50, y: 450), .init(x: 100, y: 450), cyan, magenta)
 
         vgerRender(vger, &bez)
-
         textAt(vger, 150, 450, "Quadratic Bezier stroke")
 
         var rect = vgerPrim()
@@ -38,7 +37,7 @@ struct DemoView: View {
         rect.cvs.1 = .init(x: 100, y: 400)
         rect.paint = vgerLinearGradient(.init(x: 50, y: 350), .init(x: 100, y: 400), cyan, magenta)
 
-        vgerRender(vger, &rect);
+        vgerRender(vger, &rect)
         textAt(vger, 150, 350, "Rounded rectangle")
 
         var circle = vgerPrim()
