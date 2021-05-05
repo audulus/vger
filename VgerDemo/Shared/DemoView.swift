@@ -5,10 +5,13 @@ import vger
 
 struct DemoView: View {
 
+    let cyan = SIMD4<Float>(0,1,1,1)
+    let magenta = SIMD4<Float>(1,0,1,1)
+
     func textAt(_ vger: OpaquePointer, _ x: Float, _ y: Float, _ string: String) {
         vgerSave(vger)
         vgerTranslate(vger, .init(x: x, y: y))
-        vgerRenderText(vger, string, .init(0, 1, 1, 1), 0)
+        vgerRenderText(vger, string, cyan, 0)
         vgerRestore(vger)
     }
 
@@ -21,26 +24,24 @@ struct DemoView: View {
         bez.cvs.0 = .init(x: 50, y: 450)
         bez.cvs.1 = .init(x: 100, y: 450)
         bez.cvs.2 = .init(x: 100, y: 500)
-        bez.paint = vgerLinearGradient(.init(x: 50, y: 450), .init(x: 100, y: 450), .init(0, 1, 1, 1), .init(1, 0, 1, 1))
+        bez.paint = vgerLinearGradient(.init(x: 50, y: 450), .init(x: 100, y: 450), cyan, magenta)
 
         vgerRender(vger, &bez)
 
         textAt(vger, 150, 450, "Quadratic Bezier stroke")
 
-        /*
         var rect = vgerPrim()
         rect.type = vgerRect
         rect.width = 0.0
-        vgerPrim rect = {
-            .type = vgerRect,
-            .width = 0.0,
-            .radius = 10,
-            .cvs = {{50, 350}, {100,400}},
-            .paint = vgerLinearGradient(float2{50,350}, float2{100,400}, cyan, magenta)
-        };
-        vgerRender(vger, &rect);
-        textAt(vger, 150, 350, "Rounded rectangle");
+        rect.radius = 10
+        rect.cvs.0 = .init(x: 50, y: 350)
+        rect.cvs.1 = .init(x: 100, y: 400)
+        rect.paint = vgerLinearGradient(.init(x: 50, y: 350), .init(x: 100, y: 400), cyan, magenta)
 
+        vgerRender(vger, &rect);
+        textAt(vger, 150, 350, "Rounded rectangle")
+
+        /*
         vgerPrim circle = {
             .type = vgerCircle,
             .width = 0.0,
