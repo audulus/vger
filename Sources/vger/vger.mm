@@ -143,8 +143,6 @@ struct vger {
         nullTexture = [device newTextureWithDescriptor:desc];
 
         textures = [NSMutableArray new];
-
-        assert(device.argumentBuffersSupport == MTLArgumentBuffersTier2);
     }
 
     void addCV(float2 p) {
