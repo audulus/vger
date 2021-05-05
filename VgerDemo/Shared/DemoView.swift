@@ -50,29 +50,30 @@ struct DemoView: View {
         vgerRender(vger, &circle)
         textAt(vger, 150, 250, "Circle")
 
-        /*
+        var line = vgerPrim()
+        line.type = vgerSegment
+        line.width = 2.0
+        line.cvs.0 = .init(x: 50, y: 150)
+        line.cvs.1 = .init(x: 100, y: 200)
+        line.paint = vgerLinearGradient(.init(x: 50, y: 150), .init(x: 100, y: 200), cyan, magenta)
 
-        vgerPrim line = {
-            .type = vgerSegment,
-            .width = 2.0,
-            .cvs = {{50, 150}, {100,200}},
-            .paint = vgerLinearGradient(float2{50,150}, float2{100,200}, cyan, magenta)
-        };
-        vgerRender(vger, &line);
-        textAt(vger, 150, 150, "Line segment");
+        vgerRender(vger, &line)
+        textAt(vger, 150, 150, "Line segment")
 
-        float theta = 0;      // orientation
-        float ap = .5 * M_PI; // aperture size
-        vgerPrim arc = {
-            .type = vgerArc,
-            .width = 1.0,
-            .cvs = {{75, 75}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
-            .radius=25,
-            .paint = vgerLinearGradient(float2{50,50}, float2{100,100}, cyan, magenta)
-        };
-        vgerRender(vger, &arc);
-        textAt(vger, 150, 050, "Arc");
-        */
+        let theta: Float = 0.0 // orientation
+        let aperture: Float = 0.5 * .pi
+
+        var arc = vgerPrim()
+        arc.type = vgerArc
+        arc.width = 1.0
+        arc.cvs.0 = .init(x: 75, y: 75)
+        arc.cvs.1 = .init(sin(theta), cos(theta))
+        arc.cvs.2 = .init(sin(aperture), cos(aperture))
+        arc.radius = 25
+        arc.paint = vgerLinearGradient(.init(x: 50, y: 50), .init(x: 100, y: 100), cyan, magenta)
+
+        vgerRender(vger, &arc)
+        textAt(vger, 150, 050, "Arc")
 
         vgerRestore(vger);
     }
