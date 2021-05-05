@@ -41,16 +41,17 @@ struct DemoView: View {
         vgerRender(vger, &rect);
         textAt(vger, 150, 350, "Rounded rectangle")
 
+        var circle = vgerPrim()
+        circle.type = vgerCircle
+        circle.width = 0.0
+        circle.radius = 25
+        circle.cvs.0 = .init(x: 75, y: 275)
+        circle.paint = vgerLinearGradient(.init(x: 50, y: 250), .init(x: 100, y: 300), cyan, magenta)
+
+        vgerRender(vger, &circle)
+        textAt(vger, 150, 250, "Circle")
+
         /*
-        vgerPrim circle = {
-            .type = vgerCircle,
-            .width = 0.0,
-            .radius = 25,
-            .cvs = {{75, 275}},
-            .paint = vgerLinearGradient(float2{50,250}, float2{100,300}, cyan, magenta)
-        };
-        vgerRender(vger, &circle);
-        textAt(vger, 150, 250, "Circle");
 
         vgerPrim line = {
             .type = vgerSegment,
