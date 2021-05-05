@@ -1,0 +1,88 @@
+//  Copyright © 2021 Audulus LLC. All rights reserved.
+
+import SwiftUI
+import vger
+
+struct DemoView: View {
+
+    func textAt(_ vger: OpaquePointer, _ x: Float, _ y: Float, _ string: String) {
+        vgerSave(vger)
+        vgerTranslate(vger, .init(x: x, y: y))
+        vgerRenderText(vger, string, .init(0, 1, 1, 1), 0)
+        vgerRestore(vger)
+    }
+
+    func draw(vger: OpaquePointer) {
+        vgerSave(vger)
+
+        var bez = vgerPrim()
+        bez.type = vgerBezier
+        bez.width = 1.0
+        bez.cvs.0 = .init(x: 50, y: 450)
+        bez.cvs.1 = .init(x: 100, y: 450)
+        bez.cvs.2 = .init(x: 100, y: 500)
+        bez.paint = vgerLinearGradient(.init(x: 50, y: 450), .init(x: 100, y: 450), .init(0, 1, 1, 1), .init(1, 0, 1, 1))
+
+        vgerRender(vger, &bez)
+
+        textAt(vger, 150, 450, "Quadratic Bezier stroke")
+
+        /*
+        var rect = vgerPrim()
+        rect.type = vgerRect
+        rect.width = 0.0
+        vgerPrim rect = {
+            .type = vgerRect,
+            .width = 0.0,
+            .radius = 10,
+            .cvs = {{50, 350}, {100,400}},
+            .paint = vgerLinearGradient(float2{50,350}, float2{100,400}, cyan, magenta)
+        };
+        vgerRender(vger, &rect);
+        textAt(vger, 150, 350, "Rounded rectangle");
+
+        vgerPrim circle = {
+            .type = vgerCircle,
+            .width = 0.0,
+            .radius = 25,
+            .cvs = {{75, 275}},
+            .paint = vgerLinearGradient(float2{50,250}, float2{100,300}, cyan, magenta)
+        };
+        vgerRender(vger, &circle);
+        textAt(vger, 150, 250, "Circle");
+
+        vgerPrim line = {
+            .type = vgerSegment,
+            .width = 2.0,
+            .cvs = {{50, 150}, {100,200}},
+            .paint = vgerLinearGradient(float2{50,150}, float2{100,200}, cyan, magenta)
+        };
+        vgerRender(vger, &line);
+        textAt(vger, 150, 150, "Line segment");
+
+        float theta = 0;      // orientation
+        float ap = .5 * M_PI; // aperture size
+        vgerPrim arc = {
+            .type = vgerArc,
+            .width = 1.0,
+            .cvs = {{75, 75}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
+            .radius=25,
+            .paint = vgerLinearGradient(float2{50,50}, float2{100,100}, cyan, magenta)
+        };
+        vgerRender(vger, &arc);
+        textAt(vger, 150, 050, "Arc");
+        */
+
+        vgerRestore(vger);
+    }
+
+    var body: some View {
+        VgerView(renderCallback: draw)
+    }
+}
+
+struct DemoView_Previews: PreviewProvider {
+    static var previews: some View {
+        DemoView()
+    }
+}

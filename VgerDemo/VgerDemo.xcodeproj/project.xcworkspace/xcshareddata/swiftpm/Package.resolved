@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "vger",
+        "repositoryURL": "https://github.com/audulus/vger.git",
+        "state": {
+          "branch": "main",
+          "revision": "d6907d4e6975fddc0f4b5419c6277521ad6fb4ab",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
