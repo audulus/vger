@@ -399,6 +399,13 @@ void vgerRenderTextBox(vger* vg, const char* str, float breakRowWidth, float4 co
 
 void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int align) {
 
+    auto paint = vgerColorPaint(color);
+    auto scale = averageScale(txStack.back()) * devicePxRatio;
+    auto key = TextLayoutKey{std::string(str), scale, align, breakRowWidth};
+
+    if(renderCachedText(key, paint)) {
+        return;
+    }
 }
 
 bool scanPaths = true;
