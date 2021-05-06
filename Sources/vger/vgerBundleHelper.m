@@ -5,7 +5,9 @@
 @implementation vgerBundleHelper
 
 + (NSBundle*) moduleBundle {
-    return SWIFTPM_MODULE_BUNDLE;
+    NSBundle* bundle = SWIFTPM_MODULE_BUNDLE;
+    assert(bundle);
+    return bundle;
 }
 
 @end
