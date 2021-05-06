@@ -815,4 +815,38 @@ static void textAt(vger* vger, float x, float y, const char* str) {
 
 }
 
+- (void) testTextBox {
+
+    auto vger = vgerNew();
+
+    vgerBegin(vger, 512, 512, 1.0);
+
+    auto str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
+    auto commandBuffer = [queue commandBuffer];
+
+    vgerSave(vger);
+    vgerTranslate(vger, float2{256, 256});
+
+    vgerRenderTextBox(vger, str, 100, float4(1), 0);
+    vgerRestore(vger);
+
+    vgerEncode(vger, commandBuffer, pass);
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder endEncoding];
+    #endif
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    vgerDelete(vger);
+
+    showTexture(texture, @"text_box.png");
+
+}
+
 @end

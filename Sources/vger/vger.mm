@@ -417,7 +417,7 @@ void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int
     auto string = [NSString stringWithUTF8String:str];
     auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
     auto framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
-    auto rectPath = CGPathCreateWithRect(CGRectMake(0, 0, breakRowWidth, FLT_MAX), NULL);
+    auto rectPath = CGPathCreateWithRect(CGRectMake(0, 0, breakRowWidth, 100), NULL);
     auto frame = CTFramesetterCreateFrame(framesetter,
                                           CFRangeMake(0, attrString.length),
                                           rectPath,
@@ -425,12 +425,17 @@ void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int
 
     NSArray *lines = (__bridge id)CTFrameGetLines(frame);
 
+    std::vector<CGPoint> lineOrigins(lines.count);
+    CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins.data());
+
     auto& textInfo = textCache[key];
     textInfo.lastFrame = currentFrame;
 
+    int lineIndex = 0;
     for(id obj in lines) {
         CTLineRef line = (__bridge CTLineRef)obj;
-        renderTextLine(line, textInfo, paint, float2{0,0}, scale);
+        auto o = lineOrigins[lineIndex++];
+        renderTextLine(line, textInfo, paint, float2{float(o.x),float(o.y)}, scale);
     }
 
     CFRelease(frame);
