@@ -70,7 +70,7 @@ typedef struct {
     /// Start of the control vertices, if they're in a separate buffer.
     int start;
     
-    /// Number of control vertices (only for vgerCurve)
+    /// Number of control vertices (vgerCurve and vgerPathFill)
     int count;
 
     /// How to shade the primitive.
