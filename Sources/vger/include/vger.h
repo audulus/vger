@@ -67,6 +67,9 @@ void vgerTextBounds(vger* vg, const char* str, vector_float2* min, vector_float2
 /// Renders multi-line text.
 void vgerRenderTextBox(vger* vg, const char* str, float breakRowWidth, vector_float4 color, int align);
 
+/// Returns bounds of multi-line text.
+void vgerTextBoxBounds(vger* vg, const char* str, float breakRowWidth, vector_float2* min, vector_float2* max, int align);
+
 /// Fill a path bounded by quadratic bezier segments.
 void vgerFillPath(vger* vg, vector_float2* cvs, int count, vgerPaint paint);
 

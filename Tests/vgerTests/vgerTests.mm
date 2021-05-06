@@ -828,7 +828,20 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     vgerSave(vger);
     vgerTranslate(vger, float2{256, 256});
 
-    vgerRenderTextBox(vger, str, 200, float4(1), 0);
+    float breakWidth = 200;
+
+    float2 cvs[2];
+    vgerTextBoxBounds(vger, str, breakWidth, cvs, cvs+1, 0);
+    vgerPrim rect = {
+        .type = vgerRect,
+        .width = 0.0,
+        .radius = 0,
+        .cvs = {cvs[0], cvs[1]},
+        .paint = vgerColorPaint(float4{.2,.2,.2,1.0})
+    };
+    vgerRender(vger, &rect);
+
+    vgerRenderTextBox(vger, str, breakWidth, float4(1), 0);
     vgerRestore(vger);
 
     vgerEncode(vger, commandBuffer, pass);
