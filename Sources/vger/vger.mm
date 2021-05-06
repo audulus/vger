@@ -157,7 +157,7 @@ struct vger {
 
     bool renderCachedText(const TextLayoutKey& key, const vgerPaint& paint);
 
-    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, int align, float scale);
+    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, float2 offset, float scale);
 
     void renderText(const char* str, float4 color, int align);
 
@@ -285,10 +285,9 @@ bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint) {
     return false;
 }
 
-void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, int align, float scale) {
+void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, float2 offset, float scale) {
 
     CFRange entire = CFRangeMake(0, 0);
-    auto offset = alignOffset(line, align);
 
     NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
     for(id r in runs) {
@@ -368,7 +367,7 @@ void vger::renderText(const char* str, float4 color, int align) {
     auto& textInfo = textCache[key];
     textInfo.lastFrame = currentFrame;
 
-    renderTextLine(line, textInfo, paint, align, scale);
+    renderTextLine(line, textInfo, paint, alignOffset(line, align), scale);
 
     CFRelease(typesetter);
     CFRelease(line);
