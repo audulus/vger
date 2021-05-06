@@ -412,6 +412,30 @@ void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int
     if(renderCachedText(key, paint)) {
         return;
     }
+
+    auto attributes = @{ NSFontAttributeName : (__bridge id)[glyphCache getFont] };
+    auto string = [NSString stringWithUTF8String:str];
+    auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
+    auto framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
+    auto rectPath = CGPathCreateWithRect(CGRectMake(0, 0, breakRowWidth, FLT_MAX), NULL);
+    auto frame = CTFramesetterCreateFrame(framesetter,
+                                          CFRangeMake(0, attrString.length),
+                                          rectPath,
+                                          NULL);
+
+    NSArray *lines = (__bridge id)CTFrameGetLines(frame);
+
+    auto& textInfo = textCache[key];
+    textInfo.lastFrame = currentFrame;
+
+    for(id obj in lines) {
+        CTLineRef line = (__bridge CTLineRef)obj;
+        renderTextLine(line, textInfo, paint, float2{0,0}, scale);
+    }
+
+    CFRelease(frame);
+    CFRelease(framesetter);
+    CFRelease(rectPath);
 }
 
 bool scanPaths = true;
