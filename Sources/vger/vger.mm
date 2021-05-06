@@ -157,6 +157,8 @@ struct vger {
 
     bool renderCachedText(const TextLayoutKey& key, const vgerPaint& paint);
 
+    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, int align, float scale);
+
     void renderText(const char* str, float4 color, int align);
 
     void renderTextBox(const char* str, float breakRowWidth, float4 color, int align);
@@ -283,29 +285,9 @@ bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint) {
     return false;
 }
 
-void vger::renderText(const char* str, float4 color, int align) {
-
-    auto paint = vgerColorPaint(color);
-    auto scale = averageScale(txStack.back()) * devicePxRatio;
-    auto key = TextLayoutKey{std::string(str), scale, align};
-
-    if(renderCachedText(key, paint)) {
-        return;
-    }
-
-    // Text cache miss, do more expensive typesetting.
+void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, int align, float scale) {
 
     CFRange entire = CFRangeMake(0, 0);
-
-    auto attributes = @{ NSFontAttributeName : (__bridge id)[glyphCache getFont] };
-    auto string = [NSString stringWithUTF8String:str];
-    auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
-    auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
-    auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
-
-    auto& textInfo = textCache[key];
-    textInfo.lastFrame = currentFrame;
-
     auto offset = alignOffset(line, align);
 
     NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
@@ -332,8 +314,6 @@ void vger::renderText(const char* str, float4 color, int align) {
 
                 float originY = info.textureHeight-GLYPH_MARGIN;
 
-                paint.image = info.regionIndex;
-
                 vgerPrim prim = {
                     .type = vgerGlyph,
                     .paint = paint,
@@ -352,6 +332,8 @@ void vger::renderText(const char* str, float4 color, int align) {
                     .xform = txStack.back()
                 };
 
+                prim.paint.image = info.regionIndex;
+
                 textInfo.prims.push_back(prim);
 
                 if(primCount < maxPrims) {
@@ -362,6 +344,31 @@ void vger::renderText(const char* str, float4 color, int align) {
             }
         }
     }
+
+}
+
+void vger::renderText(const char* str, float4 color, int align) {
+
+    auto paint = vgerColorPaint(color);
+    auto scale = averageScale(txStack.back()) * devicePxRatio;
+    auto key = TextLayoutKey{std::string(str), scale, align};
+
+    if(renderCachedText(key, paint)) {
+        return;
+    }
+
+    // Text cache miss, do more expensive typesetting.
+
+    auto attributes = @{ NSFontAttributeName : (__bridge id)[glyphCache getFont] };
+    auto string = [NSString stringWithUTF8String:str];
+    auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
+    auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
+    auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
+
+    auto& textInfo = textCache[key];
+    textInfo.lastFrame = currentFrame;
+
+    renderTextLine(line, textInfo, paint, align, scale);
 
     CFRelease(typesetter);
     CFRelease(line);
