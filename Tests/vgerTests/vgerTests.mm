@@ -828,7 +828,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     vgerSave(vger);
     vgerTranslate(vger, float2{256, 256});
 
-    vgerRenderTextBox(vger, str, 100, float4(1), 0);
+    vgerRenderTextBox(vger, str, 200, float4(1), 0);
     vgerRestore(vger);
 
     vgerEncode(vger, commandBuffer, pass);
