@@ -1,5 +1,7 @@
 # vger
 
+![build status](https://github.com/audulus/vger/actions/workflows/build.yml/badge.svg)
+
 vger is a vector graphics renderer which renders a limited set of primitives, but does so almost entirely on the GPU. Works on iOS and macOS.
 
 <img src="demo.png" alt="demo" width="256" height="256">
