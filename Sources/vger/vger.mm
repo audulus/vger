@@ -155,7 +155,7 @@ struct vger {
 
     void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 
-    bool renderCachedText(const TextLayoutKey& key);
+    bool renderCachedText(const TextLayoutKey& key, const vgerPaint& paint);
 
     void renderText(const char* str, float4 color, int align);
 
@@ -260,7 +260,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
     vg->renderText(str, color, align);
 }
 
-bool vger::renderCachedText(const TextLayoutKey& key) {
+bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint) {
 
     // Do we already have text in the cache?
     auto iter = textCache.find(key);
@@ -271,6 +271,7 @@ bool vger::renderCachedText(const TextLayoutKey& key) {
         for(auto& prim : info.prims) {
             if(primCount < maxPrims) {
                 *p = prim;
+                p->paint = paint;
                 p->xform = txStack.back();
                 p++;
                 primCount++;
@@ -288,7 +289,7 @@ void vger::renderText(const char* str, float4 color, int align) {
     auto scale = averageScale(txStack.back()) * devicePxRatio;
     auto key = TextLayoutKey{std::string(str), scale, align};
 
-    if(renderCachedText(key)) {
+    if(renderCachedText(key, paint)) {
         return;
     }
 
