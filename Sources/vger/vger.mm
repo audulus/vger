@@ -35,6 +35,7 @@ struct TextLayoutKey {
     std::string str;
     float size;
     int align;
+    float breakRowWidth = -1;
 };
 
 inline void hash_combine(size_t& seed) { }
@@ -60,7 +61,7 @@ namespace std {\
     };\
 }
 
-MAKE_HASHABLE(TextLayoutKey, t.str, t.size, t.align);
+MAKE_HASHABLE(TextLayoutKey, t.str, t.size, t.align, t.breakRowWidth);
 
 /// Main state object. This is not ObjC to avoid call overhead for each prim.
 struct vger {
@@ -154,7 +155,11 @@ struct vger {
 
     void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 
+    bool renderCachedText(const TextLayoutKey& key);
+
     void renderText(const char* str, float4 color, int align);
+
+    void renderTextBox(const char* str, float breakRowWidth, float4 color, int align);
 };
 
 vger* vgerNew() {
@@ -255,11 +260,7 @@ void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
     vg->renderText(str, color, align);
 }
 
-void vger::renderText(const char* str, float4 color, int align) {
-
-    auto paint = vgerColorPaint(color);
-    auto scale = averageScale(txStack.back()) * devicePxRatio;
-    auto key = TextLayoutKey{std::string(str), scale, align};
+bool vger::renderCachedText(const TextLayoutKey& key) {
 
     // Do we already have text in the cache?
     auto iter = textCache.find(key);
@@ -275,6 +276,19 @@ void vger::renderText(const char* str, float4 color, int align) {
                 primCount++;
             }
         }
+        return true;
+    }
+
+    return false;
+}
+
+void vger::renderText(const char* str, float4 color, int align) {
+
+    auto paint = vgerColorPaint(color);
+    auto scale = averageScale(txStack.back()) * devicePxRatio;
+    auto key = TextLayoutKey{std::string(str), scale, align};
+
+    if(renderCachedText(key)) {
         return;
     }
 
@@ -375,6 +389,14 @@ void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max, int ali
 
     CFRelease(line);
     CFRelease(typesetter);
+
+}
+
+void vgerRenderTextBox(vger* vg, const char* str, float breakRowWidth, float4 color, int align) {
+    vg->renderTextBox(str, breakRowWidth, color, align);
+}
+
+void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int align) {
 
 }
 
