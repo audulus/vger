@@ -9,12 +9,20 @@ void writeCGImage(CGImageRef image, CFURLRef url) {
     assert(CGImageDestinationFinalize(dest));
 }
 
+void releaseImageData(void * __nullable info,
+                      const void *  data, size_t size) {
+    free((void*)data);
+}
+
 CGImageRef getImage(UInt8* data, int w, int h) {
 
+    UInt8* newData = (UInt8*) malloc(4*w*h);
+    memcpy(newData, data, 4*w*h);
+
     auto provider = CGDataProviderCreateWithData(nullptr,
-                                                 data,
+                                                 newData,
                                                  4*w*h,
-                                                 nullptr);
+                                                 releaseImageData);
 
     return CGImageCreate(w, h,
                          8, 32,
