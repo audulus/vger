@@ -3,6 +3,10 @@
 #ifndef vger_types_h
 #define vger_types_h
 
+#ifndef __METAL_VERSION__
+#include <simd/simd.h>
+#endif
+
 /// VGER supports simple primitive types.
 typedef enum {
     
