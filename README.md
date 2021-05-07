@@ -39,7 +39,7 @@ Create a rendering context using `vgerNew()`.
 
 Then call `vgerRenderPrim` and `vgerRenderText` to store drawing commands. vger doesn't support arbitrary path fills and strokes, instead focusing on primitives that can be easily rendered on the GPU.
 
-See [`vger.h`](https://github.com/audulus/vger/blob/main/Sources/vger/include/vger.h) for the complete API.
+See [`vger.h`](https://github.com/audulus/vger/blob/main/Sources/vger/include/vger.h) for the complete API. You can get a good sense of the usage by looking at [these tests](https://github.com/audulus/vger/blob/main/Tests/vgerTests/vgerTests.mm).
 
 Finally, call `vgerEncode` to encode rendering commands to a `MTLCommandBuffer`.
 
