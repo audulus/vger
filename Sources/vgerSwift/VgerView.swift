@@ -6,19 +6,19 @@ import vger
 
 #if os(macOS)
 
-struct VgerView: NSViewRepresentable {
+public struct VgerView: NSViewRepresentable {
 
     var renderCallback : (OpaquePointer) -> Void
 
-    class Coordinator {
+    public class Coordinator {
         var renderer = Renderer(device: MTLCreateSystemDefaultDevice()!)
     }
 
-    func makeCoordinator() -> Coordinator {
+    public func makeCoordinator() -> Coordinator {
         return Coordinator()
     }
 
-    func makeNSView(context: Context) -> some NSView {
+    public func makeNSView(context: Context) -> some NSView {
         let metalView = MTKView(frame: CGRect(x: 0, y: 0, width: 1024, height: 768),
                                 device: MTLCreateSystemDefaultDevice()!)
         metalView.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 1.0)
@@ -27,26 +27,26 @@ struct VgerView: NSViewRepresentable {
         return metalView
     }
 
-    func updateNSView(_ nsView: NSViewType, context: Context) {
+    public func updateNSView(_ nsView: NSViewType, context: Context) {
         context.coordinator.renderer.renderCallback = renderCallback
     }
 }
 
 #else
 
-struct VgerView: UIViewRepresentable {
+public struct VgerView: UIViewRepresentable {
 
     var renderCallback : (OpaquePointer) -> Void
 
-    class Coordinator {
+    public class Coordinator {
         var renderer = Renderer(device: MTLCreateSystemDefaultDevice()!)
     }
 
-    func makeCoordinator() -> Coordinator {
+    public func makeCoordinator() -> Coordinator {
         return Coordinator()
     }
 
-    func makeUIView(context: Context) -> some UIView {
+    public func makeUIView(context: Context) -> some UIView {
         let metalView = MTKView(frame: CGRect(x: 0, y: 0, width: 1024, height: 768),
                                 device: MTLCreateSystemDefaultDevice()!)
         metalView.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 1.0)
@@ -55,7 +55,7 @@ struct VgerView: UIViewRepresentable {
         return metalView
     }
 
-    func updateUIView(_ nsView: UIViewType, context: Context) {
+    public func updateUIView(_ nsView: UIViewType, context: Context) {
         context.coordinator.renderer.renderCallback = renderCallback
     }
 }
