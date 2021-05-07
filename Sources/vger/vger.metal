@@ -10,7 +10,6 @@ using namespace metal;
 
 struct VertexOut {
     float4 position  [[ position ]];
-    float2 p;
     float2 t;
     int primIndex;
 };
@@ -75,9 +74,9 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
 
     auto q = prim.xform * float3(prim.verts[vid], 1.0);
 
-    out.p = float2{q.x/q.z, q.y/q.z};
+    auto p = float2{q.x/q.z, q.y/q.z};
     out.t = prim.texcoords[vid];
-    out.position = float4(2.0 * out.p / viewSize - 1.0, 0, 1);
+    out.position = float4(2.0 * p / viewSize - 1.0, 0, 1);
     
     return out;
 }
