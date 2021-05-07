@@ -112,6 +112,7 @@
 
     CGPathRelease(path);
     CGContextRelease(context);
+    CGColorSpaceRelease(colorSpace);
 
     return info;
 
