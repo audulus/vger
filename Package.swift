@@ -24,6 +24,9 @@ let package = Package(
             name: "vger",
             dependencies: [],
             resources: [.copy("fonts")]),
+        .target(
+            name: "vgerSwift",
+            dependencies: ["vger"]),
         .testTarget(
             name: "vgerTests",
             dependencies: ["vger", "MetalNanoVG"],
