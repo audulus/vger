@@ -45,4 +45,21 @@ Finally, call `vgerEncode` to encode rendering commands to a `MTLCommandBuffer`.
 
 Vger has a C interface and can be used from C, C++, ObjC, or Swift. `vgerEncode` must be called from either ObjC or Swift since it takes a `MTLCommandBuffer`.
 
-See [the demo app](https://github.com/audulus/vger/tree/main/Demo) for an example of using vger in a iOS/macOS SwiftUI app.
+See [the demo app](https://github.com/audulus/vger/tree/main/Demo) for an example of using vger in a iOS/macOS SwiftUI app. vger includes `VgerView` to make it really easy to use Vger within SwiftUI:
+
+```swift
+import SwiftUI
+import vger      // C/C++/ObjC interface.
+import vgerSwift // Swift nicities.
+
+struct HelloView: View {
+
+    let cyan = SIMD4<Float>(0,1,1,1)
+
+    var body: some View {
+        VgerView(renderCallback: { vger in
+            vgerRenderText(vger, "Hello world. This is V'Ger.", cyan, 0)
+        })
+    }
+}
+```
