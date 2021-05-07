@@ -10,6 +10,10 @@ public struct VgerView: NSViewRepresentable {
 
     var renderCallback : (OpaquePointer) -> Void
 
+    public init(renderCallback: @escaping (OpaquePointer) -> Void) {
+        self.renderCallback = renderCallback
+    }
+
     public class Coordinator {
         var renderer = Renderer(device: MTLCreateSystemDefaultDevice()!)
     }
@@ -37,6 +41,10 @@ public struct VgerView: NSViewRepresentable {
 public struct VgerView: UIViewRepresentable {
 
     var renderCallback : (OpaquePointer) -> Void
+
+    public init(renderCallback: @escaping (OpaquePointer) -> Void) {
+        self.renderCallback = renderCallback
+    }
 
     public class Coordinator {
         var renderer = Renderer(device: MTLCreateSystemDefaultDevice()!)
