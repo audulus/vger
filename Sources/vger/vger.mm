@@ -472,6 +472,7 @@ void vgerTextBoxBounds(vger* vg, const char* str, float breakRowWidth, float2* m
 
     CFRelease(frame);
     CFRelease(framesetter);
+    CFRelease(rectPath);
 
 }
 
