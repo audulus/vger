@@ -573,7 +573,7 @@ void renderPaths(NVGcontext* vg, const std::vector<vgerPrim>& primArray) {
 
     NSLog(@"saving to %@", tmpURL);
 
-    writeCGImage(makeImage(imageBits.data(), w, h), (__bridge CFURLRef)tmpURL);
+    writeCGImage(createImage(imageBits.data(), w, h), (__bridge CFURLRef)tmpURL);
 
     system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
 }

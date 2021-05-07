@@ -15,7 +15,7 @@ void releaseImageData(void * __nullable info,
     free((void*)data);
 }
 
-CGImageRef makeImage(UInt8* data, int w, int h) {
+CGImageRef createImage(UInt8* data, int w, int h) {
 
     UInt8* newData = (UInt8*) malloc(4*w*h);
     memcpy(newData, data, 4*w*h);
@@ -42,7 +42,7 @@ CGImageRef makeImage(UInt8* data, int w, int h) {
 
 }
 
-CGImageRef textureImage(id<MTLTexture> texture) {
+CGImageRef createImage(id<MTLTexture> texture) {
 
     int w = texture.width;
     int h = texture.height;
@@ -66,15 +66,17 @@ CGImageRef textureImage(id<MTLTexture> texture) {
             assert(false && "unsupported pixel format");
     }
 
-    return makeImage(imageBytes.data(), w, h);
+    return createImage(imageBytes.data(), w, h);
 }
 
 void showTexture(id<MTLTexture> texture, NSString* name) {
 
     auto tmpURL = [NSFileManager.defaultManager.temporaryDirectory URLByAppendingPathComponent:name];
     NSLog(@"saving to %@", tmpURL);
-    writeCGImage(textureImage(texture), (__bridge CFURLRef)tmpURL);
+    CGImageRef image = createImage(texture);
+    writeCGImage(image, (__bridge CFURLRef)tmpURL);
     system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
+    CGImageRelease(image);
 
 }
 
@@ -90,8 +92,9 @@ bool checkTexture(id<MTLTexture> texture, NSString* name) {
 
     auto tmpURL = [NSFileManager.defaultManager.temporaryDirectory URLByAppendingPathComponent:name];
     NSLog(@"saving to %@", tmpURL);
-    CGImageRef image = textureImage(texture);
+    CGImageRef image = createImage(texture);
     writeCGImage(image, (__bridge CFURLRef)tmpURL);
+    CGImageRelease(image);
 
     // Get URL for baseline.
     NSString* path = @"Contents/Resources/vger_vgerTests.bundle/Contents/Resources/images/";
