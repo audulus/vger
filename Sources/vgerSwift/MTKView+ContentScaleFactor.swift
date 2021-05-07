@@ -3,6 +3,8 @@
 import Foundation
 import MetalKit
 
+#if os(macOS)
+
 /// Shim contentScaleFactor into MTKView on macOS.
 extension MTKView {
     
@@ -25,3 +27,5 @@ extension MTKView {
     }
     
 }
+
+#endif
