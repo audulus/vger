@@ -14,7 +14,7 @@ Here's an early screenshot from vger in use for Audulus:
 
 ## Why?
 
-I was previously using nanovg for Audulus, but it was consuming too much CPU for an immediate mode UI. I'd guess that for most workloads, nanovg would be faster and more capable, but for Audulus, vger maintains 60fps while nanovg falls to 30fps on my iPad because of CPU-side path tessellation, and other overhead (vger renders analytically without tessellation, leaning heavily on the fragment shader).
+I was previously using nanovg for Audulus, which was consuming too much CPU for the immediate-mode UI. nanovg is certainly more full featured, but for Audulus, vger maintains 120fps while nanovg falls to 30fps on my 120Hz iPad because of CPU-side path tessellation, and other overhead. vger renders analytically without tessellation, leaning heavily on the fragment shader.
 
 vger isn't cross-platform (just iOS and macOS), but the API is simple enough that it could be ported fairly easily. If Audulus goes cross-platform again, I will port vger to vulkan or wgpu.
 
