@@ -12,7 +12,7 @@ let package = Package(
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "vger",
-            targets: ["vger"]),
+            targets: ["vger", "vgerSwift"]),
     ],
     dependencies: [
         .package(url: "https://github.com/wtholliday/MetalNanoVG", Package.Dependency.Requirement.branch("spm"))
