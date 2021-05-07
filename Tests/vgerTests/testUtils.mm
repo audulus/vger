@@ -7,6 +7,7 @@ void writeCGImage(CGImageRef image, CFURLRef url) {
     auto dest = CGImageDestinationCreateWithURL(url, kUTTypePNG, 1, nil);
     CGImageDestinationAddImage(dest, image, nil);
     assert(CGImageDestinationFinalize(dest));
+    CFRelease(dest);
 }
 
 void releaseImageData(void * __nullable info,
@@ -14,7 +15,7 @@ void releaseImageData(void * __nullable info,
     free((void*)data);
 }
 
-CGImageRef getImage(UInt8* data, int w, int h) {
+CGImageRef makeImage(UInt8* data, int w, int h) {
 
     UInt8* newData = (UInt8*) malloc(4*w*h);
     memcpy(newData, data, 4*w*h);
@@ -24,19 +25,24 @@ CGImageRef getImage(UInt8* data, int w, int h) {
                                                  4*w*h,
                                                  releaseImageData);
 
-    return CGImageCreate(w, h,
+    auto colorSpace = CGColorSpaceCreateDeviceRGB();
+
+    auto image = CGImageCreate(w, h,
                          8, 32,
                          w*4,
-                         CGColorSpaceCreateDeviceRGB(),
+                         colorSpace,
                          kCGImageAlphaNoneSkipLast,
                          provider,
                          nil,
                          true,
                          kCGRenderingIntentDefault);
 
+    CGColorSpaceRelease(colorSpace);
+    return image;
+
 }
 
-CGImageRef getTextureImage(id<MTLTexture> texture) {
+CGImageRef textureImage(id<MTLTexture> texture) {
 
     int w = texture.width;
     int h = texture.height;
@@ -60,14 +66,14 @@ CGImageRef getTextureImage(id<MTLTexture> texture) {
             assert(false && "unsupported pixel format");
     }
 
-    return getImage(imageBytes.data(), w, h);
+    return makeImage(imageBytes.data(), w, h);
 }
 
 void showTexture(id<MTLTexture> texture, NSString* name) {
 
     auto tmpURL = [NSFileManager.defaultManager.temporaryDirectory URLByAppendingPathComponent:name];
     NSLog(@"saving to %@", tmpURL);
-    writeCGImage(getTextureImage(texture), (__bridge CFURLRef)tmpURL);
+    writeCGImage(textureImage(texture), (__bridge CFURLRef)tmpURL);
     system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
 
 }
@@ -84,7 +90,8 @@ bool checkTexture(id<MTLTexture> texture, NSString* name) {
 
     auto tmpURL = [NSFileManager.defaultManager.temporaryDirectory URLByAppendingPathComponent:name];
     NSLog(@"saving to %@", tmpURL);
-    writeCGImage(getTextureImage(texture), (__bridge CFURLRef)tmpURL);
+    CGImageRef image = textureImage(texture);
+    writeCGImage(image, (__bridge CFURLRef)tmpURL);
 
     // Get URL for baseline.
     NSString* path = @"Contents/Resources/vger_vgerTests.bundle/Contents/Resources/images/";
