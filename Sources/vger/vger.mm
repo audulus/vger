@@ -274,6 +274,8 @@ bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint) {
             if(primCount < maxPrims) {
                 *p = prim;
                 p->paint = paint;
+                // Keep the old image index.
+                p->paint.image = prim.paint.image;
                 p->xform = txStack.back();
                 p++;
                 primCount++;
