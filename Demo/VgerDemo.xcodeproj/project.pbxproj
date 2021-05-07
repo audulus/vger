@@ -13,13 +13,8 @@
 		29F372CA26421D7F00B38055 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F372B526421D7E00B38055 /* ContentView.swift */; };
 		29F372CB26421D7F00B38055 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29F372B626421D7F00B38055 /* Assets.xcassets */; };
 		29F372CC26421D7F00B38055 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29F372B626421D7F00B38055 /* Assets.xcassets */; };
-		29F372D626421DD200B38055 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F372D526421DD200B38055 /* Renderer.swift */; };
-		29F372D726421DD200B38055 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F372D526421DD200B38055 /* Renderer.swift */; };
 		29F372DA26421E2A00B38055 /* vger in Frameworks */ = {isa = PBXBuildFile; productRef = 29F372D926421E2A00B38055 /* vger */; };
-		29F372DC26421E7F00B38055 /* MTKView+ContentScaleFactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F372DB26421E5500B38055 /* MTKView+ContentScaleFactor.swift */; };
-		29F372DE2642205300B38055 /* VgerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F372DD2642205300B38055 /* VgerView.swift */; };
 		29F372E2264222BE00B38055 /* vger in Frameworks */ = {isa = PBXBuildFile; productRef = 29F372E1264222BE00B38055 /* vger */; };
-		29F372E3264222D200B38055 /* VgerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F372DF264222A700B38055 /* VgerView.swift */; };
 		29F372E5264223DE00B38055 /* DemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F372E4264223DE00B38055 /* DemoView.swift */; };
 		29F372E6264223DE00B38055 /* DemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F372E4264223DE00B38055 /* DemoView.swift */; };
 /* End PBXBuildFile section */
@@ -33,10 +28,6 @@
 		29F372C326421D7F00B38055 /* VgerDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VgerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		29F372C526421D7F00B38055 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		29F372C626421D7F00B38055 /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
-		29F372D526421DD200B38055 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
-		29F372DB26421E5500B38055 /* MTKView+ContentScaleFactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MTKView+ContentScaleFactor.swift"; sourceTree = "<group>"; };
-		29F372DD2642205300B38055 /* VgerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VgerView.swift; sourceTree = "<group>"; };
-		29F372DF264222A700B38055 /* VgerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VgerView.swift; sourceTree = "<group>"; };
 		29F372E4264223DE00B38055 /* DemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -77,7 +68,6 @@
 				29F372B426421D7E00B38055 /* VgerDemoApp.swift */,
 				29F372B526421D7E00B38055 /* ContentView.swift */,
 				29F372B626421D7F00B38055 /* Assets.xcassets */,
-				29F372D526421DD200B38055 /* Renderer.swift */,
 				29F372E4264223DE00B38055 /* DemoView.swift */,
 			);
 			path = Shared;
@@ -95,7 +85,6 @@
 		29F372BD26421D7F00B38055 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				29F372DF264222A700B38055 /* VgerView.swift */,
 				29F372BE26421D7F00B38055 /* Info.plist */,
 			);
 			path = iOS;
@@ -104,10 +93,8 @@
 		29F372C426421D7F00B38055 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
-				29F372DB26421E5500B38055 /* MTKView+ContentScaleFactor.swift */,
 				29F372C526421D7F00B38055 /* Info.plist */,
 				29F372C626421D7F00B38055 /* macOS.entitlements */,
-				29F372DD2642205300B38055 /* VgerView.swift */,
 			);
 			path = macOS;
 			sourceTree = "<group>";
@@ -225,9 +212,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				29F372E3264222D200B38055 /* VgerView.swift in Sources */,
 				29F372C926421D7F00B38055 /* ContentView.swift in Sources */,
-				29F372D626421DD200B38055 /* Renderer.swift in Sources */,
 				29F372E5264223DE00B38055 /* DemoView.swift in Sources */,
 				29F372C726421D7F00B38055 /* VgerDemoApp.swift in Sources */,
 			);
@@ -239,9 +224,6 @@
 			files = (
 				29F372CA26421D7F00B38055 /* ContentView.swift in Sources */,
 				29F372E6264223DE00B38055 /* DemoView.swift in Sources */,
-				29F372DE2642205300B38055 /* VgerView.swift in Sources */,
-				29F372D726421DD200B38055 /* Renderer.swift in Sources */,
-				29F372DC26421E7F00B38055 /* MTKView+ContentScaleFactor.swift in Sources */,
 				29F372C826421D7F00B38055 /* VgerDemoApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -486,7 +468,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/audulus/vger.git";
 			requirement = {
-				branch = main;
+				branch = swift;
 				kind = branch;
 			};
 		};

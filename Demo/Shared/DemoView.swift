@@ -2,6 +2,7 @@
 
 import SwiftUI
 import vger
+import vgerSwift
 
 struct DemoView: View {
 
