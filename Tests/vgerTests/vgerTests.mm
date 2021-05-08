@@ -192,6 +192,8 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
 
     [self checkRender:vg name:@"vger_basics.png"];
 
+    vgerDelete(vg);
+
 }
 
 - (void) testTransformStack {
