@@ -77,6 +77,26 @@ using namespace simd;
 
 }
 
+- (void) checkRender:(vger*)vg name:(NSString*) name {
+
+    auto commandBuffer = [queue commandBuffer];
+
+    vgerEncode(vg, commandBuffer, pass);
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder endEncoding];
+    #endif
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    XCTAssertTrue(checkTexture(texture, name));
+
+}
+
 static void SplitBezier(float t,
                         simd_float2 cv[3],
                         simd_float2 a[3],
@@ -170,21 +190,7 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
     vgerFillPath(vg, cvs2, 5, white);
     vgerRestore(vg);
 
-    auto commandBuffer = [queue commandBuffer];
-
-    vgerEncode(vg, commandBuffer, pass);
-
-    // Sync texture on macOS
-    #if TARGET_OS_OSX
-    auto blitEncoder = [commandBuffer blitCommandEncoder];
-    [blitEncoder synchronizeResource:texture];
-    [blitEncoder endEncoding];
-    #endif
-
-    [commandBuffer commit];
-    [commandBuffer waitUntilCompleted];
-
-    XCTAssertTrue(checkTexture(texture, @"vger_basics.png"));
+    [self checkRender:vg name:@"vger_basics.png"];
 
 }
 
