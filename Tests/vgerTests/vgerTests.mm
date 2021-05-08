@@ -732,6 +732,8 @@ static void textAt(vger* vger, float x, float y, const char* str) {
 
     [self render:vger name:@"test_align.png"];
 
+    vgerDelete(vger);
+
 }
 
 - (void) testPathFill {
