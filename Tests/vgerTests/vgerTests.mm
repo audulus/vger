@@ -304,19 +304,9 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
 
     vgerEncode(vger, commandBuffer, pass);
 
-    // Sync texture on macOS
-    #if TARGET_OS_OSX
-    auto blitEncoder = [commandBuffer blitCommandEncoder];
-    [blitEncoder synchronizeResource:texture];
-    [blitEncoder endEncoding];
-    #endif
-
-    [commandBuffer commit];
-    [commandBuffer waitUntilCompleted];
+    [self render:vger name:@"texture.png"];
 
     vgerDelete(vger);
-
-    showTexture(texture, @"texture.png");
 }
 
 - (void) testText {
