@@ -730,21 +730,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     vgerRenderText(vger, str, float4(1), VGER_ALIGN_CENTER | VGER_ALIGN_MIDDLE);
     vgerRestore(vger);
 
-    vgerEncode(vger, commandBuffer, pass);
-
-    // Sync texture on macOS
-    #if TARGET_OS_OSX
-    auto blitEncoder = [commandBuffer blitCommandEncoder];
-    [blitEncoder synchronizeResource:texture];
-    [blitEncoder endEncoding];
-    #endif
-
-    [commandBuffer commit];
-    [commandBuffer waitUntilCompleted];
-
-    vgerDelete(vger);
-
-    showTexture(texture, @"text_align.png");
+    [self render:vger name:@"test_align.png"];
 
 }
 
