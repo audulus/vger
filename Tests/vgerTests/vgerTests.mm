@@ -244,23 +244,9 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
 
     vgerRestore(vger);
 
-    auto commandBuffer = [queue commandBuffer];
-
-    vgerEncode(vger, commandBuffer, pass);
-
-    // Sync texture on macOS
-    #if TARGET_OS_OSX
-    auto blitEncoder = [commandBuffer blitCommandEncoder];
-    [blitEncoder synchronizeResource:texture];
-    [blitEncoder endEncoding];
-    #endif
-
-    [commandBuffer commit];
-    [commandBuffer waitUntilCompleted];
+    [self render:vger name:@"rects.png"];
 
     vgerDelete(vger);
-
-    showTexture(texture, @"rects.png");
 }
 
 - (NSURL*) getImageURL:(NSString*)name {
