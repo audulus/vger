@@ -813,21 +813,9 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     vgerRenderTextBox(vger, str, breakWidth, float4(1), 0);
     vgerRestore(vger);
 
-    vgerEncode(vger, commandBuffer, pass);
-
-    // Sync texture on macOS
-    #if TARGET_OS_OSX
-    auto blitEncoder = [commandBuffer blitCommandEncoder];
-    [blitEncoder synchronizeResource:texture];
-    [blitEncoder endEncoding];
-    #endif
-
-    [commandBuffer commit];
-    [commandBuffer waitUntilCompleted];
+    [self render:vger name:@"text_box.png"];
 
     vgerDelete(vger);
-
-    showTexture(texture, @"text_box.png");
 
 }
 
