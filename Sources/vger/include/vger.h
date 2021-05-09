@@ -29,75 +29,75 @@
 extern "C" {
 #endif
 
-typedef struct vger vger;
+typedef struct vger *vgerContext;
 
 /// Create a new state object.
-vger* vgerNew();
+vgerContext vgerNew();
 
 /// Deallocate state object.
-void vgerDelete(vger*);
+void vgerDelete(vgerContext);
 
 /// Begin rendering a frame.
-void vgerBegin(vger*, float windowWidth, float windowHeight, float devicePxRatio);
+void vgerBegin(vgerContext, float windowWidth, float windowHeight, float devicePxRatio);
 
 /// Create a texture to sample from.
-int  vgerAddTexture(vger*, const uint8_t* data, int width, int height);
+int  vgerAddTexture(vgerContext, const uint8_t* data, int width, int height);
 
 #ifdef __OBJC__
 /// Add a texture from a MTLTexture. This copies image data from the texture instead of referencing
 /// the texture.
-int vgerAddMTLTexture(vger*, id<MTLTexture>);
+int vgerAddMTLTexture(vgerContext, id<MTLTexture>);
 #endif
 
 /// Remove a texture.
-void vgerDeleteTexture(vger* vg, int texID);
+void vgerDeleteTexture(vgerContext vg, int texID);
 
 /// Get the size of a texture.
-vector_int2 vgerTextureSize(vger* vg, int texID);
+vector_int2 vgerTextureSize(vgerContext vg, int texID);
 
 /// Render a prim.
-void vgerRender(vger*, const vgerPrim* prim);
+void vgerRender(vgerContext, const vgerPrim* prim);
 
 /// Render text.
-void vgerText(vger*, const char* str, vector_float4 color, int align);
+void vgerText(vgerContext, const char* str, vector_float4 color, int align);
 
 /// Return bounds for text in local coordinates.
-void vgerTextBounds(vger* vg, const char* str, vector_float2* min, vector_float2* max, int align);
+void vgerTextBounds(vgerContext vg, const char* str, vector_float2* min, vector_float2* max, int align);
 
 /// Renders multi-line text.
-void vgerTextBox(vger* vg, const char* str, float breakRowWidth, vector_float4 color, int align);
+void vgerTextBox(vgerContext vg, const char* str, float breakRowWidth, vector_float4 color, int align);
 
 /// Returns bounds of multi-line text.
-void vgerTextBoxBounds(vger* vg, const char* str, float breakRowWidth, vector_float2* min, vector_float2* max, int align);
+void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, vector_float2* min, vector_float2* max, int align);
 
 /// Fill a path bounded by quadratic bezier segments.
-void vgerFillPath(vger* vg, vector_float2* cvs, int count, vgerPaint paint);
+void vgerFillPath(vgerContext vg, vector_float2* cvs, int count, vgerPaint paint);
 
 /// Translates current coordinate system.
-void vgerTranslate(vger*, vector_float2 t);
+void vgerTranslate(vgerContext, vector_float2 t);
 
 /// Scales current coordinate system.
-void vgerScale(vger*, vector_float2 s);
+void vgerScale(vgerContext, vector_float2 s);
 
 /// Transforms a point according to the current transformation.
-vector_float2 vgerTransform(vger*, vector_float2 p);
+vector_float2 vgerTransform(vgerContext, vector_float2 p);
 
 /// Returns current transformation matrix.
-simd_float3x2 vgerCurrentTransform(vger*);
+simd_float3x2 vgerCurrentTransform(vgerContext);
 
 /// Pushes and saves the current transform onto a transform stack. A matching vgerRestore must
 /// be used to restore the state.
-void vgerSave(vger*);
+void vgerSave(vgerContext);
 
 /// Pops and restores the current transform.
-void vgerRestore(vger*);
+void vgerRestore(vgerContext);
 
 #ifdef __OBJC__
 /// Encode drawing commands to a metal command buffer.
-void vgerEncode(vger*, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
+void vgerEncode(vgerContext, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 
 /// For debugging.
-id<MTLTexture> vgerGetGlyphAtlas(vger*);
+id<MTLTexture> vgerGetGlyphAtlas(vgerContext);
 #endif
 
 /// Create a paint for a constant color.

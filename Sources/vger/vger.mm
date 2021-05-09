@@ -164,15 +164,15 @@ struct vger {
     void renderTextBox(const char* str, float breakRowWidth, float4 color, int align);
 };
 
-vger* vgerNew() {
+vgerContext vgerNew() {
     return new vger;
 }
 
-void vgerDelete(vger* vg) {
+void vgerDelete(vgerContext vg) {
     delete vg;
 }
 
-void vgerBegin(vger* vg, float windowWidth, float windowHeight, float devicePxRatio) {
+void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devicePxRatio) {
     vg->curBuffer = (vg->curBuffer+1)%3;
     vg->p = (vgerPrim*) vg->primBuffers[vg->curBuffer].contents;
     vg->primCount = 0;
@@ -182,7 +182,7 @@ void vgerBegin(vger* vg, float windowWidth, float windowHeight, float devicePxRa
     vg->devicePxRatio = devicePxRatio;
 }
 
-int  vgerAddTexture(vger* vg, const uint8_t* data, int width, int height) {
+int  vgerAddTexture(vgerContext vg, const uint8_t* data, int width, int height) {
     assert(data);
 
     auto desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm width:width height:height mipmapped:NO];
@@ -201,24 +201,24 @@ int  vgerAddTexture(vger* vg, const uint8_t* data, int width, int height) {
     return vgerAddMTLTexture(vg, tex);
 }
 
-int vgerAddMTLTexture(vger* vg, id<MTLTexture> tex) {
+int vgerAddMTLTexture(vgerContext vg, id<MTLTexture> tex) {
     assert(tex);
     [vg->textures addObject:tex];
     return int(vg->textures.count)-1;
 }
 
-void vgerDeleteTexture(vger* vg, int texID) {
+void vgerDeleteTexture(vgerContext vg, int texID) {
     assert(vg);
     [vg->textures setObject:vg->nullTexture atIndexedSubscript:texID];
 }
 
 
-vector_int2 vgerTextureSize(vger* vg, int texID) {
+vector_int2 vgerTextureSize(vgerContext vg, int texID) {
     auto tex = [vg->textures objectAtIndex:texID];
     return {int(tex.width), int(tex.height)};
 }
 
-void vgerRender(vger* vg, const vgerPrim* prim) {
+void vgerRender(vgerContext vg, const vgerPrim* prim) {
 
     if(vg->primCount < vg->maxPrims) {
         *vg->p = *prim;
@@ -258,7 +258,7 @@ static float2 alignOffset(CTLineRef line, int align) {
     return t;
 }
 
-void vgerText(vger* vg, const char* str, float4 color, int align) {
+void vgerText(vgerContext vg, const char* str, float4 color, int align) {
     vg->renderText(str, color, align);
 }
 
@@ -376,7 +376,7 @@ void vger::renderText(const char* str, float4 color, int align) {
 
 }
 
-void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max, int align) {
+void vgerTextBounds(vgerContext vg, const char* str, float2* min, float2* max, int align) {
 
     CFRange entire = CFRangeMake(0, 0);
 
@@ -401,7 +401,7 @@ void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max, int ali
 
 }
 
-void vgerTextBox(vger* vg, const char* str, float breakRowWidth, float4 color, int align) {
+void vgerTextBox(vgerContext vg, const char* str, float breakRowWidth, float4 color, int align) {
     vg->renderTextBox(str, breakRowWidth, color, align);
 }
 
@@ -446,7 +446,7 @@ void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int
     CFRelease(rectPath);
 }
 
-void vgerTextBoxBounds(vger* vg, const char* str, float breakRowWidth, float2* min, float2* max, int align) {
+void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, float2* min, float2* max, int align) {
 
     CFRange entire = CFRangeMake(0, 0);
 
@@ -478,7 +478,7 @@ void vgerTextBoxBounds(vger* vg, const char* str, float breakRowWidth, float2* m
 
 bool scanPaths = true;
 
-void vgerFillPath(vger* vg, float2* cvs, int count, vgerPaint paint) {
+void vgerFillPath(vgerContext vg, float2* cvs, int count, vgerPaint paint) {
     vg->fillPath(cvs, count, paint);
 }
 
@@ -587,7 +587,7 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint) {
     }
 }
 
-void vgerEncode(vger* vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
+void vgerEncode(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
     vg->encode(buf, pass);
 }
 
@@ -634,7 +634,7 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
     }
 }
 
-void vgerTranslate(vger* vg, vector_float2 t) {
+void vgerTranslate(vgerContext vg, vector_float2 t) {
     auto M = matrix_identity_float3x3;
     M.columns[2] = vector3(t, 1);
 
@@ -643,7 +643,7 @@ void vgerTranslate(vger* vg, vector_float2 t) {
 }
 
 /// Scales current coordinate system.
-void vgerScale(vger* vg, vector_float2 s) {
+void vgerScale(vgerContext vg, vector_float2 s) {
     auto M = matrix_identity_float3x3;
     M.columns[0].x = s.x;
     M.columns[1].y = s.y;
@@ -653,29 +653,29 @@ void vgerScale(vger* vg, vector_float2 s) {
 }
 
 /// Transforms a point according to the current transformation.
-vector_float2 vgerTransform(vger* vg, vector_float2 p) {
+vector_float2 vgerTransform(vgerContext vg, vector_float2 p) {
     auto& M = vg->txStack.back();
     auto q = matrix_multiply(M, float3{p.x,p.y,1.0});
     return {q.x/q.z, q.y/q.z};
 }
 
-simd_float3x2 vgerCurrentTransform(vger* vg) {
+simd_float3x2 vgerCurrentTransform(vgerContext vg) {
     auto& M = vg->txStack.back();
     return {
         M.columns[0].xy, M.columns[1].xy, M.columns[2].xy
     };
 }
 
-void vgerSave(vger* vg) {
+void vgerSave(vgerContext vg) {
     vg->txStack.push_back(vg->txStack.back());
 }
 
-void vgerRestore(vger* vg) {
+void vgerRestore(vgerContext vg) {
     vg->txStack.pop_back();
     assert(!vg->txStack.empty());
 }
 
-id<MTLTexture> vgerGetGlyphAtlas(vger* vg) {
+id<MTLTexture> vgerGetGlyphAtlas(vgerContext vg) {
     return [vg->glyphCache getAltas];
 }
 

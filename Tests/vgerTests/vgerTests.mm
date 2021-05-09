@@ -57,7 +57,7 @@ using namespace simd;
     // Put teardown code here. This method is called after the invocation of each test method in the class.
 }
 
-- (void) render:(vger*)vg name:(NSString*) name {
+- (void) render:(vgerContext)vg name:(NSString*) name {
 
     auto commandBuffer = [queue commandBuffer];
 
@@ -77,7 +77,7 @@ using namespace simd;
 
 }
 
-- (void) checkRender:(vger*)vg name:(NSString*) name {
+- (void) checkRender:(vgerContext)vg name:(NSString*) name {
 
     auto commandBuffer = [queue commandBuffer];
 
@@ -562,7 +562,7 @@ void renderPaths(NVGcontext* vg, const std::vector<vgerPrim>& primArray) {
     system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
 }
 
-static void textAt(vger* vger, float x, float y, const char* str) {
+static void textAt(vgerContext vger, float x, float y, const char* str) {
     vgerSave(vger);
     vgerTranslate(vger, float2{x, y});
     vgerScale(vger, float2{2,2});
