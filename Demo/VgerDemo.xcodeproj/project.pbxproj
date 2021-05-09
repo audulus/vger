@@ -468,7 +468,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/audulus/vger.git";
 			requirement = {
-				branch = swift;
+				branch = main;
 				kind = branch;
 			};
 		};

@@ -9,14 +9,14 @@ struct DemoView: View {
     let cyan = SIMD4<Float>(0,1,1,1)
     let magenta = SIMD4<Float>(1,0,1,1)
 
-    func textAt(_ vger: OpaquePointer, _ x: Float, _ y: Float, _ string: String) {
+    func textAt(_ vger: vgerContext, _ x: Float, _ y: Float, _ string: String) {
         vgerSave(vger)
         vgerTranslate(vger, .init(x: x, y: y))
-        vgerRenderText(vger, string, cyan, 0)
+        vgerText(vger, string, cyan, 0)
         vgerRestore(vger)
     }
 
-    func draw(vger: OpaquePointer) {
+    func draw(vger: vgerContext) {
         vgerSave(vger)
 
         var bez = vgerPrim()

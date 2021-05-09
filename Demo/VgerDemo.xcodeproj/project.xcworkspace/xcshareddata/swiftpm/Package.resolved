@@ -5,8 +5,8 @@
         "package": "vger",
         "repositoryURL": "https://github.com/audulus/vger.git",
         "state": {
-          "branch": "swift",
-          "revision": "4a39b9d1d87a30924977b8d46d36d38cc60f977d",
+          "branch": "main",
+          "revision": "537869db23fae233eedc8d0b161df503aa0752fa",
           "version": null
         }
       }
