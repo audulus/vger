@@ -18,6 +18,9 @@ typedef enum {
     
     /// Rounded corner rectangle.
     vgerRect,
+
+    /// Stroked rounded rectangle.
+    vgerRectStroke,
     
     /// Single-segment quadratic bezier curve.
     vgerBezier,

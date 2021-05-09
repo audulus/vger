@@ -227,6 +227,7 @@ inline BBox sdPrimBounds(const DEVICE vgerPrim& prim, const DEVICE float2* cvs) 
             };
             break;
         case vgerRect:
+        case vgerRectStroke:
         case vgerGlyph:
             b = BBox{prim.cvs[0], prim.cvs[1]};
             break;
@@ -268,6 +269,12 @@ inline float sdPrim(const DEVICE vgerPrim& prim, float2 p) {
             auto center = .5*(prim.cvs[1] + prim.cvs[0]);
             auto size = prim.cvs[1] - prim.cvs[0];
             d = sdBox(p - center, .5*size, prim.radius);
+        }
+            break;
+        case vgerRectStroke: {
+            auto center = .5*(prim.cvs[1] + prim.cvs[0]);
+            auto size = prim.cvs[1] - prim.cvs[0];
+            d = abs(sdBox(p - center, .5*size, prim.radius)) - prim.width/2;
         }
             break;
         case vgerSegment:

@@ -151,8 +151,15 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
             .type = vgerRect,
             .width = 0.01,
             .cvs = {{400,100}, {450,150}},
-            .radius=0.04,
+            .radius= 10,
             .paint = vgerLinearGradient(float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1})
+        },
+        {
+            .type = vgerRectStroke,
+            .width = 2.0,
+            .cvs = {{400,100}, {450,150}},
+            .radius= 10,
+            .paint = magenta
         },
         {
             .type = vgerArc,
