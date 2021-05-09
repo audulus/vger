@@ -21,8 +21,8 @@ vger isn't cross-platform (just iOS and macOS), but the API is simple enough tha
 ## Status
 
 - ✅ Quadratic bezier strokes 
-- ✅ Round Rectangles (need strokes)
-- ✅ Circles 
+- ✅ Round Rectangles
+- ✅ Circles
 - ✅ Line segments (need square ends for Audulus)
 - ✅ Arcs (need square ends for Audulus)
 - ✅ Text (Audulus only uses one font, but could add support for more if anyone is interested)
