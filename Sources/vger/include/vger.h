@@ -50,10 +50,10 @@ int vgerAddMTLTexture(vgerContext, id<MTLTexture>);
 #endif
 
 /// Remove a texture.
-void vgerDeleteTexture(vgerContext vg, int texID);
+void vgerDeleteTexture(vgerContext, int texID);
 
 /// Get the size of a texture.
-vector_int2 vgerTextureSize(vgerContext vg, int texID);
+vector_int2 vgerTextureSize(vgerContext, int texID);
 
 /// Render a prim.
 void vgerRender(vgerContext, const vgerPrim* prim);
@@ -62,16 +62,16 @@ void vgerRender(vgerContext, const vgerPrim* prim);
 void vgerText(vgerContext, const char* str, vector_float4 color, int align);
 
 /// Return bounds for text in local coordinates.
-void vgerTextBounds(vgerContext vg, const char* str, vector_float2* min, vector_float2* max, int align);
+void vgerTextBounds(vgerContext, const char* str, vector_float2* min, vector_float2* max, int align);
 
 /// Renders multi-line text.
-void vgerTextBox(vgerContext vg, const char* str, float breakRowWidth, vector_float4 color, int align);
+void vgerTextBox(vgerContext, const char* str, float breakRowWidth, vector_float4 color, int align);
 
 /// Returns bounds of multi-line text.
-void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, vector_float2* min, vector_float2* max, int align);
+void vgerTextBoxBounds(vgerContext, const char* str, float breakRowWidth, vector_float2* min, vector_float2* max, int align);
 
 /// Fill a path bounded by quadratic bezier segments.
-void vgerFillPath(vgerContext vg, vector_float2* cvs, int count, vgerPaint paint);
+void vgerFillPath(vgerContext, vector_float2* cvs, int count, vgerPaint paint);
 
 /// Translates current coordinate system.
 void vgerTranslate(vgerContext, vector_float2 t);
