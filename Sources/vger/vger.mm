@@ -401,7 +401,7 @@ void vgerTextBounds(vger* vg, const char* str, float2* min, float2* max, int ali
 
 }
 
-void vgerRenderTextBox(vger* vg, const char* str, float breakRowWidth, float4 color, int align) {
+void vgerTextBox(vger* vg, const char* str, float breakRowWidth, float4 color, int align) {
     vg->renderTextBox(str, breakRowWidth, color, align);
 }
 

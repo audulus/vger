@@ -796,7 +796,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     };
     vgerRender(vger, &rect);
 
-    vgerRenderTextBox(vger, str, breakWidth, float4(1), 0);
+    vgerTextBox(vger, str, breakWidth, float4(1), 0);
     vgerRestore(vger);
 
     [self render:vger name:@"text_box.png"];

@@ -65,7 +65,7 @@ void vgerText(vger*, const char* str, vector_float4 color, int align);
 void vgerTextBounds(vger* vg, const char* str, vector_float2* min, vector_float2* max, int align);
 
 /// Renders multi-line text.
-void vgerRenderTextBox(vger* vg, const char* str, float breakRowWidth, vector_float4 color, int align);
+void vgerTextBox(vger* vg, const char* str, float breakRowWidth, vector_float4 color, int align);
 
 /// Returns bounds of multi-line text.
 void vgerTextBoxBounds(vger* vg, const char* str, float breakRowWidth, vector_float2* min, vector_float2* max, int align);
