@@ -258,7 +258,7 @@ static float2 alignOffset(CTLineRef line, int align) {
     return t;
 }
 
-void vgerRenderText(vger* vg, const char* str, float4 color, int align) {
+void vgerText(vger* vg, const char* str, float4 color, int align) {
     vg->renderText(str, color, align);
 }
 

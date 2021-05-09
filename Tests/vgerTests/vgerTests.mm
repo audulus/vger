@@ -311,7 +311,7 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
 
     vgerSave(vger);
     vgerTranslate(vger, float2{100,100});
-    vgerRenderText(vger, "This is a test.", float4{0,1,1,1}, VGER_ALIGN_LEFT);
+    vgerText(vger, "This is a test.", float4{0,1,1,1}, VGER_ALIGN_LEFT);
     vgerRestore(vger);
 
     auto commandBuffer = [queue commandBuffer];
@@ -346,7 +346,7 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
     vgerSave(vger);
     vgerTranslate(vger, float2{100,100});
     vgerScale(vger, float2{10,10});
-    vgerRenderText(vger, "This is a test.", float4{0,1,1,1}, VGER_ALIGN_LEFT);
+    vgerText(vger, "This is a test.", float4{0,1,1,1}, VGER_ALIGN_LEFT);
     vgerRestore(vger);
 
     auto commandBuffer = [queue commandBuffer];
@@ -566,7 +566,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     vgerSave(vger);
     vgerTranslate(vger, float2{x, y});
     vgerScale(vger, float2{2,2});
-    vgerRenderText(vger, str, float4{0,1,1,1}, VGER_ALIGN_LEFT);
+    vgerText(vger, str, float4{0,1,1,1}, VGER_ALIGN_LEFT);
     vgerRestore(vger);
 }
 
@@ -711,7 +711,7 @@ static void textAt(vger* vger, float x, float y, const char* str) {
     };
     vgerRender(vger, &dot);
 
-    vgerRenderText(vger, str, float4(1), VGER_ALIGN_CENTER | VGER_ALIGN_MIDDLE);
+    vgerText(vger, str, float4(1), VGER_ALIGN_CENTER | VGER_ALIGN_MIDDLE);
     vgerRestore(vger);
 
     [self render:vger name:@"test_align.png"];
