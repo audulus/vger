@@ -163,7 +163,7 @@ inline float2 get_distance_vector(float2 b0, float2 b1, float2 b2) {
     
     if( abs(2.0*a+b+d) < 0.001 ) return closestPointInSegment(b0,b2);
     
-    float f=b*d-a*a; // ð‘“(ð‘)
+    float f=b*d-a*a;
     float2 d21=b2-b1, d10=b1-b0, d20=b2-b0;
     float2 gf=2.0*(b*d21+d*d10+a*d20);
     gf=float2{gf.y,-gf.x};
