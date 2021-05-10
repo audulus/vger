@@ -127,8 +127,14 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
             int j = prim.start + 3*i;
             n += bezierTest(cvs[j], cvs[j+1], cvs[j+2], in.t);
         }
-        // XXX: no AA!
-        return n % 2 ? color : float4(color.rgb, 0.0);
+        if(n % 2) {
+            d = -1; // completely inside
+        }
+        // Outside, calculate stroke.
+        for(int i=0; i<prim.count; i++) {
+            int j = prim.start + 3*i;
+            d = min(d, sdBezierApprox(in.t, cvs[j], cvs[j+1], cvs[j+2]));
+        }
     }
 
     float fw = length(fwidth(in.t));
