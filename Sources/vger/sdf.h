@@ -145,7 +145,7 @@ inline float sdBezier2(float2 uv, float2 p0, float2 p1, float2 p2){
     gradient.x=2.*trf.columns[0][0]*(trf.columns[0][0]*uv.x+trf.columns[1][0]*uv.y)-trf.columns[0][1];
     gradient.y=2.*trf.columns[1][0]*(trf.columns[0][0]*uv.x+trf.columns[1][0]*uv.y)-trf.columns[1][1];
 
-    return (xy.x*xy.x-xy.y)/length(gradient);
+    return abs(xy.x*xy.x-xy.y)/length(gradient);
 }
 
 inline float det(float2 a, float2 b) { return a.x*b.y-b.x*a.y; }
