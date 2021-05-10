@@ -251,8 +251,11 @@ inline BBox sdPrimBounds(const DEVICE vgerPrim& prim, const DEVICE float2* cvs) 
     return b.inset(-prim.width);
 }
 
-inline float sdPrim(const DEVICE vgerPrim& prim, float2 p) {
+inline int bezierTest(float2 A, float2 B, float2 C, float2 p);
+
+inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p) {
     float d = FLT_MAX;
+    int n = 0;
     switch(prim.type) {
         case vgerBezier:
             // d = sdBezier(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]);
@@ -290,6 +293,20 @@ inline float sdPrim(const DEVICE vgerPrim& prim, float2 p) {
             break;
         case vgerWire:
             d = sdWire(p, prim.cvs[0], prim.cvs[1]);
+            break;
+        case vgerPathFill:
+            for(int i=0; i<prim.count; i++) {
+                int j = prim.start + 3*i;
+                n += bezierTest(cvs[j], cvs[j+1], cvs[j+2], p);
+            }
+            if(n % 2) {
+                d = 0; // completely inside
+            }
+            // Outside, calculate stroke.
+            for(int i=0; i<prim.count; i++) {
+                int j = prim.start + 3*i;
+                d = min(d, sdBezierApprox(p, cvs[j], cvs[j+1], cvs[j+2]));
+            }
             break;
         default:
             break;

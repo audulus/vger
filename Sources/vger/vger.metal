@@ -26,7 +26,7 @@ kernel void vger_prune(uint gid [[thread_position_in_grid]],
             auto center = 0.5 * (prim.texcoords[0] + prim.texcoords[3]);
             auto tile_size = prim.texcoords[3] - prim.texcoords[0];
 
-            if(sdPrim(prim, center) > max(tile_size.x, tile_size.y) * 0.5 * SQRT_2) {
+            if(sdPrim(prim, nullptr, center) > max(tile_size.x, tile_size.y) * 0.5 * SQRT_2) {
                 float2 big = {FLT_MAX, FLT_MAX};
                 prim.verts[0] = big;
                 prim.verts[1] = big;
@@ -101,7 +101,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
         return float4(c.rgb, c.a * glyphs.sample(glyphSampler, in.t).a);
     }
     
-    float d = sdPrim(prim, in.t);
+    float d = sdPrim(prim, cvs, in.t);
 
     //if(d > 2*sw) {
     //    discard_fragment();
@@ -119,22 +119,6 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
         auto t = (prim.paint.xform * float3(in.t,1)).xy;
         t.y = 1.0 - t.y;
         color = tex.sample(textureSampler, t);
-    }
-
-    if(prim.type == vgerPathFill) {
-        int n = 0;
-        for(int i=0; i<prim.count; i++) {
-            int j = prim.start + 3*i;
-            n += bezierTest(cvs[j], cvs[j+1], cvs[j+2], in.t);
-        }
-        if(n % 2) {
-            d = -1; // completely inside
-        }
-        // Outside, calculate stroke.
-        for(int i=0; i<prim.count; i++) {
-            int j = prim.start + 3*i;
-            d = min(d, sdBezierApprox(in.t, cvs[j], cvs[j+1], cvs[j+2]));
-        }
     }
 
     float fw = length(fwidth(in.t));
