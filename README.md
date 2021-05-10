@@ -27,7 +27,7 @@ vger isn't cross-platform (just iOS and macOS), but the API is simple enough tha
 - ✅ Arcs (need square ends for Audulus)
 - ✅ Text (Audulus only uses one font, but could add support for more if anyone is interested)
 - ✅ Multi-line text
-- Path Fills: Haven't done AA yet.
+- ✅ Path Fills.
 
 ## Installation
 
