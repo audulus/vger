@@ -384,6 +384,48 @@ inline float2 bezier(float2 A, float2 B, float2 C, float t) {
     return (1 - t) * (1 - t) * A + 2 * (1 - t) * t * B + t * t * C;
 }
 
+// From https://github.com/linebender/kurbo/blob/25ec803ecd1bb908d2b1d8242282b76c060b26d6/src/common.rs#L105
+
+inline float2 solve_quadratic(float c0, float c1, float c2) {
+    float sc0 = c0 * (1.0f/c2);
+    float sc1 = c1 * (1.0f/c2);
+    if(isinf(c0) || isinf(sc1)) {
+        // c2 is zero or very small, treat as linear eqn
+        float root = -c0 / c1;
+        if(!isinf(root)) {
+            return float2{root, NAN};
+        } else if(c0 == 0.0f || c1 == 0.0f) {
+            // Degenerate.
+            return float2{0.0, NAN};
+        }
+    }
+
+    float arg = sc1 * sc1 - 4.0f * sc0;
+    float root1;
+    if(!isinf(arg)) {
+        root1 = -sc1;
+    } else {
+        if(arg < 0.0) {
+            return float2{NAN, NAN};
+        } else if(arg == 0.0) {
+            return float2{-0.5f * sc1, NAN};
+        }
+        // See https://math.stackexchange.com/questions/866331
+        root1 = -0.5f * (sc1 + copysign(sqrt(arg), sc1));
+    }
+    float root2 = sc0 / root1;
+    if(!isinf(root2)) {
+        if(root2 > root1) {
+            return float2{root1, root2};
+        } else {
+            return float2{root2, root1};
+        }
+    } else {
+        return float2{root1, NAN};
+    }
+    return float2{NAN, NAN};
+}
+
 /// Intersect a bezier with a horizontal line.
 inline float2 bezierIntersect(float2 A, float2 B, float2 C, float y) {
 
