@@ -123,6 +123,31 @@ inline float sdBezier(float2 pos, float2 A, float2 B, float2 C )
     return sqrt( res );
 }
 
+// From https://www.shadertoy.com/view/4sySDK
+
+inline float2x2 inv(float2x2 M) {
+    return (1.0f / determinant(M)) * float2x2{
+        float2{M.columns[1][1], -M.columns[0][1]},
+        float2{-M.columns[1][0], M.columns[0][0]}};
+}
+
+inline float sdBezier2(float2 uv, float2 p0, float2 p1, float2 p2){
+
+    const float2x2 trf1 = float2x2{ float2{-1, 2}, float2{1, 2} };
+    float2x2 trf2 = inv(float2x2{p0-p1, p2-p1});
+    float2x2 trf=trf1*trf2;
+
+    uv-=p1;
+    float2 xy=trf*uv;
+    xy.y-=1.;
+
+    float2 gradient;
+    gradient.x=2.*trf.columns[0][0]*(trf.columns[0][0]*uv.x+trf.columns[1][0]*uv.y)-trf.columns[0][1];
+    gradient.y=2.*trf.columns[1][0]*(trf.columns[0][0]*uv.x+trf.columns[1][0]*uv.y)-trf.columns[1][1];
+
+    return (xy.x*xy.x-xy.y)/length(gradient);
+}
+
 inline float det(float2 a, float2 b) { return a.x*b.y-b.x*a.y; }
 
 inline float2 closestPointInSegment( float2 a, float2 b )
