@@ -386,6 +386,9 @@ inline float2 bezier(float2 A, float2 B, float2 C, float t) {
 
 // From https://github.com/linebender/kurbo/blob/25ec803ecd1bb908d2b1d8242282b76c060b26d6/src/common.rs#L105
 
+/// Find real roots of quadratic equation.
+///
+/// Returns values of x for which c0 + c1 x + c2 x² = 0.
 inline float2 solve_quadratic(float c0, float c1, float c2) {
     float sc0 = c0 * (1.0f/c2);
     float sc1 = c1 * (1.0f/c2);
@@ -402,7 +405,7 @@ inline float2 solve_quadratic(float c0, float c1, float c2) {
 
     float arg = sc1 * sc1 - 4.0f * sc0;
     float root1;
-    if(!isinf(arg)) {
+    if(isinf(arg)) {
         root1 = -sc1;
     } else {
         if(arg < 0.0) {

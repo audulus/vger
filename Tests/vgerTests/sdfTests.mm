@@ -25,6 +25,14 @@
 
 }
 
+- (void) testSolveQuadratic {
+
+
+    float2 x = solve_quadratic(-1, 0, 1);
+    XCTAssertTrue(simd_equal(x, float2{-1, 1}));
+    
+}
+
 - (void) testBezierIntersect {
 
     float epsilon = 1e-5;
