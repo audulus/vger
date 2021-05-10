@@ -39,6 +39,18 @@
     x = solve_quadratic(-5.0, 0.0, 1.0);
     XCTAssertEqualWithAccuracy(x[0], -sqrtf(5.0), epsilon);
     XCTAssertEqualWithAccuracy(x[1], sqrtf(5.0), epsilon);
+
+    x = solve_quadratic(5.0, 0.0, 1.0);
+    XCTAssert(isnan(x[0]));
+    XCTAssert(isnan(x[1]));
+
+    x = solve_quadratic(5.0, 1.0, 0.0);
+    XCTAssertEqualWithAccuracy(x[0], -5.0, epsilon);
+    XCTAssert(isnan(x[1]));
+
+    x = solve_quadratic(1.0, 2.0, 1.0);
+    XCTAssertEqualWithAccuracy(x[0], -1.0, epsilon);
+    XCTAssert(isnan(x[1]));
     
 }
 
