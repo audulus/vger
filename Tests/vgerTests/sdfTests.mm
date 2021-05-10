@@ -30,6 +30,10 @@
 
     float2 x = solve_quadratic(-1, 0, 1);
     XCTAssertTrue(simd_equal(x, float2{-1, 1}));
+
+    x = solve_quadratic(0, 0, 1);
+    XCTAssertEqual(x[0], 0);
+    XCTAssert(isnan(x[1]));
     
 }
 
