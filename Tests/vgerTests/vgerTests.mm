@@ -118,11 +118,6 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
 
 - (void) testBasic {
 
-    simd_float2 cvs[3] = {256, {256,384}, {384,384}};
-    simd_float2 cvs_l[3];
-    simd_float2 cvs_r[3];
-    SplitBezier(0.5, cvs, cvs_l, cvs_r);
-
     float theta = 0;
     float ap = .5 * M_PI;
 
@@ -136,9 +131,9 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
             .paint = cyan
         },
         {
-            .type = vgerCurve,
+            .type = vgerBezier,
             .width = 1,
-            .count = 5,
+            .cvs = {{256,256}, {256,384}, {384,384}},
             .paint = white,
         },
         {
@@ -175,13 +170,6 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
             .paint = white
         }
     };
-    
-    simd_float2* pts = primArray[1].cvs;
-    pts[0] = cvs_l[0];
-    pts[1] = cvs_l[1];
-    pts[2] = cvs_l[2];
-    pts[3] = cvs_r[1];
-    pts[4] = cvs_r[2];
 
     auto vg = vgerNew();
 
