@@ -27,6 +27,7 @@
 
 - (void) testSolveQuadratic {
 
+    float epsilon = 1e-5;
 
     float2 x = solve_quadratic(-1, 0, 1);
     XCTAssertTrue(simd_equal(x, float2{-1, 1}));
@@ -34,6 +35,10 @@
     x = solve_quadratic(0, 0, 1);
     XCTAssertEqual(x[0], 0);
     XCTAssert(isnan(x[1]));
+
+    x = solve_quadratic(-5.0, 0.0, 1.0);
+    XCTAssertEqualWithAccuracy(x[0], -sqrtf(5.0), epsilon);
+    XCTAssertEqualWithAccuracy(x[1], sqrtf(5.0), epsilon);
     
 }
 
