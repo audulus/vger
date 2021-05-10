@@ -466,7 +466,7 @@ inline int bezierTest(float2 A, float2 B, float2 C, float2 p) {
     auto t = bezierIntersect(A, B, C, p.y);
 
     for(int i=0;i<2;++i) {
-        c += !isnan(t[i]) && (t[i] >= 0.0) && (t[i] <= 1.0) && (bezier(A, B, C, t[i]).x > p.x);
+        c += !isnan(t[i]) && (t[i] >= 0.0) && (t[i] < 1.0) && (bezier(A, B, C, t[i]).x > p.x);
     }
 
     return c;
