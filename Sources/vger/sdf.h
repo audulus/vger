@@ -256,14 +256,7 @@ inline BBox sdPrimBounds(const DEVICE vgerPrim& prim, const DEVICE float2* cvs) 
         case vgerGlyph:
             b = BBox{prim.cvs[0], prim.cvs[1]};
             break;
-        case vgerCurve: {
-            b = {FLT_MAX, -FLT_MAX};
-            for(int i=0;i<prim.count;++i) {
-                b.min = min(b.min, prim.cvs[i]);
-                b.max = max(b.max, prim.cvs[i]);
-            }
-            break;
-        }
+        case vgerCurve:
         case vgerPathFill: {
             b = {FLT_MAX, -FLT_MAX};
             for(int i=0;i<prim.count*3;++i) {
@@ -309,11 +302,9 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
             d = sdSegment(p, prim.cvs[0], prim.cvs[1]) - prim.width;
             break;
         case vgerCurve:
-            for(int i=0;i<prim.count-2;i+=2) {
-                d = min(d, sdBezierApprox(p,
-                                          prim.cvs[i],
-                                          prim.cvs[i+1],
-                                          prim.cvs[i+2]));
+            for(int i=0; i<prim.count; i++) {
+                int j = prim.start + 3*i;
+                d = min(d, sdBezierApprox(p, cvs[j], cvs[j+1], cvs[j+2]));
             }
             break;
         case vgerWire:
