@@ -1,9 +1,28 @@
 // Copyright © 2021 Audulus LLC. All rights reserved.
 
-#include "vgerGlyphPathCache.h"
-#include "sdf.h"
+#import "vgerGlyphPathCache.h"
+#import "vgerBundleHelper.h"
+#import "sdf.h"
 
 using namespace simd;
+
+vgerGlyphPathCache::vgerGlyphPathCache() {
+    
+    auto bundle = [vgerBundleHelper moduleBundle];
+    assert(bundle);
+
+    auto fontURL = [bundle URLForResource:@"Anodina-Regular" withExtension:@"ttf" subdirectory:@"fonts"];
+
+    auto fd = CTFontManagerCreateFontDescriptorsFromURL( (__bridge CFURLRef) fontURL);
+    ctFont = CTFontCreateWithFontDescriptor( (CTFontDescriptorRef) CFArrayGetValueAtIndex(fd, 0), 12.0, nil);
+    assert(ctFont);
+    CFRelease(fd);
+    
+}
+
+vgerGlyphPathCache::~vgerGlyphPathCache() {
+    CFRelease(ctFont);
+}
 
 vgerGlyphPathCache::Info& vgerGlyphPathCache::getInfo(CGGlyph glyph) {
     

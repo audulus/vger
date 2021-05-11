@@ -22,6 +22,9 @@ struct vgerGlyphPathCache {
     
     vgerPathScanner scan;
     
+    vgerGlyphPathCache();
+    ~vgerGlyphPathCache();
+    
     Info& getInfo(CGGlyph);
 };
 
