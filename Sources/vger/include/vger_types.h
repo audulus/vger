@@ -72,7 +72,7 @@ typedef struct {
     float radius;
     
     /// Control vertices.
-    vector_float2 cvs[8];
+    vector_float2 cvs[3];
 
     /// Start of the control vertices, if they're in a separate buffer.
     int start;
