@@ -14,6 +14,7 @@
 #import "vgerTextureManager.h"
 #import "vgerGlyphCache.h"
 #import "vgerPathScanner.h"
+#import "vgerGlyphPathCache.h"
 #include <vector>
 #include <unordered_map>
 #include <string>
@@ -125,6 +126,9 @@ struct vger {
 
     /// For speeding up path rendering.
     vgerPathScanner scan;
+    
+    /// For generating glyph paths.
+    vgerGlyphPathCache glyphPathCache;
 
     vger() {
         device = MTLCreateSystemDefaultDevice();
@@ -162,6 +166,8 @@ struct vger {
     void renderText(const char* str, float4 color, int align);
 
     void renderTextBox(const char* str, float breakRowWidth, float4 color, int align);
+    
+    void renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 position);
 };
 
 vgerContext vgerNew() {
@@ -346,6 +352,31 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPa
         }
     }
 
+}
+
+void vger::renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 position) {
+
+    auto& info = glyphPathCache.getInfo(glyph);
+    auto n = cvCount;
+    
+    vgerSave(this);
+    vgerTranslate(this, position);
+    
+    for(auto& prim : info.prims) {
+        if(primCount < maxPrims) {
+            *p = prim;
+            p->xform = txStack.back();
+            p->paint = paint;
+            p->start += n;
+            p++;
+            primCount++;
+        }
+        for(auto cv : info.cvs) {
+            addCV(cv);
+        }
+    }
+    
+    vgerRestore(this);
 }
 
 void vger::renderText(const char* str, float4 color, int align) {
