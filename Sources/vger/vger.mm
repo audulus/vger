@@ -86,7 +86,7 @@ struct vger {
     int primCount = 0;
 
     /// Prim buffer capacity.
-    int maxPrims = 16384;
+    int maxPrims = 65536;
 
     /// Cycle through 3 cv buffers for streaming.
     id<MTLBuffer> cvBuffers[3];
@@ -98,7 +98,7 @@ struct vger {
     int cvCount = 0;
 
     /// CV buffer capacity.
-    int maxCvs = 16384;
+    int maxCvs = 1024*1024;
 
     /// Atlas for finding glyph images.
     vgerGlyphCache* glyphCache;
