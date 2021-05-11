@@ -94,15 +94,22 @@
     // Vertical line, left of point.
     XCTAssertEqual(bezierTest(float2{-1,-1}, float2{-1,0}, float2{-1,1}, float2{0, 0}), 0);
 
-
     // Diagonal line, right of point.
     XCTAssertEqual(bezierTest(float2{1, -1}, float2{2,0}, float2{3,1}, float2{0, 0}), 1);
 
-    // Diagonal in Z
-    XCTAssertEqual(bezierTest(float2{0, 1.308}, float2{2.19, 4.374}, float2{4.38, 7.44}, float2{0,5.0}), 1);
-
     t = bezierIntersect(float2{0,0}, float2{0,1}, float2{0,2}, 1.0);
     XCTAssertEqual(t[0], 0.5);
+}
+
+- (void) testDiagonalZ {
+    // Diagonal in Z
+    XCTAssertEqual(bezierTest(float2{0, 1.308}, float2{2.19, 4.374}, float2{4.38, 7.44}, float2{0,5.0}), 1);
+}
+
+- (void) testPCurve {
+    int n = bezierTest(float2{4.968, 7.728}, float2{5.748, 7.02}, float2{5.748, 5.796},
+                       float2{0,6.0});
+    XCTAssertEqual(n, 1);
 }
 
 @end
