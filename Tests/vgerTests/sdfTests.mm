@@ -94,8 +94,6 @@
     // Vertical line, left of point.
     XCTAssertEqual(bezierTest(float2{-1,-1}, float2{-1,0}, float2{-1,1}, float2{0, 0}), 0);
 
-    // Horizontal line.
-    XCTAssertEqual(bezierTest(float2{1,0}, float2{2,0}, float2{3,1}, float2{0, 0}), 0);
 
     // Diagonal line, right of point.
     XCTAssertEqual(bezierTest(float2{1, -1}, float2{2,0}, float2{3,1}, float2{0, 0}), 1);

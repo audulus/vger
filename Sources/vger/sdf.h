@@ -424,7 +424,7 @@ inline float2 bezier(float2 A, float2 B, float2 C, float t) {
 inline float2 solve_quadratic(float c0, float c1, float c2) {
     float sc0 = c0 * (1.0f/c2);
     float sc1 = c1 * (1.0f/c2);
-    if(isinf(c0) || isinf(sc1)) {
+    if(isinf(sc0) || isinf(sc1)) {
         // c2 is zero or very small, treat as linear eqn
         float root = -c0 / c1;
         if(!isinf(root)) {
