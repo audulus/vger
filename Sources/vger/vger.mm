@@ -151,8 +151,10 @@ struct vger {
     }
 
     void addCV(float2 p) {
-        *(cv++) = p;
-        cvCount++;
+        if(cvCount < maxCvs) {
+            *(cv++) = p;
+            cvCount++;
+        }
     }
 
     void fillPath(float2* cvs, int count, vgerPaint paint);
@@ -371,39 +373,77 @@ void vger::renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 positio
             p++;
             primCount++;
         }
-        for(auto cv : info.cvs) {
-            addCV(cv);
-        }
+    }
+    
+    for(auto cv : info.cvs) {
+        addCV(cv);
     }
     
     vgerRestore(this);
 }
 
+bool glyphPaths = false;
+
 void vger::renderText(const char* str, float4 color, int align) {
-
+    
     auto paint = vgerColorPaint(color);
-    auto scale = averageScale(txStack.back()) * devicePxRatio;
-    auto key = TextLayoutKey{std::string(str), scale, align};
+    
+    if(glyphPaths) {
+        
+        CFRange entire = CFRangeMake(0, 0);
+        
+        auto attributes = @{ NSFontAttributeName : (__bridge id)glyphPathCache.ctFont };
+        auto string = [NSString stringWithUTF8String:str];
+        auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
+        auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
+        auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
+        
+        NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
+        for(id r in runs) {
+            CTRunRef run = (__bridge CTRunRef)r;
+            size_t glyphCount = CTRunGetGlyphCount(run);
 
-    if(renderCachedText(key, paint)) {
-        return;
+            glyphs.resize(glyphCount);
+            CTRunGetGlyphs(run, entire, glyphs.data());
+
+            for(int i=0;i<glyphCount;++i) {
+                
+                CGRect r = CTRunGetImageBounds(run, nil, CFRangeMake(i, 1));
+                float2 p = {float(r.origin.x), float(r.origin.y)};
+                
+                renderGlyphPath(glyphs[i], paint, p);
+            }
+        }
+        
+        CFRelease(typesetter);
+        CFRelease(line);
+        
+    } else {
+
+        auto scale = averageScale(txStack.back()) * devicePxRatio;
+        auto key = TextLayoutKey{std::string(str), scale, align};
+        
+        if(renderCachedText(key, paint)) {
+            return;
+        }
+        
+        // Text cache miss, do more expensive typesetting.
+        
+        auto attributes = @{ NSFontAttributeName : (__bridge id)[glyphCache getFont] };
+        auto string = [NSString stringWithUTF8String:str];
+        auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
+        auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
+        auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
+        
+        auto& textInfo = textCache[key];
+        textInfo.lastFrame = currentFrame;
+        
+        renderTextLine(line, textInfo, paint, alignOffset(line, align), scale);
+        
+        CFRelease(typesetter);
+        CFRelease(line);
+        
     }
-
-    // Text cache miss, do more expensive typesetting.
-
-    auto attributes = @{ NSFontAttributeName : (__bridge id)[glyphCache getFont] };
-    auto string = [NSString stringWithUTF8String:str];
-    auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
-    auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
-    auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
-
-    auto& textInfo = textCache[key];
-    textInfo.lastFrame = currentFrame;
-
-    renderTextLine(line, textInfo, paint, alignOffset(line, align), scale);
-
-    CFRelease(typesetter);
-    CFRelease(line);
 
 }
 
