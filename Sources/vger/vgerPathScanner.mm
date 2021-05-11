@@ -4,6 +4,8 @@
 #include <cmath>
 #include <cfloat>
 
+using namespace simd;
+
 Interval vgerPathScanner::Segment::yInterval() const {
     return { std::min(cvs[0].y, std::min(cvs[1].y, cvs[2].y)),
         std::max(cvs[0].y, std::max(cvs[1].y, cvs[2].y))
@@ -14,11 +16,24 @@ bool operator<(const vgerPathScanner::Node& a, const vgerPathScanner::Node& b) {
     return std::tie(a.y, a.seg, a.end) < std::tie(b.y, b.seg, b.end);
 }
 
+void vgerPathScanner::_init() {
+
+    nodes.clear();
+    index = 0;
+
+    for(int i=0;i<segments.size();++i) {
+        auto yInterval = segments[i].yInterval();
+        nodes.push_back({yInterval.a, i, 0});
+        nodes.push_back({yInterval.b, i, 1});
+    }
+
+    std::sort(nodes.begin(), nodes.end());
+
+}
+
 void vgerPathScanner::begin(vector_float2 *cvs, int count) {
 
     segments.clear();
-    nodes.clear();
-    index = 0;
 
     for(int i=0;i<count-2;i+=2) {
         segments.push_back({cvs[i], cvs[i+1], cvs[i+2]});
@@ -31,13 +46,71 @@ void vgerPathScanner::begin(vector_float2 *cvs, int count) {
         segments.push_back({end, (start+end)/2, start});
     }
 
-    for(int i=0;i<segments.size();++i) {
-        auto yInterval = segments[i].yInterval();
-        nodes.push_back({yInterval.a, i, 0});
-        nodes.push_back({yInterval.b, i, 1});
+    _init();
+
+}
+
+float2 tof2(CGPoint p) {
+    return float2{(float)p.x, (float)p.y};
+}
+
+static void pathElement(void *info, const CGPathElement *element) {
+
+    auto scan = (vgerPathScanner*) info;
+
+    float2& p = scan->p;
+    float2& start = scan->start;
+
+    switch(element->type) {
+        case kCGPathElementMoveToPoint:
+            p = start = tof2(element->points[0]);
+            break;
+
+        case kCGPathElementAddLineToPoint: {
+            printf("kCGPathElementAddLineToPoint\n");
+            float2 b = tof2(element->points[0]);
+            scan->segments.push_back({p, (p+b)/2, b});
+            p = b;
+        }
+            break;
+
+        case kCGPathElementAddQuadCurveToPoint:
+            printf("kCGPathElementAddQuadCurveToPoint\n");
+
+            scan->segments.push_back({
+                p, tof2(element->points[0]), tof2(element->points[1])
+            });
+
+            p = tof2(element->points[1]);
+            break;
+
+        case kCGPathElementAddCurveToPoint:
+            assert(false); // can't handle cubic curves yet.
+            break;
+
+        case kCGPathElementCloseSubpath:
+            printf("kCGPathElementCloseSubpath\n");
+            if(!simd_equal(p, start)) {
+                scan->segments.push_back({p, (p+start)/2, start});
+            }
+            p = start;
+            break;
+
+        default:
+            break;
     }
 
-    std::sort(nodes.begin(), nodes.end());
+}
+
+void vgerPathScanner::begin(CGPathRef path) {
+
+    segments.clear();
+    p = float2{0,0};
+    start = float2{0,0};
+
+    CGPathApply(path, this, pathElement);
+
+    _init();
 
 }
 

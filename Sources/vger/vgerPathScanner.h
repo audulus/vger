@@ -7,6 +7,7 @@
 #include <vector>
 #include <set>
 #include "Interval.h"
+#import <CoreGraphics/CoreGraphics.h>
 
 struct vgerPathScanner {
 
@@ -30,8 +31,12 @@ struct vgerPathScanner {
     Interval yInterval;
     int first = -1; // first active segment
     int activeCount = 0;
+    vector_float2 start{0,0};
+    vector_float2 p{0,0};
 
+    void _init();
     void begin(vector_float2* cvs, int count);
+    void begin(CGPathRef path);
     bool next();
 
 };
