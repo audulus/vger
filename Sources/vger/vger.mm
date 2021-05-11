@@ -134,6 +134,7 @@ struct vger {
         device = MTLCreateSystemDefaultDevice();
         renderer = [[vgerRenderer alloc] initWithDevice:device];
         glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
+        printf("prim buffer size: %d MB\n", (int)(maxPrims * sizeof(vgerPrim))/(1024*1024));
         for(int i=0;i<3;++i) {
             primBuffers[i] = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
                                            options:MTLResourceStorageModeShared];
