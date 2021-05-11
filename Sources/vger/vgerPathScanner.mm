@@ -67,7 +67,6 @@ static void pathElement(void *info, const CGPathElement *element) {
             break;
 
         case kCGPathElementAddLineToPoint: {
-            printf("kCGPathElementAddLineToPoint\n");
             float2 b = tof2(element->points[0]);
             scan->segments.push_back({p, (p+b)/2, b});
             p = b;
@@ -75,8 +74,6 @@ static void pathElement(void *info, const CGPathElement *element) {
             break;
 
         case kCGPathElementAddQuadCurveToPoint:
-            printf("kCGPathElementAddQuadCurveToPoint\n");
-
             scan->segments.push_back({
                 p, tof2(element->points[0]), tof2(element->points[1])
             });
@@ -89,7 +86,6 @@ static void pathElement(void *info, const CGPathElement *element) {
             break;
 
         case kCGPathElementCloseSubpath:
-            printf("kCGPathElementCloseSubpath\n");
             if(!simd_equal(p, start)) {
                 scan->segments.push_back({p, (p+start)/2, start});
             }
