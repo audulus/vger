@@ -19,7 +19,7 @@
     queue = [device newCommandQueue];
 }
 
-- (void)testGlpyhAtlas {
+- (void)testGlyphAtlas {
 
     auto cache = [[vgerGlyphCache alloc] initWithDevice:device];
 
