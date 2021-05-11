@@ -122,6 +122,6 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
     }
 
     float fw = length(fwidth(in.t));
-    return mix(float4(color.rgb,0.0), color, 1.0-smoothstep(0,fw,d) );
+    return mix(float4(color.rgb,0.0), color, 1.0-smoothstep(-fw/2,fw/2,d) );
 
 }

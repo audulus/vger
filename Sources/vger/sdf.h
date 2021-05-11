@@ -315,13 +315,12 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
                 int j = prim.start + 3*i;
                 n += bezierTest(cvs[j], cvs[j+1], cvs[j+2], p);
             }
-            if(n % 2) {
-                d = 0; // completely inside
-            }
-            // Outside, calculate stroke.
             for(int i=0; i<prim.count; i++) {
                 int j = prim.start + 3*i;
                 d = min(d, sdBezierApprox(p, cvs[j], cvs[j+1], cvs[j+2]));
+            }
+            if(n % 2) {
+                d = -d;
             }
             break;
         default:
