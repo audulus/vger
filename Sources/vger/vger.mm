@@ -494,7 +494,7 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint) {
 
         while(scan.next()) {
 
-            int n = scan.active.size();
+            int n = scan.activeCount;
 
             vgerPrim prim = {
                 .type = vgerPathFill,
@@ -508,7 +508,7 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint) {
 
                 Interval xInt{FLT_MAX, -FLT_MAX};
 
-                for(auto a : scan.active) {
+                for(int a = scan.first; a != -1; a = scan.segments[a].next) {
 
                     assert(a < scan.segments.size());
                     for(int i=0;i<3;++i) {
@@ -541,6 +541,8 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint) {
                 primCount++;
             }
         }
+
+        assert(scan.activeCount == 0);
 
     } else {
 

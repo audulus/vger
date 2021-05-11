@@ -19,7 +19,6 @@ void vgerPathScanner::begin(vector_float2 *cvs, int count) {
     segments.clear();
     nodes.clear();
     index = 0;
-    active.clear();
 
     for(int i=0;i<count-2;i+=2) {
         segments.push_back({cvs[i], cvs[i+1], cvs[i+2]});
@@ -51,9 +50,26 @@ bool vgerPathScanner::next() {
     for(;index < nodes.size() && nodes[index].y == y; ++index) {
         auto& node = nodes[index];
         if(node.end) {
-            active.erase(node.seg);
+            --activeCount;
+            auto& prev = segments[node.seg].previous;
+            auto& next = segments[node.seg].next;
+            if(prev != -1) {
+                segments[prev].next = next;
+            }
+            if(next != -1) {
+                segments[next].previous = prev;
+            }
+            if(first == node.seg) {
+                first = next;
+            }
+            next = prev = -1;
         } else {
-            active.insert(node.seg);
+            ++activeCount;
+            segments[node.seg].next = first;
+            if(first != -1) {
+                segments[first].previous = node.seg;
+            }
+            first = node.seg;
         }
     }
 
@@ -61,5 +77,5 @@ bool vgerPathScanner::next() {
         yInterval.b = nodes[index].y;
     }
 
-    return active.size() > 0;
+    return first != -1;
 }

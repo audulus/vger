@@ -29,7 +29,7 @@
 
     while(scan.next()) {
         printf("interval %f %f, active: ", scan.yInterval.a, scan.yInterval.b);
-        for(int a : scan.active) {
+        for(int a = scan.first; a != -1; a = scan.segments[a].next) {
             printf("%d ", a);
         }
         printf("\n");
