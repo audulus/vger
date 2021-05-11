@@ -83,6 +83,12 @@
 
     float2 x = bezier(float2{0,0}, float2{1,1}, float2{2,0}, 0.5);
 
+    t = bezierIntersect(float2{0,0}, float2{0,1}, float2{0,2}, 1.0);
+    XCTAssertEqual(t[0], 0.5);
+}
+
+- (void) testBezierTest {
+
     XCTAssertEqual(bezierTest(float2{0,0}, float2{1,0}, float2{1,1}, float2{0, .5}), 1);
     XCTAssertEqual(bezierTest(float2{0,0}, float2{1,0}, float2{1,1}, float2{0, -1}), 0);
     XCTAssertEqual(bezierTest(float2{0,0}, float2{1,0}, float2{1,1}, float2{0, 2}), 0);
@@ -97,8 +103,6 @@
     // Diagonal line, right of point.
     XCTAssertEqual(bezierTest(float2{1, -1}, float2{2,0}, float2{3,1}, float2{0, 0}), 1);
 
-    t = bezierIntersect(float2{0,0}, float2{0,1}, float2{0,2}, 1.0);
-    XCTAssertEqual(t[0], 0.5);
 }
 
 - (void) testDiagonalZ {
