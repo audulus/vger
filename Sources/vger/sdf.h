@@ -131,6 +131,26 @@ inline float2x2 inv(float2x2 M) {
         float2{-M.columns[1][0], M.columns[0][0]}};
 }
 
+inline float sign (float2 p1, float2 p2, float2 p3)
+{
+    return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+}
+
+inline bool inTri (float2 pt, float2 v1, float2 v2, float2 v3)
+{
+    float d1, d2, d3;
+    bool has_neg, has_pos;
+
+    d1 = sign(pt, v1, v2);
+    d2 = sign(pt, v2, v3);
+    d3 = sign(pt, v3, v1);
+
+    has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+    has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+
+    return !(has_neg && has_pos);
+}
+
 inline float sdBezier2(float2 uv, float2 p0, float2 p1, float2 p2){
 
     const float2x2 trf1 = float2x2{ float2{-1, 2}, float2{1, 2} };
@@ -145,7 +165,7 @@ inline float sdBezier2(float2 uv, float2 p0, float2 p1, float2 p2){
     gradient.x=2.*trf.columns[0][0]*(trf.columns[0][0]*uv.x+trf.columns[1][0]*uv.y)-trf.columns[0][1];
     gradient.y=2.*trf.columns[1][0]*(trf.columns[0][0]*uv.x+trf.columns[1][0]*uv.y)-trf.columns[1][1];
 
-    return abs(xy.x*xy.x-xy.y)/length(gradient);
+    return (xy.x*xy.x-xy.y)/length(gradient);
 }
 
 inline float det(float2 a, float2 b) { return a.x*b.y-b.x*a.y; }
@@ -274,7 +294,6 @@ inline int lineTest(float2 A, float2 B, float2 p);
 
 inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p) {
     float d = FLT_MAX;
-    int n = 0;
     switch(prim.type) {
         case vgerBezier:
             // d = sdBezier(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]);
@@ -314,14 +333,17 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
         case vgerPathFill:
             for(int i=0; i<prim.count; i++) {
                 int j = prim.start + 3*i;
-                n += bezierTest(cvs[j], cvs[j+1], cvs[j+2], p);
+                d = min(d, sdBezierApprox(p, cvs[j], cvs[j+1], cvs[j+2]));
             }
             for(int i=0; i<prim.count; i++) {
                 int j = prim.start + 3*i;
-                d = min(d, sdBezierApprox(p, cvs[j], cvs[j+1], cvs[j+2]));
-            }
-            if(n % 2) {
-                d = -d;
+                auto a = cvs[j]; auto b = cvs[j+1]; auto c = cvs[j+2];
+                if(lineTest(a, c, p)) {
+                    d = -d;
+                }
+                if(inTri(p, a, b, c) and sdBezier2(p, a, b, c) < 0) {
+                    d = -d;
+                }
             }
             break;
         default:
