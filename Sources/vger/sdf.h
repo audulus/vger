@@ -337,9 +337,13 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
             for(int i=0; i<prim.count; i++) {
                 int j = prim.start + 3*i;
                 auto a = cvs[j]; auto b = cvs[j+1]; auto c = cvs[j+2];
+
+                // Intersect +x ray starting at p with line.
                 if(lineTest(p, a, c)) {
                     d = -d;
                 }
+
+                // Flip if inside area between curve and line.
                 if(inTri(p, a, b, c) and sdBezier2(p, a, b, c) < 0) {
                     d = -d;
                 }
