@@ -475,9 +475,6 @@ inline float2 bezierIntersect(float2 A, float2 B, float2 C, float y) {
         return -c/b;
     }
 
-    // Imaginary roots will already have been rejected earlier
-    // as the control points would all be on the same side
-    // of the x-axis.
     float d = sqrt(b*b-4*a*c);
 
     return float2{-b - d, -b + d} / (2*a);
