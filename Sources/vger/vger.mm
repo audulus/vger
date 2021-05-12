@@ -158,8 +158,7 @@ struct vger {
         }
     }
 
-    template<class F>
-    void withCTLine(const char* str, F f);
+    CTLineRef createCTLine(const char* str);
 
     void fillPath(float2* cvs, int count, vgerPaint paint);
 
@@ -386,8 +385,7 @@ void vger::renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 positio
     vgerRestore(this);
 }
 
-template<class F>
-void vger::withCTLine(const char* str, F f) {
+CTLineRef vger::createCTLine(const char* str) {
 
     auto attributes = @{ NSFontAttributeName : (__bridge id)glyphPathCache.ctFont };
     auto string = [NSString stringWithUTF8String:str];
@@ -395,10 +393,8 @@ void vger::withCTLine(const char* str, F f) {
     auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
     auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
 
-    f(line);
-
     CFRelease(typesetter);
-    CFRelease(line);
+    return line;
 
 }
 
@@ -410,29 +406,28 @@ void vger::renderText(const char* str, float4 color, int align) {
     
     if(glyphPaths) {
 
-        withCTLine(str, [&](CTLineRef line) {
+        auto line = createCTLine(str);
+        auto offset = alignOffset(line, align);
 
-            auto offset = alignOffset(line, align);
+        NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
+        for(id r in runs) {
+            CTRunRef run = (__bridge CTRunRef)r;
+            size_t glyphCount = CTRunGetGlyphCount(run);
 
-            NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
-            for(id r in runs) {
-                CTRunRef run = (__bridge CTRunRef)r;
-                size_t glyphCount = CTRunGetGlyphCount(run);
+            glyphs.resize(glyphCount);
+            CFRange entire = CFRangeMake(0, 0);
+            CTRunGetGlyphs(run, entire, glyphs.data());
 
-                glyphs.resize(glyphCount);
-                CFRange entire = CFRangeMake(0, 0);
-                CTRunGetGlyphs(run, entire, glyphs.data());
+            for(int i=0;i<glyphCount;++i) {
 
-                for(int i=0;i<glyphCount;++i) {
+                CGRect r = CTRunGetImageBounds(run, nil, CFRangeMake(i, 1));
+                float2 p = float2{float(r.origin.x), float(r.origin.y)} + offset;
 
-                    CGRect r = CTRunGetImageBounds(run, nil, CFRangeMake(i, 1));
-                    float2 p = float2{float(r.origin.x), float(r.origin.y)} + offset;
-
-                    renderGlyphPath(glyphs[i], paint, p);
-                }
+                renderGlyphPath(glyphs[i], paint, p);
             }
+        }
 
-        });
+        CFRelease(line);
         
     } else {
 
@@ -442,16 +437,16 @@ void vger::renderText(const char* str, float4 color, int align) {
         if(renderCachedText(key, paint)) {
             return;
         }
-        
+
         // Text cache miss, do more expensive typesetting.
-        withCTLine(str, [&](CTLineRef line) {
+        auto line = createCTLine(str);
 
-            auto& textInfo = textCache[key];
-            textInfo.lastFrame = currentFrame;
+        auto& textInfo = textCache[key];
+        textInfo.lastFrame = currentFrame;
 
-            renderTextLine(line, textInfo, paint, alignOffset(line, align), scale);
+        renderTextLine(line, textInfo, paint, alignOffset(line, align), scale);
 
-        });
+        CFRelease(line);
         
     }
 
@@ -459,19 +454,19 @@ void vger::renderText(const char* str, float4 color, int align) {
 
 void vgerTextBounds(vgerContext vg, const char* str, float2* min, float2* max, int align) {
 
-    vg->withCTLine(str, [&](CTLineRef line) {
+    auto line = vg->createCTLine(str);
 
-        auto bounds = CTLineGetImageBounds(line, nil);
-        min->x = bounds.origin.x;
-        min->y = bounds.origin.y;
-        max->x = bounds.origin.x + bounds.size.width;
-        max->y = bounds.origin.y + bounds.size.height;
+    auto bounds = CTLineGetImageBounds(line, nil);
+    min->x = bounds.origin.x;
+    min->y = bounds.origin.y;
+    max->x = bounds.origin.x + bounds.size.width;
+    max->y = bounds.origin.y + bounds.size.height;
 
-        auto offset = alignOffset(line, align);
-        *min += offset;
-        *max += offset;
+    auto offset = alignOffset(line, align);
+    *min += offset;
+    *max += offset;
 
-    });
+    CFRelease(line);
 
 }
 
