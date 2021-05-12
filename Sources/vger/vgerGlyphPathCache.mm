@@ -24,7 +24,7 @@ vgerGlyphPathCache::~vgerGlyphPathCache() {
     CFRelease(ctFont);
 }
 
-static bool scanGlyphs = false;
+static bool scanGlyphs = true;
 
 vgerGlyphPathCache::Info& vgerGlyphPathCache::getInfo(CGGlyph glyph) {
     
