@@ -146,5 +146,5 @@ bool vgerPathScanner::next() {
         yInterval.b = nodes[index].y;
     }
 
-    return first != -1;
+    return index < nodes.size();
 }
