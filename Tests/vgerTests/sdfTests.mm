@@ -74,6 +74,14 @@
 
 }
 
+- (void) testIntersectionOutsideInterval {
+    XCTAssertEqual(bezierTest(float2{0,1}, float2{0,-1}, float2{1,-1}, float2{0,0}), 1);
+}
+
+- (void) testAbove {
+    XCTAssertEqual(bezierTest(float2{-1,0}, float2{0,-1}, float2{1,0}, float2{-100,1}), 0);
+}
+
 - (void) testDiagonalZ {
     // Diagonal in Z
     XCTAssertEqual(bezierTest(float2{0, 1.308}, float2{2.19, 4.374}, float2{4.38, 7.44}, float2{0,5.0}), 1);
