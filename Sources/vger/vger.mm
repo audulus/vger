@@ -459,8 +459,6 @@ void vger::renderText(const char* str, float4 color, int align) {
 
 void vgerTextBounds(vgerContext vg, const char* str, float2* min, float2* max, int align) {
 
-    CFRange entire = CFRangeMake(0, 0);
-
     auto attributes = @{ NSFontAttributeName : (__bridge id)[vg->glyphCache getFont] };
     auto string = [NSString stringWithUTF8String:str];
     auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
