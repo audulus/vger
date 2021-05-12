@@ -444,20 +444,14 @@ void vger::renderText(const char* str, float4 color, int align) {
         }
         
         // Text cache miss, do more expensive typesetting.
-        
-        auto attributes = @{ NSFontAttributeName : (__bridge id)[glyphCache getFont] };
-        auto string = [NSString stringWithUTF8String:str];
-        auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
-        auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
-        auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
-        
-        auto& textInfo = textCache[key];
-        textInfo.lastFrame = currentFrame;
-        
-        renderTextLine(line, textInfo, paint, alignOffset(line, align), scale);
-        
-        CFRelease(typesetter);
-        CFRelease(line);
+        withCTLine(str, [&](CTLineRef line) {
+
+            auto& textInfo = textCache[key];
+            textInfo.lastFrame = currentFrame;
+
+            renderTextLine(line, textInfo, paint, alignOffset(line, align), scale);
+
+        });
         
     }
 
