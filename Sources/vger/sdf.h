@@ -289,7 +289,6 @@ inline BBox sdPrimBounds(const DEVICE vgerPrim& prim, const DEVICE float2* cvs) 
     return b.inset(-prim.width);
 }
 
-inline int bezierTest(float2 A, float2 B, float2 C, float2 p);
 inline int lineTest(float2 A, float2 B, float2 p);
 
 inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p) {
@@ -437,100 +436,6 @@ inline float4 applyPaint(const DEVICE vgerPaint& paint, float2 p) {
 /// Quadratic bezier curve.
 inline float2 bezier(float2 A, float2 B, float2 C, float t) {
     return (1 - t) * (1 - t) * A + 2 * (1 - t) * t * B + t * t * C;
-}
-
-// From https://github.com/linebender/kurbo/blob/25ec803ecd1bb908d2b1d8242282b76c060b26d6/src/common.rs#L105
-
-/// Find real roots of quadratic equation.
-///
-/// Returns values of x for which c0 + c1 x + c2 x² = 0.
-inline float2 solve_quadratic(float c0, float c1, float c2) {
-    float sc0 = c0 * (1.0f/c2);
-    float sc1 = c1 * (1.0f/c2);
-    if(isinf(sc0) || isinf(sc1)) {
-        // c2 is zero or very small, treat as linear eqn
-        float root = -c0 / c1;
-        if(!isinf(root)) {
-            return float2{root, NAN};
-        } else if(c0 == 0.0f || c1 == 0.0f) {
-            // Degenerate.
-            return float2{0.0, NAN};
-        }
-    }
-
-    float arg = sc1 * sc1 - 4.0f * sc0;
-    float root1;
-    if(isinf(arg)) {
-        root1 = -sc1;
-    } else {
-        if(arg < 0.0) {
-            return float2{NAN, NAN};
-        } else if(arg == 0.0) {
-            return float2{-0.5f * sc1, NAN};
-        }
-        // See https://math.stackexchange.com/questions/866331
-        root1 = -0.5f * (sc1 + copysign(sqrt(arg), sc1));
-    }
-    float root2 = sc0 / root1;
-    if(!isinf(root2)) {
-        if(root2 > root1) {
-            return float2{root1, root2};
-        } else {
-            return float2{root2, root1};
-        }
-    } else {
-        return float2{root1, NAN};
-    }
-    return float2{NAN, NAN};
-}
-
-/// Intersect a bezier with a horizontal line.
-inline float2 bezierIntersect(float2 A, float2 B, float2 C, float y) {
-
-    // Quadratic bezier:
-    // f(t) = (1 - t) * (1 - t) * A + 2 * (1 - t) * t * B + t * t * C
-
-    float a = C.y - 2.0 * B.y + A.y;
-    float b = 2.0 * (B.y - A.y);
-    float c = A.y - y;
-
-    if(abs(a) < 0.0001) {
-        return -c/b;
-    }
-
-    float d = sqrt(b*b-4*a*c);
-
-    return float2{-b - d, -b + d} / (2*a);
-}
-
-/// Returns number of intersections between quadratic bezier and x-axis ray starting at p.
-inline int bezierTest(float2 A, float2 B, float2 C, float2 p) {
-
-    bool rootTable[8][2] = {
-        {false, false}, // 0
-        {true,  false}, // 1
-        {true,  true},  // 2
-        {true,  false}, // 3
-        {false, true},  // 4
-        {true,  true},  // 5
-        {false, true},  // 6
-        {false, false}  // 7
-    };
-
-    int cs = (A.y < p.y)*4 + (B.y < p.y)*2 + (C.y < p.y);
-
-    if(cs == 0 or cs == 7) return 0; // trivial reject
-
-    auto t = bezierIntersect(A, B, C, p.y);
-
-    auto P0 = bezier(A, B, C, t[0]);
-    auto P1 = bezier(A, B, C, t[1]);
-
-    int c = 0;
-    c += (P0.x > p.x) && rootTable[cs][0];
-    c += (P1.x > p.x) && rootTable[cs][1];
-
-    return c;
 }
 
 inline int lineTest(float2 A, float2 B, float2 p) {
