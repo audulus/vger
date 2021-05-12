@@ -398,6 +398,8 @@ void vger::renderText(const char* str, float4 color, int align) {
         auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
         auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
         auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
+
+        auto offset = alignOffset(line, align);
         
         NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
         for(id r in runs) {
@@ -410,7 +412,7 @@ void vger::renderText(const char* str, float4 color, int align) {
             for(int i=0;i<glyphCount;++i) {
                 
                 CGRect r = CTRunGetImageBounds(run, nil, CFRangeMake(i, 1));
-                float2 p = {float(r.origin.x), float(r.origin.y)};
+                float2 p = float2{float(r.origin.x), float(r.origin.y)} + offset;
                 
                 renderGlyphPath(glyphs[i], paint, p);
             }
