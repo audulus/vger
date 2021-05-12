@@ -270,6 +270,7 @@ inline BBox sdPrimBounds(const DEVICE vgerPrim& prim, const DEVICE float2* cvs) 
 }
 
 inline int bezierTest(float2 A, float2 B, float2 C, float2 p);
+inline int lineTest(float2 A, float2 B, float2 p);
 
 inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p) {
     float d = FLT_MAX;
@@ -516,13 +517,12 @@ inline int lineTest(float2 A, float2 B, float2 p) {
 
     if(cs == 0 or cs == 3) return 0; // trivial reject
 
+    auto v = B - A;
+
     // Intersect line with x axis.
-    float b = 2.0 * (B.y - A.y);
-    float c = A.y - p.y;
+    float t = (p.y-A.y)/v.y;
 
-    float t = -c/b;
-
-    return (A.x + t*(B.x-A.x)) > p.x;
+    return (A.x + t*v.x) > p.x;
 
 }
 
