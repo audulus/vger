@@ -61,6 +61,8 @@
     XCTAssertEqual(bezierTest(float2{0,0}, float2{1,0}, float2{1,1}, float2{0, 2}), 0);
     XCTAssertEqual(bezierTest(float2{0,0}, float2{1,1}, float2{2,0}, float2{0, .1}), 2);
 
+    XCTAssertEqual(bezierTest(float2{0,-1}, float2{1,0.1}, float2{2,-1}, float2{0, 0}), 0);
+
     // Vertical line, right of point.
     XCTAssertEqual(bezierTest(float2{1,-1}, float2{1,0}, float2{1,1}, float2{0, 0}), 1);
 
