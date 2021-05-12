@@ -337,7 +337,7 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
             for(int i=0; i<prim.count; i++) {
                 int j = prim.start + 3*i;
                 auto a = cvs[j]; auto b = cvs[j+1]; auto c = cvs[j+2];
-                if(lineTest(a, c, p)) {
+                if(lineTest(p, a, c)) {
                     d = -d;
                 }
                 if(inTri(p, a, b, c) and sdBezier2(p, a, b, c) < 0) {
@@ -438,7 +438,7 @@ inline float2 bezier(float2 A, float2 B, float2 C, float t) {
     return (1 - t) * (1 - t) * A + 2 * (1 - t) * t * B + t * t * C;
 }
 
-inline int lineTest(float2 A, float2 B, float2 p) {
+inline int lineTest(float2 p, float2 A, float2 B) {
 
     int cs = (A.y < p.y) * 2 + (B.y < p.y);
 

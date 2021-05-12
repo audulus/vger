@@ -30,8 +30,8 @@
     float2 i{1,0};
     float2 j{0,1};
 
-    XCTAssertEqual(lineTest(i-j, i+j, 0), 1);
-    XCTAssertEqual(lineTest(i-j, i+j, 2*j), 0);
+    XCTAssertEqual(lineTest(0, i-j, i+j), 1);
+    XCTAssertEqual(lineTest(2*j, i-j, i+j), 0);
 }
 
 @end
