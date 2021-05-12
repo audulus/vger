@@ -93,4 +93,13 @@
     XCTAssertEqual(n, 1);
 }
 
+- (void) testLineTest {
+
+    float2 i{1,0};
+    float2 j{0,1};
+
+    XCTAssertEqual(lineTest(i-j, i+j, 0), 1);
+    XCTAssertEqual(lineTest(i-j, i+j, 2*j), 0);
+}
+
 @end

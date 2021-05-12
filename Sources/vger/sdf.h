@@ -510,4 +510,20 @@ inline int bezierTest(float2 A, float2 B, float2 C, float2 p) {
     return c;
 }
 
+inline int lineTest(float2 A, float2 B, float2 p) {
+
+    int cs = (A.y < p.y) * 2 + (B.y < p.y);
+
+    if(cs == 0 or cs == 3) return 0; // trivial reject
+
+    // Intersect line with x axis.
+    float b = 2.0 * (B.y - A.y);
+    float c = A.y - p.y;
+
+    float t = -c/b;
+
+    return (A.x + t*(B.x-A.x)) > p.x;
+
+}
+
 #endif /* sdf_h */
