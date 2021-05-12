@@ -459,24 +459,19 @@ void vger::renderText(const char* str, float4 color, int align) {
 
 void vgerTextBounds(vgerContext vg, const char* str, float2* min, float2* max, int align) {
 
-    auto attributes = @{ NSFontAttributeName : (__bridge id)[vg->glyphCache getFont] };
-    auto string = [NSString stringWithUTF8String:str];
-    auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
-    auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
-    auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
+    vg->withCTLine(str, [&](CTLineRef line) {
 
-    auto bounds = CTLineGetImageBounds(line, nil);
-    min->x = bounds.origin.x;
-    min->y = bounds.origin.y;
-    max->x = bounds.origin.x + bounds.size.width;
-    max->y = bounds.origin.y + bounds.size.height;
+        auto bounds = CTLineGetImageBounds(line, nil);
+        min->x = bounds.origin.x;
+        min->y = bounds.origin.y;
+        max->x = bounds.origin.x + bounds.size.width;
+        max->y = bounds.origin.y + bounds.size.height;
 
-    auto offset = alignOffset(line, align);
-    *min += offset;
-    *max += offset;
+        auto offset = alignOffset(line, align);
+        *min += offset;
+        *max += offset;
 
-    CFRelease(line);
-    CFRelease(typesetter);
+    });
 
 }
 
