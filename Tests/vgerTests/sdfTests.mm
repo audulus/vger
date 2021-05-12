@@ -51,40 +51,7 @@
     x = solve_quadratic(1.0, 2.0, 1.0);
     XCTAssertEqualWithAccuracy(x[0], -1.0, epsilon);
     XCTAssert(isnan(x[1]));
-    
-}
 
-- (void) testBezierIntersect {
-
-    float epsilon = 1e-5;
-
-    auto t = bezierIntersect(float2{0,0}, float2{0,0}, float2{1,1}, 0.0);
-    XCTAssertEqual(t[0], 0.0);
-    XCTAssert(isnan(t[1]));
-
-    t = bezierIntersect(float2{0,0}, float2{0,0}, float2{1,1}, 1.0);
-    XCTAssertTrue(length(t - float2{-1.0, 1.0}) < epsilon);
-
-    t = bezierIntersect(float2{0,0}, float2{0,0}, float2{1,1}, 0.5);
-    XCTAssertTrue(length(t - float2{-sqrtf(2)/2, sqrtf(2)/2}) < epsilon);
-
-    t = bezierIntersect(float2{0,0}, float2{0,0}, float2{1,1}, -1);
-    XCTAssertTrue(isnan(t.x));
-    XCTAssertTrue(isnan(t.y));
-
-    t = bezierIntersect(float2{0,0}, float2{1,0}, float2{1,1}, 0.0);
-    XCTAssertEqual(t[0], 0.0);
-    XCTAssert(isnan(t[1]));
-
-    t = bezierIntersect(float2{0,0}, float2{1,0}, float2{1,1}, 1.0);
-    XCTAssertTrue(length(t - float2{-1.0, 1.0}) < epsilon);
-
-    t = bezierIntersect(float2{0,0}, float2{1,1}, float2{2,0}, 0.1);
-
-    float2 x = bezier(float2{0,0}, float2{1,1}, float2{2,0}, 0.5);
-
-    t = bezierIntersect(float2{0,0}, float2{0,1}, float2{0,2}, 1.0);
-    XCTAssertEqual(t[0], 0.5);
 }
 
 - (void) testBezierTest {

@@ -471,18 +471,44 @@ inline float2 bezierIntersect(float2 A, float2 B, float2 C, float y) {
     float b = 2.0 * (B.y - A.y);
     float c = A.y - y;
 
-    return solve_quadratic(c,b,a);
+    if(abs(a) < 0.0001) {
+        return -c/b;
+    }
+
+    // Imaginary roots will already have been rejected earlier
+    // as the control points would all be on the same side
+    // of the x-axis.
+    float d = sqrt(b*b-4*a*c);
+
+    return float2{-b - d, -b + d} / (2*a);
 }
 
 /// Returns number of intersections between quadratic bezier and x-axis ray starting at p.
 inline int bezierTest(float2 A, float2 B, float2 C, float2 p) {
 
-    int c = 0;
+    bool rootTable[8][2] = {
+        {false, false}, // 0
+        {true,  false}, // 1
+        {true,  true},  // 2
+        {true,  false}, // 3
+        {false, true},  // 4
+        {true,  true},  // 5
+        {false, true},  // 6
+        {false, false}  // 7
+    };
+
+    int cs = (A.y < p.y)*4 + (B.y < p.y)*2 + (C.y < p.y);
+
+    if(cs == 0 or cs == 7) return 0; // trivial reject
+
     auto t = bezierIntersect(A, B, C, p.y);
 
-    for(int i=0;i<2;++i) {
-        c += !isnan(t[i]) && (t[i] >= 0.0) && (t[i] < 1.0) && (bezier(A, B, C, t[i]).x > p.x);
-    }
+    auto P0 = bezier(A, B, C, t[0]);
+    auto P1 = bezier(A, B, C, t[1]);
+
+    int c = 0;
+    c += (P0.x > p.x) && rootTable[cs][0];
+    c += (P1.x > p.x) && rootTable[cs][1];
 
     return c;
 }
