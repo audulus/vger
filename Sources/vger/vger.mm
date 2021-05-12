@@ -158,6 +158,9 @@ struct vger {
         }
     }
 
+    template<class F>
+    void withCTLine(const char* str, F f);
+
     void fillPath(float2* cvs, int count, vgerPaint paint);
 
     void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
@@ -383,6 +386,22 @@ void vger::renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 positio
     vgerRestore(this);
 }
 
+template<class F>
+void vger::withCTLine(const char* str, F f) {
+
+    auto attributes = @{ NSFontAttributeName : (__bridge id)glyphPathCache.ctFont };
+    auto string = [NSString stringWithUTF8String:str];
+    auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
+    auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
+    auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
+
+    f(line);
+
+    CFRelease(typesetter);
+    CFRelease(line);
+
+}
+
 bool glyphPaths = false;
 
 void vger::renderText(const char* str, float4 color, int align) {
@@ -390,36 +409,30 @@ void vger::renderText(const char* str, float4 color, int align) {
     auto paint = vgerColorPaint(color);
     
     if(glyphPaths) {
-        
-        CFRange entire = CFRangeMake(0, 0);
-        
-        auto attributes = @{ NSFontAttributeName : (__bridge id)glyphPathCache.ctFont };
-        auto string = [NSString stringWithUTF8String:str];
-        auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
-        auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
-        auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
 
-        auto offset = alignOffset(line, align);
-        
-        NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
-        for(id r in runs) {
-            CTRunRef run = (__bridge CTRunRef)r;
-            size_t glyphCount = CTRunGetGlyphCount(run);
+        withCTLine(str, [&](CTLineRef line) {
 
-            glyphs.resize(glyphCount);
-            CTRunGetGlyphs(run, entire, glyphs.data());
+            auto offset = alignOffset(line, align);
 
-            for(int i=0;i<glyphCount;++i) {
-                
-                CGRect r = CTRunGetImageBounds(run, nil, CFRangeMake(i, 1));
-                float2 p = float2{float(r.origin.x), float(r.origin.y)} + offset;
-                
-                renderGlyphPath(glyphs[i], paint, p);
+            NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
+            for(id r in runs) {
+                CTRunRef run = (__bridge CTRunRef)r;
+                size_t glyphCount = CTRunGetGlyphCount(run);
+
+                glyphs.resize(glyphCount);
+                CFRange entire = CFRangeMake(0, 0);
+                CTRunGetGlyphs(run, entire, glyphs.data());
+
+                for(int i=0;i<glyphCount;++i) {
+
+                    CGRect r = CTRunGetImageBounds(run, nil, CFRangeMake(i, 1));
+                    float2 p = float2{float(r.origin.x), float(r.origin.y)} + offset;
+
+                    renderGlyphPath(glyphs[i], paint, p);
+                }
             }
-        }
-        
-        CFRelease(typesetter);
-        CFRelease(line);
+
+        });
         
     } else {
 
