@@ -281,8 +281,7 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
     float d = FLT_MAX;
     switch(prim.type) {
         case vgerBezier:
-            // d = sdBezier(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]);
-            d = sdBezierApprox(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]) - prim.width;
+            d = sdBezier(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]) - prim.width;
             break;
         case vgerCircle:
             d = sdCircle(p - prim.cvs[0], prim.radius);
@@ -318,7 +317,7 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
         case vgerPathFill:
             for(int i=0; i<prim.count; i++) {
                 int j = prim.start + 3*i;
-                d = min(d, sdBezierApprox(p, cvs[j], cvs[j+1], cvs[j+2]));
+                d = min(d, sdBezier(p, cvs[j], cvs[j+1], cvs[j+2]));
             }
             for(int i=0; i<prim.count; i++) {
                 int j = prim.start + 3*i;
