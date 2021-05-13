@@ -474,7 +474,7 @@ inline int bezierTest(float2 p, float2 A, float2 B, float2 C) {
     // Transform to canonical coordinte space.
     float2 canon[3] = { {0,0}, {.5,0}, {1,1}};
 
-    float2 uv = s * canon[0] + t * canon[1] + (1-s-t) * canon[2];
+    float2 uv = s * canon[1] + t * canon[2] + (1-s-t) * canon[0];
 
     return (uv.x*uv.x - uv.y) < 0;
 
