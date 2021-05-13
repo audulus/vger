@@ -469,7 +469,7 @@ inline bool bezierTest(float2 p, float2 A, float2 B, float2 C) {
     float t = (v0.x * v2.y - v2.x * v0.y) / det;
 
     if(s < 0 or t < 0 or (1-s-t) < 0) {
-        return 0; // outside triangle
+        return false; // outside triangle
     }
 
     // Transform to canonical coordinte space.
