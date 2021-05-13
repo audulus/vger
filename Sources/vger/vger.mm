@@ -159,6 +159,7 @@ struct vger {
     }
 
     CTLineRef createCTLine(const char* str);
+    CTFrameRef createCTFrame(const char* str, float breakRowWidth);
 
     void fillPath(float2* cvs, int count, vgerPaint paint);
 
@@ -474,6 +475,26 @@ void vgerTextBox(vgerContext vg, const char* str, float breakRowWidth, float4 co
     vg->renderTextBox(str, breakRowWidth, color, align);
 }
 
+static constexpr float big = 10000;
+
+CTFrameRef vger::createCTFrame(const char* str, float breakRowWidth) {
+
+    auto attributes = @{ NSFontAttributeName : (__bridge id)[glyphCache getFont] };
+    auto string = [NSString stringWithUTF8String:str];
+    auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
+    auto framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
+
+    auto rectPath = CGPathCreateWithRect(CGRectMake(0, 0, breakRowWidth, big), NULL);
+    auto frame = CTFramesetterCreateFrame(framesetter,
+                                          CFRangeMake(0, attrString.length),
+                                          rectPath,
+                                          NULL);
+
+    CFRelease(rectPath);
+    CFRelease(framesetter);
+    return frame;
+}
+
 void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int align) {
 
     auto paint = vgerColorPaint(color);
@@ -484,16 +505,7 @@ void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int
         return;
     }
 
-    auto attributes = @{ NSFontAttributeName : (__bridge id)[glyphCache getFont] };
-    auto string = [NSString stringWithUTF8String:str];
-    auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
-    auto framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
-    float big = 10000;
-    auto rectPath = CGPathCreateWithRect(CGRectMake(0, 0, breakRowWidth, big), NULL);
-    auto frame = CTFramesetterCreateFrame(framesetter,
-                                          CFRangeMake(0, attrString.length),
-                                          rectPath,
-                                          NULL);
+    auto frame = createCTFrame(str, breakRowWidth);
 
     NSArray *lines = (__bridge id)CTFrameGetLines(frame);
 
@@ -511,24 +523,13 @@ void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int
     }
 
     CFRelease(frame);
-    CFRelease(framesetter);
-    CFRelease(rectPath);
 }
 
 void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, float2* min, float2* max, int align) {
 
     CFRange entire = CFRangeMake(0, 0);
 
-    auto attributes = @{ NSFontAttributeName : (__bridge id)[vg->glyphCache getFont] };
-    auto string = [NSString stringWithUTF8String:str];
-    auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
-    auto framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
-    float big = 10000;
-    auto rectPath = CGPathCreateWithRect(CGRectMake(0, 0, breakRowWidth, big), NULL);
-    auto frame = CTFramesetterCreateFrame(framesetter,
-                                          CFRangeMake(0, attrString.length),
-                                          rectPath,
-                                          NULL);
+    auto frame = vg->createCTFrame(str, breakRowWidth);
 
     NSArray *lines = (__bridge id)CTFrameGetLines(frame);
 
@@ -540,8 +541,6 @@ void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, flo
     max->y = 0;
 
     CFRelease(frame);
-    CFRelease(framesetter);
-    CFRelease(rectPath);
 
 }
 
