@@ -458,7 +458,7 @@ inline bool lineTest(float2 p, float2 A, float2 B) {
 
 }
 
-/// Is the point with the area between the curve and A-C?
+/// Is the point with the area between the curve and line segment A C?
 inline bool bezierTest(float2 p, float2 A, float2 B, float2 C) {
 
     // Compute barycentric coordinates of p.
