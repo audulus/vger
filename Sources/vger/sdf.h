@@ -160,9 +160,7 @@ inline float2 closestPointInSegment( float2 a, float2 b )
 inline float2 get_distance_vector(float2 b0, float2 b1, float2 b2) {
     
     float a=det(b0,b2), b=2.0*det(b1,b0), d=2.0*det(b2,b1);
-    
-    if( abs(2.0*a+b+d) < 0.001 ) return closestPointInSegment(b0,b2);
-    
+
     float f=b*d-a*a;
     float2 d21=b2-b1, d10=b1-b0, d20=b2-b0;
     float2 gf=2.0*(b*d21+d*d10+a*d20);
@@ -176,8 +174,15 @@ inline float2 get_distance_vector(float2 b0, float2 b1, float2 b2) {
     
 }
 
-inline float sdBezierApprox(float2 p, float2 b0, float2 b1, float2 b2) {
-    return length(get_distance_vector(b0-p, b1-p, b2-p));
+inline float sdBezierApprox(float2 p, float2 A, float2 B, float2 C) {
+
+    float2 v0 = normalize(B - A), v1 = normalize(C - A);
+    float det = v0.x * v1.y - v1.x * v0.y;
+    if(abs(det) < 0.005) {
+        return sdSegment(p, A, C);
+    }
+
+    return length(get_distance_vector(A-p, B-p, C-p));
 }
 
 inline float sdWire(float2 p, float2 a, float2 b) {
