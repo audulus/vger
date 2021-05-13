@@ -178,8 +178,8 @@ inline float sdBezierApprox(float2 p, float2 A, float2 B, float2 C) {
 
     float2 v0 = normalize(B - A), v1 = normalize(C - A);
     float det = v0.x * v1.y - v1.x * v0.y;
-    if(abs(det) < 0.005) {
-        return sdSegment(p, A, C);
+    if(abs(det) < 0.01) {
+        return sdBezier(p, A, B, C);
     }
 
     return length(get_distance_vector(A-p, B-p, C-p));
@@ -281,7 +281,7 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
     float d = FLT_MAX;
     switch(prim.type) {
         case vgerBezier:
-            d = sdBezier(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]) - prim.width;
+            d = sdBezierApprox(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]) - prim.width;
             break;
         case vgerCircle:
             d = sdCircle(p - prim.cvs[0], prim.radius);
