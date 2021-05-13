@@ -290,6 +290,7 @@ inline BBox sdPrimBounds(const DEVICE vgerPrim& prim, const DEVICE float2* cvs) 
 }
 
 inline int lineTest(float2 A, float2 B, float2 p);
+inline int bezierTest(float2 p, float2 A, float2 B, float2 C);
 
 inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p) {
     float d = FLT_MAX;
@@ -344,7 +345,7 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
                 }
 
                 // Flip if inside area between curve and line.
-                if(inTri(p, a, b, c) and sdBezier2(p, a, b, c) < 0) {
+                if(bezierTest(p, a, b, c)) {
                     d = -d;
                 }
             }
