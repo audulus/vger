@@ -289,8 +289,8 @@ inline BBox sdPrimBounds(const DEVICE vgerPrim& prim, const DEVICE float2* cvs) 
     return b.inset(-prim.width);
 }
 
-inline int lineTest(float2 A, float2 B, float2 p);
-inline int bezierTest(float2 p, float2 A, float2 B, float2 C);
+inline bool lineTest(float2 A, float2 B, float2 p);
+inline bool bezierTest(float2 p, float2 A, float2 B, float2 C);
 
 inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p) {
     float d = FLT_MAX;
@@ -443,11 +443,11 @@ inline float2 bezier(float2 A, float2 B, float2 C, float t) {
     return (1 - t) * (1 - t) * A + 2 * (1 - t) * t * B + t * t * C;
 }
 
-inline int lineTest(float2 p, float2 A, float2 B) {
+inline bool lineTest(float2 p, float2 A, float2 B) {
 
     int cs = (A.y < p.y) * 2 + (B.y < p.y);
 
-    if(cs == 0 or cs == 3) return 0; // trivial reject
+    if(cs == 0 or cs == 3) return false; // trivial reject
 
     auto v = B - A;
 
@@ -459,7 +459,7 @@ inline int lineTest(float2 p, float2 A, float2 B) {
 }
 
 /// Is the point with the area between the curve and A-C?
-inline int bezierTest(float2 p, float2 A, float2 B, float2 C) {
+inline bool bezierTest(float2 p, float2 A, float2 B, float2 C) {
 
     // Compute barycentric coordinates of p.
     // p = s * A + t * B + (1-s-t) * C
