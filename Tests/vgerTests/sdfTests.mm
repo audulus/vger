@@ -34,4 +34,14 @@
     XCTAssertEqual(lineTest(2*j, i-j, i+j), 0);
 }
 
+- (void) testBezierTest {
+
+    float2 i{1,0};
+    float2 j{0,1};
+
+    XCTAssertEqual(bezierTest(.5*i+.1*j, 0, i+j, 2*i), 1);
+    XCTAssertEqual(bezierTest(.5*i+.9*j, 0, i+j, 2*i), 0);
+    XCTAssertEqual(bezierTest(.5*i+2*j, 0, i+j, 2*i), 0);
+}
+
 @end

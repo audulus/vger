@@ -457,4 +457,27 @@ inline int lineTest(float2 p, float2 A, float2 B) {
 
 }
 
+/// Is the point with the area between the curve and A-C?
+inline int bezierTest(float2 p, float2 A, float2 B, float2 C) {
+
+    // Compute barycentric coordinates of p.
+    // p = s * A + t * B + (1-s-t) * C
+    float2 v0 = B - A, v1 = C - A, v2 = p - A;
+    float det = v0.x * v1.y - v1.x * v0.y;
+    float s = (v2.x * v1.y - v1.x * v2.y) / det;
+    float t = (v0.x * v2.y - v2.x * v0.y) / det;
+
+    if(s < 0 or t < 0 or (1-s-t) < 0) {
+        return 0; // outside triangle
+    }
+
+    // Transform to canonical coordinte space.
+    float2 canon[3] = { {0,0}, {.5,0}, {1,1}};
+
+    float2 uv = s * canon[0] + t * canon[1] + (1-s-t) * canon[2];
+
+    return (uv.x*uv.x - uv.y) < 0;
+
+}
+
 #endif /* sdf_h */
