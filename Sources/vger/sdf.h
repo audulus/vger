@@ -456,7 +456,7 @@ inline bool bezierTest(float2 p, float2 A, float2 B, float2 C) {
     float u = s * .5 + t;
     float v = t;
 
-    return (u*u - v) < 0;
+    return u*u < v;
 
 }
 
