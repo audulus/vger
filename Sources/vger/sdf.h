@@ -43,6 +43,19 @@ inline float2 mix(float2 a, float2 b, float t) {
 
 #endif
 
+// Projection of b onto a.
+inline float2 proj(float2 a, float2 b) {
+    return normalize(a) * dot(a,b) / length(a);
+}
+
+inline float2 orth(float2 a, float2 b) {
+    return b - proj(a, b);
+}
+
+inline float2 rot90(float2 p) {
+    return {-p.y, p.x};
+}
+
 // From https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm
 // See also https://www.shadertoy.com/view/4dfXDn
 
@@ -62,6 +75,16 @@ inline float sdSegment(float2 p, float2 a, float2 b )
     float2 pa = p-a, ba = b-a;
     float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
     return length( pa - ba*h );
+}
+
+inline float sdSegment2(float2 p, float2 a, float2 b, float width)
+{
+    float2 u = normalize(b-a);
+    float2 v = rot90(u);
+
+    p -= (a+b)/2;
+    p = p * float2x2{u, v};
+    return sdBox(p, float2{length(b-a)/2, width/2}, 0);
 }
 
 // sca is {sin,cos} of orientation
@@ -348,7 +371,7 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
         }
             break;
         case vgerSegment:
-            d = sdSegment(p, prim.cvs[0], prim.cvs[1]) - prim.width;
+            d = sdSegment2(p, prim.cvs[0], prim.cvs[1], prim.width);
             break;
         case vgerCurve:
             for(int i=0; i<prim.count; i++) {
@@ -397,19 +420,6 @@ struct OBB {
         return {origin+d*(un+vn), u-2*d*un, v-2*d*vn};
     }
 };
-
-// Projection of b onto a.
-inline float2 proj(float2 a, float2 b) {
-    return normalize(a) * dot(a,b) / length(a);
-}
-
-inline float2 orth(float2 a, float2 b) {
-    return b - proj(a, b);
-}
-
-inline float2 rot90(float2 p) {
-    return {-p.y, p.x};
-}
 
 inline OBB sdPrimOBB(const DEVICE vgerPrim& prim) {
     switch(prim.type) {
