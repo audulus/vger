@@ -21,6 +21,7 @@
 
 using namespace simd;
 #import "sdf.h"
+#import "bezier.h"
 
 /// For caching the layout of strings.
 struct TextLayoutInfo {
