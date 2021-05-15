@@ -818,7 +818,9 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     vgerBegin(vger, 512, 512, 1.0);
 
     vgerSave(vger);
-    vgerScale(vger, float2{0.5, 0.5});
+    vgerTranslate(vger, float2{0, 512});
+    vgerScale(vger, float2{0.5, -0.5});
+
     for (NSVGshape *shape = image->shapes; shape; shape = shape->next) {
         for (NSVGpath *path = shape->paths; path; path = path->next) {
             vgerFillCubicPath(vger, (float2*) path->pts, path->npts, magenta);
