@@ -97,6 +97,9 @@
 
     CGContextAddPath(context, path);
     CGContextFillPath(context);
+    
+    //CGPoint p = {-boundingRect.origin.x, -boundingRect.origin.y};
+    //CTFontDrawGlyphs(ctFont, &glyph, &p, 1, context);
 
     auto region = [mgr addRegion:imageData.data() width:width height:height bytesPerRow:width];
 
