@@ -113,6 +113,9 @@ struct vger {
     /// Cache of text layout by strings.
     std::unordered_map< TextLayoutKey, TextLayoutInfo > textCache;
 
+    /// Points scratch space (avoid malloc).
+    std::vector<float2> points;
+
     /// Determines whether we prune cached text.
     uint64_t currentFrame = 1;
 
@@ -163,6 +166,8 @@ struct vger {
     CTFrameRef createCTFrame(const char* str, float breakRowWidth);
 
     void fillPath(float2* cvs, int count, vgerPaint paint);
+
+    void fillCubicPath(float2* cvs, int count, vgerPaint paint);
 
     void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 
@@ -656,6 +661,28 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint) {
             primCount++;
         }
     }
+}
+
+void vgerFillCubicPath(vgerContext vg, float2* cvs, int count, vgerPaint paint) {
+    vg->fillCubicPath(cvs, count, paint);
+}
+
+void vger::fillCubicPath(float2* cvs, int count, vgerPaint paint) {
+
+    points.resize(0);
+
+    for (int i = 0; i < count; i += 3) {
+        float2 q[6];
+        approx_cubic(cvs+i, q);
+        if(i==0) { points.push_back(q[0]); }
+        points.push_back(q[1]);
+        points.push_back(q[2]);
+        points.push_back(q[4]);
+        points.push_back(q[5]);
+    }
+
+    fillPath(points.data(), points.size(), paint);
+
 }
 
 void vgerEncode(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
