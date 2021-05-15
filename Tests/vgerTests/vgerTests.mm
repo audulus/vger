@@ -10,6 +10,9 @@
 #include "nanovg_mtl.h"
 #include <vector>
 
+#define NANOSVG_IMPLEMENTATION
+#include "nanosvg.h"
+
 #import "../../Sources/vger/sdf.h"
 
 using namespace simd;
@@ -798,6 +801,36 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     vgerDelete(vger);
 
+}
+
+- (void) testTiger {
+
+    auto tigerURL = [self getImageURL:@"Ghostscript_Tiger.svg"];
+
+    auto image = nsvgParseFromFile(tigerURL.path.UTF8String, "px", 96);
+
+    printf("size: %f x %f\n", image->width, image->height);
+
+    auto vger = vgerNew();
+
+    auto magenta = vgerColorPaint(float4{1,0,1,1});
+
+    vgerBegin(vger, 512, 512, 1.0);
+
+    vgerSave(vger);
+    vgerScale(vger, float2{0.5, 0.5});
+    for (NSVGshape *shape = image->shapes; shape; shape = shape->next) {
+        for (NSVGpath *path = shape->paths; path; path = path->next) {
+            vgerFillCubicPath(vger, (float2*) path->pts, path->npts, magenta);
+        }
+    }
+    vgerRestore(vger);
+    // Delete
+    nsvgDelete(image);
+
+    [self render:vger name:@"tiger.png"];
+
+    vgerDelete(vger);
 }
 
 @end

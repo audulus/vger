@@ -671,7 +671,7 @@ void vger::fillCubicPath(float2* cvs, int count, vgerPaint paint) {
 
     points.resize(0);
 
-    for (int i = 0; i < count; i += 3) {
+    for (int i = 0; i < count-2; i += 3) {
         float2 q[6];
         approx_cubic(cvs+i, q);
         if(i==0) { points.push_back(q[0]); }
