@@ -44,6 +44,7 @@ inline float2 mix(float2 a, float2 b, float t) {
 #endif
 
 // From https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm
+// See also https://www.shadertoy.com/view/4dfXDn
 
 inline float sdCircle( float2 p, float r )
 {
@@ -121,6 +122,25 @@ inline float sdBezier(float2 pos, float2 A, float2 B, float2 C )
         // res = min(res,dot2(d+(c+b*t.z)*t.z));
     }
     return sqrt( res );
+}
+
+inline float sdSubtract(float d1, float d2)
+{
+    return max(-d1, d2);
+}
+
+inline float sdPie(float2 p, float angle)
+{
+    float2 n{cos(angle), sin(angle)};
+    return abs(p).x * n.x + p.y*n.y;
+}
+
+inline float sdArc2(float2 p, float radius, float angle, float width)
+{
+    width /= 2.0;
+    radius -= width;
+    return sdSubtract(sdPie(p, angle),
+                     abs(sdCircle(p, radius)) - width);
 }
 
 // From https://www.shadertoy.com/view/4sySDK
