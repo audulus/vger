@@ -64,6 +64,8 @@ inline float sdSegment(float2 p, float2 a, float2 b )
     return length( pa - ba*h );
 }
 
+// sca is {sin,cos} of orientation
+// scb is {sin,cos} of aperture angle
 inline float sdArc(float2 p, float2 sca, float2 scb, float ra, float rb )
 {
     p = p * float2x2{float2{sca.x,sca.y},float2{-sca.y,sca.x}};
@@ -129,17 +131,17 @@ inline float sdSubtract(float d1, float d2)
     return max(-d1, d2);
 }
 
-inline float sdPie(float2 p, float angle)
+inline float sdPie(float2 p, float2 n)
 {
-    float2 n{cos(angle), sin(angle)};
-    return abs(p).x * n.x + p.y*n.y;
+    return abs(p).x * n.y + p.y*n.x;
 }
 
-inline float sdArc2(float2 p, float radius, float angle, float width)
+/// Arc with square ends.
+inline float sdArc2(float2 p, float2 sca, float2 scb, float radius, float width)
 {
-    width /= 2.0;
-    radius -= width;
-    return sdSubtract(sdPie(p, angle),
+    // Rotate point.
+    p = p * float2x2{float2{sca.x,sca.y},float2{-sca.y,sca.x}};
+    return sdSubtract(sdPie(p, float2{scb.x, -scb.y}),
                      abs(sdCircle(p, radius)) - width);
 }
 
@@ -330,7 +332,7 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
             d = sdCircle(p - prim.cvs[0], prim.radius);
             break;
         case vgerArc:
-            d = sdArc(p - prim.cvs[0], prim.cvs[1], prim.cvs[2], prim.radius, prim.width/2);
+            d = sdArc2(p - prim.cvs[0], prim.cvs[1], prim.cvs[2], prim.radius, prim.width/2);
             break;
         case vgerRect:
         case vgerGlyph: {
