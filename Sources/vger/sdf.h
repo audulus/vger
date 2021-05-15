@@ -277,6 +277,29 @@ inline BBox sdPrimBounds(const DEVICE vgerPrim& prim, const DEVICE float2* cvs) 
 inline bool lineTest(float2 A, float2 B, float2 p);
 inline bool bezierTest(float2 p, float2 A, float2 B, float2 C);
 
+inline bool pointInsidePath(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p) {
+
+    bool inside = false;
+
+    for(int i=0; i<prim.count; i++) {
+        int j = prim.start + 3*i;
+        auto a = cvs[j]; auto b = cvs[j+1]; auto c = cvs[j+2];
+
+        // Intersect +x ray starting at p with line.
+        if(lineTest(p, a, c)) {
+            inside = !inside;
+        }
+
+        // Flip if inside area between curve and line.
+        if(bezierTest(p, a, b, c)) {
+            inside = !inside;
+        }
+    }
+
+    return inside;
+
+}
+
 inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p) {
     float d = FLT_MAX;
     switch(prim.type) {
