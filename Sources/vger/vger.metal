@@ -291,7 +291,7 @@ kernel void vger_tile_encode2(const device vgerPrim* prims,
 
         float d = sdPrim(prim, cvs, p);
 
-        if(d < tileSize * 2) {
+        if(d < tileSize * SQRT_2 * 0.5) {
             *dst++ = i;
         }
     }
