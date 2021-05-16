@@ -347,6 +347,7 @@ inline bool pointInsidePath(const DEVICE vgerPrim& prim, const DEVICE float2* cv
 
 inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p) {
     float d = FLT_MAX;
+    float s = 1;
     switch(prim.type) {
         case vgerBezier:
             d = sdBezierApprox(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]) - prim.width;
@@ -385,22 +386,22 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
         case vgerPathFill:
             for(int i=0; i<prim.count; i++) {
                 int j = prim.start + 3*i;
-                d = min(d, sdBezier(p, cvs[j], cvs[j+1], cvs[j+2]));
-            }
-            for(int i=0; i<prim.count; i++) {
-                int j = prim.start + 3*i;
-                auto a = cvs[j]; auto b = cvs[j+1]; auto c = cvs[j+2];
+                auto a = cvs[j];
+                auto b = cvs[j+1];
+                auto c = cvs[j+2];
 
-                // Intersect +x ray starting at p with line.
+                d = min(d, sdBezier(p, a, b, c));
+
                 if(lineTest(p, a, c)) {
-                    d = -d;
+                    s = -s;
                 }
 
                 // Flip if inside area between curve and line.
                 if(bezierTest(p, a, b, c)) {
-                    d = -d;
+                    s = -s;
                 }
             }
+            d *= s;
             break;
         default:
             break;
