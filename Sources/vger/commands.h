@@ -10,6 +10,7 @@
 
 #define tileBufSize 4096
 #define maxTilesWidth 256
+#define tileSize 16
 
 enum vgerOp {
     vgerOpLine,

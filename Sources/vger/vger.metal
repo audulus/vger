@@ -167,6 +167,41 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 
 }
 
+kernel void vger_tile_encode(const device vgerPrim* prims,
+                             const device float2* cvs,
+                             constant uint& primCount,
+                             device char *tiles,
+                             uint2 gid [[thread_position_in_grid]]) {
+
+    uint tileIx = gid.y * maxTilesWidth + gid.x;
+    device char *dst = tiles + tileIx * tileBufSize;
+    TileEncoder encoder{dst};
+
+    float2 p = float2(gid * tileSize + tileSize/2);
+
+    for(uint i=0;i<primCount;++i) {
+        device auto& prim = prims[i];
+
+        float d = sdPrim(prim, cvs, p);
+
+        if(d < 2) {
+
+            if(prim.type == vgerPathFill) {
+                for(int i=0; i<prim.count; i++) {
+                    int j = prim.start + 3*i;
+                    auto a = cvs[j];
+                    auto b = cvs[j+1];
+                    auto c = cvs[j+2];
+                    encoder.bezFill(a,b,c);
+                }
+            }
+        }
+    }
+
+    encoder.end();
+
+}
+
 // Not yet used.
 kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture(0)]],
                              const device char *tiles [[buffer(0)]],
