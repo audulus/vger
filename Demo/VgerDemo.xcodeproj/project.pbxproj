@@ -11,8 +11,8 @@
 		29E7DA2A26509E5800A196FF /* TigerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29E7DA2826509E5800A196FF /* TigerView.swift */; };
 		29E7DA2F26509EA400A196FF /* nanosvg.m in Sources */ = {isa = PBXBuildFile; fileRef = 29E7DA2E26509EA400A196FF /* nanosvg.m */; };
 		29E7DA3026509EA400A196FF /* nanosvg.m in Sources */ = {isa = PBXBuildFile; fileRef = 29E7DA2E26509EA400A196FF /* nanosvg.m */; };
-		29E7DA322650A2C000A196FF /* Ghostscript_Tiger.svg in Resources */ = {isa = PBXBuildFile; fileRef = 29E7DA312650A2C000A196FF /* Ghostscript_Tiger.svg */; };
-		29E7DA332650A2C000A196FF /* Ghostscript_Tiger.svg in Resources */ = {isa = PBXBuildFile; fileRef = 29E7DA312650A2C000A196FF /* Ghostscript_Tiger.svg */; };
+		29E7DA392650B6D600A196FF /* Ghostscript_Tiger.svg in Resources */ = {isa = PBXBuildFile; fileRef = 29E7DA382650B6D600A196FF /* Ghostscript_Tiger.svg */; };
+		29E7DA3A2650B6D600A196FF /* Ghostscript_Tiger.svg in Resources */ = {isa = PBXBuildFile; fileRef = 29E7DA382650B6D600A196FF /* Ghostscript_Tiger.svg */; };
 		29F372C726421D7F00B38055 /* VgerDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F372B426421D7E00B38055 /* VgerDemoApp.swift */; };
 		29F372C826421D7F00B38055 /* VgerDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F372B426421D7E00B38055 /* VgerDemoApp.swift */; };
 		29F372C926421D7F00B38055 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F372B526421D7E00B38055 /* ContentView.swift */; };
@@ -31,7 +31,7 @@
 		29E7DA2C26509EA300A196FF /* VgerDemo (iOS)-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VgerDemo (iOS)-Bridging-Header.h"; sourceTree = "<group>"; };
 		29E7DA2D26509EA300A196FF /* VgerDemo (macOS)-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VgerDemo (macOS)-Bridging-Header.h"; sourceTree = "<group>"; };
 		29E7DA2E26509EA400A196FF /* nanosvg.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = nanosvg.m; sourceTree = "<group>"; };
-		29E7DA312650A2C000A196FF /* Ghostscript_Tiger.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = Ghostscript_Tiger.svg; path = "../../../Library/Developer/Xcode/DerivedData/VgerDemo-dmwnaocxqqgwbmfuyhrfhrcltpre/SourcePackages/checkouts/vger/Tests/vgerTests/images/Ghostscript_Tiger.svg"; sourceTree = "<group>"; };
+		29E7DA382650B6D600A196FF /* Ghostscript_Tiger.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Ghostscript_Tiger.svg; sourceTree = "<group>"; };
 		29F372B426421D7E00B38055 /* VgerDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VgerDemoApp.swift; sourceTree = "<group>"; };
 		29F372B526421D7E00B38055 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		29F372B626421D7F00B38055 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -86,7 +86,7 @@
 				29E7DA2E26509EA400A196FF /* nanosvg.m */,
 				29E7DA2C26509EA300A196FF /* VgerDemo (iOS)-Bridging-Header.h */,
 				29E7DA2D26509EA300A196FF /* VgerDemo (macOS)-Bridging-Header.h */,
-				29E7DA312650A2C000A196FF /* Ghostscript_Tiger.svg */,
+				29E7DA382650B6D600A196FF /* Ghostscript_Tiger.svg */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -214,7 +214,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				29F372CB26421D7F00B38055 /* Assets.xcassets in Resources */,
-				29E7DA322650A2C000A196FF /* Ghostscript_Tiger.svg in Resources */,
+				29E7DA392650B6D600A196FF /* Ghostscript_Tiger.svg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,7 +223,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				29F372CC26421D7F00B38055 /* Assets.xcassets in Resources */,
-				29E7DA332650A2C000A196FF /* Ghostscript_Tiger.svg in Resources */,
+				29E7DA3A2650B6D600A196FF /* Ghostscript_Tiger.svg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
