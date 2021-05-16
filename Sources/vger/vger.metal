@@ -301,11 +301,11 @@ kernel void vger_tile_encode2(const device vgerPrim* prims,
 }
 
 kernel void vger_tile_render2(texture2d<half, access::write> outTexture [[texture(0)]],
-                             const device int *tiles,
-                             const device vgerPrim* prims,
-                             const device float2* cvs,
-                             uint2 gid [[thread_position_in_grid]],
-                             uint2 tgid [[threadgroup_position_in_grid]]) {
+                              const device vgerPrim* prims,
+                              const device float2* cvs,
+                              const device int *tiles,
+                              uint2 gid [[thread_position_in_grid]],
+                              uint2 tgid [[threadgroup_position_in_grid]]) {
 
     uint tileIx = tgid.y * maxTilesWidth + tgid.x;
     const device int *src = tiles + tileIx * tileBufSize;
