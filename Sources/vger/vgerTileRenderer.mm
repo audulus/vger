@@ -59,6 +59,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
             count:(int)n
          textures:(NSArray<id<MTLTexture>>*)textures
      glyphTexture:(id<MTLTexture>)glyphTexture
+    renderTexture:(id<MTLTexture>)renderTexture
        windowSize:(vector_float2)windowSize
 {
     if(n == 0) {
@@ -79,6 +80,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     auto render = [buffer computeCommandEncoder];
     render.label = @"tile render encoder";
     [render setComputePipelineState:renderPipeline];
+    [render setTexture:renderTexture atIndex:0];
     [render setBuffer:primBuffer offset:0 atIndex:0];
     [render setBuffer:cvBuffer offset:0 atIndex:1];
     [encode setBuffer:tileBuffer offset:0 atIndex:3];
