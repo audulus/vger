@@ -844,4 +844,62 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     vgerDelete(vger);
 }
 
+- (void) testTigerPerf {
+
+    auto tigerURL = [self getImageURL:@"Ghostscript_Tiger.svg"];
+
+    auto image = nsvgParseFromFile(tigerURL.path.UTF8String, "px", 96);
+
+    printf("size: %f x %f\n", image->width, image->height);
+
+    auto vger = vgerNew();
+
+    [self measureBlock:^{
+
+        vgerBegin(vger, 512, 512, 1.0);
+
+        vgerSave(vger);
+        vgerTranslate(vger, float2{0, 512});
+        vgerScale(vger, float2{0.5, -0.5});
+
+        for (NSVGshape *shape = image->shapes; shape; shape = shape->next) {
+
+            auto c = shape->fill.color;
+            auto fcolor = float4{
+                float((c >> 0) & 0xff),
+                float((c >> 8) & 0xff),
+                float((c >> 16) & 0xff),
+                float((c >> 24) & 0xff)
+            } * 1.0/255.0;
+
+            auto paint = vgerColorPaint(fcolor);
+
+            for (NSVGpath *path = shape->paths; path; path = path->next) {
+                vgerFillCubicPath(vger, (float2*) path->pts, path->npts, paint);
+            }
+        }
+
+        vgerRestore(vger);
+
+        auto commandBuffer = [queue commandBuffer];
+
+        vgerEncode(vger, commandBuffer, pass);
+
+        // Sync texture on macOS
+        #if TARGET_OS_OSX
+        auto blitEncoder = [commandBuffer blitCommandEncoder];
+        [blitEncoder synchronizeResource:texture];
+        [blitEncoder endEncoding];
+        #endif
+
+        [commandBuffer commit];
+        [commandBuffer waitUntilCompleted];
+    }];
+
+    // Delete
+    nsvgDelete(image);
+
+    vgerDelete(vger);
+}
+
 @end
