@@ -176,6 +176,8 @@ struct vger {
 
     void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 
+    void encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture);
+
     bool renderCachedText(const TextLayoutKey& key, const vgerPaint& paint);
 
     void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, float2 offset, float scale);
@@ -735,6 +737,23 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
         glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
         textCache.clear();
     }
+}
+
+void vgerEncodeTileRender(vgerContext vg, id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture) {
+    vg->encodeTileRender(buf, renderTexture);
+}
+
+void vger::encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture) {
+
+    [tileRenderer encodeTo:buf
+                     prims:primBuffers[curBuffer]
+                       cvs:cvBuffers[curBuffer]
+                     count:primCount
+                  textures:textures
+              glyphTexture:[glyphCache getAltas]
+             renderTexture:renderTexture
+                windowSize:windowSize];
+
 }
 
 void vgerTranslate(vgerContext vg, vector_float2 t) {

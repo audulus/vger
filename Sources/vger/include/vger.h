@@ -99,6 +99,9 @@ void vgerRestore(vgerContext);
 /// Encode drawing commands to a metal command buffer.
 void vgerEncode(vgerContext, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 
+/// Experimental!
+void vgerEncodeTileRender(vgerContext vg, id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture);
+
 /// For debugging.
 id<MTLTexture> vgerGetGlyphAtlas(vgerContext);
 #endif
