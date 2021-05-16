@@ -4,12 +4,13 @@ import SwiftUI
 import vger
 import vgerSwift
 
-class TigerModel {
+class TigerModel : ObservableObject {
 
     var image: UnsafeMutablePointer<NSVGimage>
 
     init() {
-        image = nsvgParseFromFile("tiger", "px", 96)!
+        let path = Bundle.main.path(forResource: "Ghostscript_Tiger", ofType: "svg")
+        image = nsvgParseFromFile(path, "px", 96)!
     }
 
     func draw(vger: vgerContext) {
@@ -23,16 +24,17 @@ class TigerModel {
 
             let c = shape!.pointee.fill.color
 
-            let fcolor = SIMD4<Float>( Float(c & 0xff), Float( (c>>8) & 0xff),
+            let fcolor = 1.0/255.0 * SIMD4<Float>( Float(c & 0xff), Float( (c>>8) & 0xff),
                                        Float( (c>>16) & 0xff), Float( (c>>24) & 0xff ))
 
             let paint = vgerColorPaint(fcolor)
 
-            let path = shape?.pointee.paths
+            var path = shape?.pointee.paths
             while path != nil {
                 path?.pointee.pts.withMemoryRebound(to: SIMD2<Float>.self, capacity: Int(path!.pointee.npts), { cvs in
                     vgerFillCubicPath(vger, cvs, path!.pointee.npts, paint)
                 })
+                path = path?.pointee.next
             }
 
             shape = shape?.pointee.next
