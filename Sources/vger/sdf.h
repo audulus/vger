@@ -230,6 +230,10 @@ inline float sdBezierApprox(float2 p, float2 A, float2 B, float2 C) {
     return length(get_distance_vector(A-p, B-p, C-p));
 }
 
+inline float sdBezierApprox2(float2 p, float2 A, float2 B, float2 C) {
+    return length(get_distance_vector(A-p, B-p, C-p));
+}
+
 inline float sdWire(float2 p, float2 a, float2 b) {
 
     float2 sz = b-a;
@@ -390,7 +394,7 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
                 auto b = cvs[j+1];
                 auto c = cvs[j+2];
 
-                d = min(d, sdBezierApprox(p, a, b, c));
+                d = min(d, sdBezierApprox2(p, a, b, c));
 
                 if(lineTest(p, a, c)) {
                     s = -s;
