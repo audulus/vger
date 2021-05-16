@@ -299,3 +299,33 @@ kernel void vger_tile_encode2(const device vgerPrim* prims,
     *dst = -1; // end
 
 }
+
+kernel void vger_tile_render2(texture2d<half, access::write> outTexture [[texture(0)]],
+                             const device int *tiles,
+                             const device vgerPrim* prims,
+                             const device float2* cvs,
+                             uint2 gid [[thread_position_in_grid]],
+                             uint2 tgid [[threadgroup_position_in_grid]]) {
+
+    uint tileIx = tgid.y * maxTilesWidth + tgid.x;
+    const device int *src = tiles + tileIx * tileBufSize;
+    uint x = gid.x;
+    uint y = gid.y;
+    float2 xy = float2(x, y);
+
+    half3 rgb = half3(1.0);
+
+    for(; *src != -1; ++src) {
+        device auto& prim = prims[*src];
+        float d = sdPrim(prim, cvs, xy);
+        auto c = half4(applyPaint(prim.paint, xy));
+        rgb = mix(rgb, c.rgb, 1.0-smoothstep(-.5,.5,d) );
+    }
+
+    // Linear to sRGB conversion. Note that if we had writable sRGB textures
+    // we could let this be done in the write call.
+    rgb = select(1.055 * pow(rgb, 1/2.4) - 0.055, 12.92 * rgb, rgb < 0.0031308);
+    half4 rgba = half4(rgb, 1.0);
+    outTexture.write(rgba, gid);
+
+}
