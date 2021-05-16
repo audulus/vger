@@ -15,6 +15,7 @@
 #import "vgerGlyphCache.h"
 #import "vgerPathScanner.h"
 #import "vgerGlyphPathCache.h"
+#import "vgerTileRenderer.h"
 #include <vector>
 #include <unordered_map>
 #include <string>
@@ -70,6 +71,9 @@ struct vger {
 
     id<MTLDevice> device;
     vgerRenderer* renderer;
+
+    /// New experimental tile renderer.
+    vgerTileRenderer* tileRenderer;
 
     /// Transform matrix stack.
     std::vector<matrix_float3x3> txStack;
@@ -137,6 +141,7 @@ struct vger {
     vger() {
         device = MTLCreateSystemDefaultDevice();
         renderer = [[vgerRenderer alloc] initWithDevice:device];
+        tileRenderer = [[vgerTileRenderer alloc] initWithDevice:device];
         glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
         printf("prim buffer size: %d MB\n", (int)(maxPrims * sizeof(vgerPrim))/(1024*1024));
         for(int i=0;i<3;++i) {

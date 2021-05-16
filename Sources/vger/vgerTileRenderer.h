@@ -9,6 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface vgerTileRenderer : NSObject
 
+- (instancetype)initWithDevice:(id<MTLDevice>) device;
+
 @end
 
 NS_ASSUME_NONNULL_END
