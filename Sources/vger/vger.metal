@@ -274,3 +274,28 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
     outTexture.write(rgba, gid);
 
 }
+
+kernel void vger_tile_encode2(const device vgerPrim* prims,
+                             const device float2* cvs,
+                             constant uint& primCount,
+                             device int *tiles,
+                             uint2 gid [[thread_position_in_grid]]) {
+
+    uint tileIx = gid.y * maxTilesWidth + gid.x;
+    device int *dst = tiles + tileIx * tileBufSize;
+
+    float2 p = float2(gid * tileSize + tileSize/2);
+
+    for(uint i=0;i<primCount;++i) {
+        device auto& prim = prims[i];
+
+        float d = sdPrim(prim, cvs, p);
+
+        if(d < tileSize * 2) {
+            *dst++ = i;
+        }
+    }
+
+    *dst = -1; // end
+
+}
