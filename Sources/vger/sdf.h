@@ -390,7 +390,7 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
                 auto b = cvs[j+1];
                 auto c = cvs[j+2];
 
-                d = min(d, sdBezier(p, a, b, c));
+                d = min(d, sdBezierApprox(p, a, b, c));
 
                 if(lineTest(p, a, c)) {
                     s = -s;
