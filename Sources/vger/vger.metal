@@ -5,6 +5,7 @@ using namespace metal;
 
 #include "include/vger_types.h"
 #include "sdf.h"
+#include "commands.h"
 
 #define SQRT_2 1.414213562373095
 
@@ -123,5 +124,118 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 
     float fw = length(fwidth(in.t));
     return mix(float4(color.rgb,0.0), color, 1.0-smoothstep(-fw/2,fw/2,d) );
+
+}
+
+
+fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
+                              const device vgerPrim* prims,
+                              const device float2* cvs,
+                              device char *tiles,
+                              texture2d<float, access::sample> tex,
+                              texture2d<float, access::sample> glyphs) {
+
+    device auto& prim = prims[in.primIndex];
+
+    float d = sdPrim(prim, cvs, in.t);
+
+    // Are we close enough to output data for the prim?
+    if(d < 2) {
+
+        uint x = (uint) in.position.x;
+        uint y = (uint) in.position.y;
+        uint tileIx = y * maxTilesWidth + x;
+
+        TileEncoder encoder{tiles + tileIx * tileBufSize};
+
+        if(prim.type == vgerPathFill) {
+            for(int i=0; i<prim.count; i++) {
+                int j = prim.start + 3*i;
+                auto a = cvs[j];
+                auto b = cvs[j+1];
+                auto c = cvs[j+2];
+                encoder.bezFill(a,b,c);
+            }
+        }
+
+        encoder.end();
+    }
+
+    // This is just for debugging so we can see what was rendered
+    // in the coarse rasterization.
+    return float4(1,0,1,1);
+
+}
+
+// Not yet used.
+kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture(0)]],
+                             const device char *tiles [[buffer(0)]],
+                             uint2 gid [[thread_position_in_grid]],
+                             uint2 tgid [[threadgroup_position_in_grid]]) {
+
+    uint tileIx = tgid.y * maxTilesWidth + tgid.x;
+    const device char *src = tiles + tileIx * tileBufSize;
+    uint x = gid.x;
+    uint y = gid.y;
+    float2 xy = float2(x, y);
+
+    half3 rgb = half3(1.0);
+    float d = 1e9;
+
+    while(true) {
+        vgerOp op = *(device vgerOp*) src;
+
+        if(op == vgerOpEnd) {
+            break;
+        }
+
+        switch(op) {
+            case vgerOpLine: {
+                vgerCmdLineFill cmd = *(device vgerCmdLineFill*) src;
+
+                if(lineTest(xy, cmd.a, cmd.b)) {
+                    d = -d;
+                }
+
+                src += sizeof(vgerCmdLineFill);
+                break;
+            }
+
+            case vgerOpBez: {
+                vgerCmdBezFill cmd = *(device vgerCmdBezFill*) src;
+
+                if(lineTest(xy, cmd.a, cmd.c)) {
+                    d = -d;
+                }
+
+                if(bezierTest(xy, cmd.a, cmd.b, cmd.c)) {
+                    d = -d;
+                }
+
+                src += sizeof(vgerCmdBezFill);
+                break;
+            }
+
+            case vgerOpSolid: {
+                vgerCmdSolid cmd = *(device vgerCmdSolid*) src;
+                half4 c = unpack_unorm4x8_srgb_to_half(cmd.color);
+                rgb = mix(rgb, c.rgb, 1.0-smoothstep(-.5,.5,d) );
+                d = 1e9;
+                src += sizeof(vgerCmdSolid);
+                break;
+            }
+
+            default:
+                outTexture.write(half4(1.0, 0.0, 1.0, 1.0), gid);
+                return;
+
+        }
+    }
+
+    // Linear to sRGB conversion. Note that if we had writable sRGB textures
+    // we could let this be done in the write call.
+    rgb = select(1.055 * pow(rgb, 1/2.4) - 0.055, 12.92 * rgb, rgb < 0.0031308);
+    half4 rgba = half4(rgb, 1.0);
+    outTexture.write(rgba, gid);
 
 }
