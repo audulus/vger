@@ -7,17 +7,19 @@ import vgerSwift
 class TigerModel : ObservableObject {
 
     var image: UnsafeMutablePointer<NSVGimage>
+    var scale = CGFloat(1.0)
 
     init() {
         let path = Bundle.main.path(forResource: "Ghostscript_Tiger", ofType: "svg")
         image = nsvgParseFromFile(path, "px", 96)!
     }
 
-    func draw(vger: vgerContext) {
+    func draw(vger: vgerContext, size: CGSize) {
         vgerSave(vger)
 
-        vgerTranslate(vger, .init(0, 512));
-        vgerScale(vger, .init(0.5, -0.5));
+        vgerTranslate(vger, .init(0, Float(size.height)))
+        vgerScale(vger, .init(0.5, -0.5))
+        vgerScale(vger, .init(repeating: Float(scale)))
 
         var shape = image.pointee.shapes
         while shape != nil {
@@ -49,7 +51,13 @@ struct TigerView: View {
     var model: TigerModel
 
     var body: some View {
-        VgerView(renderCallback: model.draw)
+        GeometryReader { geom in
+            VgerView(renderCallback: { vger in model.draw(vger: vger, size: geom.size)})
+                .gesture(MagnificationGesture().onChanged({ scale in
+                    model.scale = scale
+                }))
+        }
+
     }
 }
 
