@@ -23,9 +23,34 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 @interface vgerTileRenderer() {
     id<MTLComputePipelineState> encodePipeline;
     id<MTLComputePipelineState> renderPipeline;
+    id<MTLBuffer> tileBuffer;
 }
 @end
 
 @implementation vgerTileRenderer
+
+- (instancetype)initWithDevice:(id<MTLDevice>) device
+{
+    self = [super init];
+    if (self) {
+        auto lib = GetMetalLibrary(device);
+
+        NSError* error;
+        auto encodeFunc = [lib newFunctionWithName:@"vger_tile_encode2"];
+        encodePipeline = [device newComputePipelineStateWithFunction:encodeFunc error:&error];
+        if(error) {
+            NSLog(@"error creating pipline state: %@", error);
+            abort();
+        }
+
+        auto renderFunc = [lib newFunctionWithName:@"vger_tile_render2"];
+        renderPipeline = [device newComputePipelineStateWithFunction:renderFunc error:&error];
+        if(error) {
+            NSLog(@"error creating pipline state: %@", error);
+            abort();
+        }
+    }
+    return self;
+}
 
 @end
