@@ -78,7 +78,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
     auto render = [buffer computeCommandEncoder];
     render.label = @"tile render encoder";
-    [render setComputePipelineState:encodePipeline];
+    [render setComputePipelineState:renderPipeline];
     [render setBuffer:primBuffer offset:0 atIndex:0];
     [render setBuffer:cvBuffer offset:0 atIndex:1];
     [encode setBuffer:tileBuffer offset:0 atIndex:3];
