@@ -53,4 +53,39 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     return self;
 }
 
+- (void) encodeTo:(id<MTLCommandBuffer>) buffer
+            prims:(id<MTLBuffer>) primBuffer
+              cvs:(id<MTLBuffer>) cvBuffer
+            count:(int)n
+         textures:(NSArray<id<MTLTexture>>*)textures
+     glyphTexture:(id<MTLTexture>)glyphTexture
+       windowSize:(vector_float2)windowSize
+{
+    if(n == 0) {
+        return;
+    }
+
+    auto encode = [buffer computeCommandEncoder];
+    encode.label = @"tile encode encoder";
+    [encode setComputePipelineState:encodePipeline];
+    [encode setBuffer:primBuffer offset:0 atIndex:0];
+    [encode setBuffer:cvBuffer offset:0 atIndex:1];
+    [encode setBytes:&n length:sizeof(uint) atIndex:2];
+    [encode setBuffer:tileBuffer offset:0 atIndex:3];
+    [encode dispatchThreadgroups:MTLSizeMake(16, 16, 1)
+           threadsPerThreadgroup:MTLSizeMake(16, 16, 1)];
+    [encode endEncoding];
+
+    auto render = [buffer computeCommandEncoder];
+    render.label = @"tile render encoder";
+    [render setComputePipelineState:encodePipeline];
+    [render setBuffer:primBuffer offset:0 atIndex:0];
+    [render setBuffer:cvBuffer offset:0 atIndex:1];
+    [encode setBuffer:tileBuffer offset:0 atIndex:3];
+    [encode dispatchThreadgroups:MTLSizeMake(int(windowSize.x/16)+1, int(windowSize.y/16)+1, 1)
+           threadsPerThreadgroup:MTLSizeMake(16, 16, 1)];
+    [encode endEncoding];
+
+}
+
 @end
