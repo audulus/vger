@@ -102,8 +102,10 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     auto enc = [buffer renderCommandEncoderWithDescriptor:pass];
     enc.label = @"render encoder";
 
+    float2 coarseSize{maxTilesWidth, maxTilesWidth};
+
     [enc setRenderPipelineState:coarsePipeline];
-    [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:1];
+    [enc setVertexBytes:&coarseSize length:sizeof(coarseSize) atIndex:1];
     [enc setFragmentTexture:glyphTexture atIndex:1];
     [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
     [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
