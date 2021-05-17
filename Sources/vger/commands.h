@@ -23,11 +23,11 @@ using namespace simd;
 #define tileSize 16
 
 enum vgerOp {
+    vgerOpEnd,
     vgerOpLine,
     vgerOpBez,
     vgerOpSolid,
     vgerOpSegment,
-    vgerOpEnd
 };
 
 /// Line segment.
