@@ -15,6 +15,7 @@ struct VertexOut {
     int primIndex;
 };
 
+/// Calculates bounds for prims.
 kernel void vger_bounds(uint gid [[thread_position_in_grid]],
                         device vgerPrim* prims,
                         const device float2* cvs,
@@ -39,6 +40,7 @@ kernel void vger_bounds(uint gid [[thread_position_in_grid]],
     }
 }
 
+/// Removes a prim if its texture region is outside the rendered geometry.
 kernel void vger_prune(uint gid [[thread_position_in_grid]],
                        device vgerPrim* prims,
                        const device float2* cvs,
