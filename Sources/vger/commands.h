@@ -67,7 +67,7 @@ struct TileEncoder {
         cmd->op = vgerOpSegment;
         cmd->a = a;
         cmd->b = b;
-        dst += sizeof(vgerOpSegment);
+        dst += sizeof(vgerCmdSegment);
     }
 
     void lineFill(float2 a, float2 b) {
