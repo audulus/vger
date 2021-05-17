@@ -184,7 +184,7 @@ kernel void vger_tile_encode(const device vgerPrim* prims,
 
         float d = sdPrim(prim, cvs, p);
 
-        if(d < 2) {
+        if(d < tileSize * SQRT_2 * 0.5) {
 
             if(prim.type == vgerPathFill) {
                 for(int i=0; i<prim.count; i++) {
