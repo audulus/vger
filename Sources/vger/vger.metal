@@ -140,7 +140,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
     float d = sdPrim(prim, cvs, in.t);
 
     // Are we close enough to output data for the prim?
-    if(d < 2) {
+    if(d < tileSize * SQRT_2 * 0.5) {
 
         uint x = (uint) in.position.x;
         uint y = (uint) in.position.y;
