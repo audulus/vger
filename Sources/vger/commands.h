@@ -5,10 +5,20 @@
 
 #include "include/vger_types.h"
 
+#ifdef __METAL_VERSION__
+#define DEVICE device
+#else
+#define DEVICE
+
+#include <simd/simd.h>
+using namespace simd;
+
+#endif
+
 // Rendering commands for experimental tile-based fine rendering.
 // Not yet in use.
 
-#define tileBufSize 4096
+#define tileBufSize 32
 #define maxTilesWidth 256
 #define tileSize 16
 
@@ -49,10 +59,10 @@ union vgerCmd {
 
 struct TileEncoder {
 
-    device char* dst;
+    DEVICE char* dst;
 
     void lineFill(float2 a, float2 b) {
-        device vgerCmdLineFill* cmd = (device vgerCmdLineFill*) dst;
+        DEVICE vgerCmdLineFill* cmd = (DEVICE vgerCmdLineFill*) dst;
         cmd->op = vgerOpLine;
         cmd->a = a;
         cmd->b = b;
@@ -60,7 +70,7 @@ struct TileEncoder {
     }
 
     void bezFill(float2 a, float2 b, float2 c) {
-        device vgerCmdBezFill* cmd = (device vgerCmdBezFill*) dst;
+        DEVICE vgerCmdBezFill* cmd = (DEVICE vgerCmdBezFill*) dst;
         cmd->op = vgerOpBez;
         cmd->a = a;
         cmd->b = b;
@@ -69,14 +79,14 @@ struct TileEncoder {
     }
 
     void solid(int color) {
-        device vgerCmdSolid* cmd = (device vgerCmdSolid*) dst;
+        DEVICE vgerCmdSolid* cmd = (DEVICE vgerCmdSolid*) dst;
         cmd->op = vgerOpSolid;
         cmd->color = color;
         dst += sizeof(vgerCmdSolid);
     }
 
     void end() {
-        device vgerCmd* cmd = (device vgerCmd*) dst;
+        DEVICE vgerCmd* cmd = (DEVICE vgerCmd*) dst;
         cmd->op = vgerOpEnd;
     }
 

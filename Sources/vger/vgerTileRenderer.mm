@@ -2,6 +2,7 @@
 
 #import "vgerTileRenderer.h"
 #import "vgerBundleHelper.h"
+#import "commands.h"
 
 static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
@@ -50,7 +51,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
             abort();
         }
 
-        tileBuffer = [device newBufferWithLength:4096 * 256 * 256 options:MTLResourceStorageModePrivate];
+        tileBuffer = [device newBufferWithLength:tileBufSize * maxTilesWidth * maxTilesWidth * sizeof(int) options:MTLResourceStorageModePrivate];
+        printf("tile buffer size: %d MB\n", (int)(tileBuffer.length)/(1024*1024));
     }
     return self;
 }
