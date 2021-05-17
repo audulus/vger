@@ -67,8 +67,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
         tileBuffer = [device newBufferWithLength:tileBufSize * maxTilesWidth * maxTilesWidth * sizeof(int) options:MTLResourceStorageModePrivate];
         printf("tile buffer size: %d MB\n", (int)(tileBuffer.length)/(1024*1024));
 
-        int w = 256;
-        int h = 256;
+        int w = 512;
+        int h = 512;
 
         auto textureDesc = [MTLTextureDescriptor
                             texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
@@ -111,12 +111,11 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     auto enc = [buffer renderCommandEncoderWithDescriptor:pass];
     enc.label = @"render encoder";
 
-    float2 coarseSize{maxTilesWidth, maxTilesWidth};
+    float2 coarseSize{512, 512};
 
     [enc setRenderPipelineState:coarsePipeline];
-    [enc setVertexBytes:&coarseSize length:sizeof(coarseSize) atIndex:1];
-    [enc setFragmentTexture:glyphTexture atIndex:1];
     [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
+    [enc setVertexBytes:&coarseSize length:sizeof(coarseSize) atIndex:1];
     [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
     [enc setFragmentBuffer:cvBuffer offset:0 atIndex:1];
     [enc setFragmentBuffer:tileBuffer offset:0 atIndex:2];
