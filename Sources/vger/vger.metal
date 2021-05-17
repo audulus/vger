@@ -127,46 +127,6 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 
 }
 
-
-fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
-                              const device vgerPrim* prims,
-                              const device float2* cvs,
-                              device char *tiles,
-                              texture2d<float, access::sample> tex,
-                              texture2d<float, access::sample> glyphs) {
-
-    device auto& prim = prims[in.primIndex];
-
-    float d = sdPrim(prim, cvs, in.t);
-
-    // Are we close enough to output data for the prim?
-    if(d < 2) {
-
-        uint x = (uint) in.position.x;
-        uint y = (uint) in.position.y;
-        uint tileIx = y * maxTilesWidth + x;
-
-        TileEncoder encoder{tiles + tileIx * tileBufSize};
-
-        if(prim.type == vgerPathFill) {
-            for(int i=0; i<prim.count; i++) {
-                int j = prim.start + 3*i;
-                auto a = cvs[j];
-                auto b = cvs[j+1];
-                auto c = cvs[j+2];
-                encoder.bezFill(a,b,c);
-            }
-        }
-
-        encoder.end();
-    }
-
-    // This is just for debugging so we can see what was rendered
-    // in the coarse rasterization.
-    return float4(1,0,1,1);
-
-}
-
 kernel void vger_tile_encode(const device vgerPrim* prims,
                              const device float2* cvs,
                              constant uint& primCount,
