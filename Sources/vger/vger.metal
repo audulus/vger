@@ -131,7 +131,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
                               const device float2* cvs,
-                              device char *tiles,
+                              device char *tiles [[ raster_order_group(0) ]],
                               texture2d<float, access::sample> tex,
                               texture2d<float, access::sample> glyphs) {
 
