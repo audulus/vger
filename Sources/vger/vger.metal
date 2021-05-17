@@ -22,44 +22,45 @@ kernel void vger_bounds(uint gid [[thread_position_in_grid]],
                         constant uint& primCount) {
 
     if(gid < primCount) {
-        device auto& p = prims[gid];
+        device auto& prim = prims[gid];
 
-        if(p.type != vgerGlyph and p.type != vgerPathFill) {
+        if(prim.type != vgerGlyph and prim.type != vgerPathFill) {
 
-            auto bounds = sdPrimBounds(p, cvs).inset(-1);
-            p.texcoords[0] = bounds.min;
-            p.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-            p.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-            p.texcoords[3] = bounds.max;
+            auto bounds = sdPrimBounds(prim, cvs).inset(-1);
+            prim.texcoords[0] = bounds.min;
+            prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
+            prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
+            prim.texcoords[3] = bounds.max;
 
             for(int i=0;i<4;++i) {
-                p.verts[i] = p.texcoords[i];
+                prim.verts[i] = prim.texcoords[i];
             }
 
         }
-    }
-}
 
-/// Removes a prim if its texture region is outside the rendered geometry.
-kernel void vger_prune(uint gid [[thread_position_in_grid]],
-                       device vgerPrim* prims,
-                       const device float2* cvs,
-                       constant uint& primCount) {
+        // Prune.
+        if(prim.type != vgerGlyph) {
+            auto center = 0.5 * (prim.texcoords[0] + prim.texcoords[3]);
+            auto tile_size = prim.texcoords[3] - prim.texcoords[0];
 
-    if(gid < primCount) {
-        device auto& prim = prims[gid];
+            float d = sdPrim(prim, cvs, center);
+            float threshold = max(tile_size.x, tile_size.y) * 0.5 * SQRT_2;
 
-        auto center = 0.5 * (prim.texcoords[0] + prim.texcoords[3]);
-        auto tile_size = prim.texcoords[3] - prim.texcoords[0];
-
-        if(sdPrim(prim, cvs, center) > max(tile_size.x, tile_size.y) * 0.5 * SQRT_2) {
-            float2 big = {FLT_MAX, FLT_MAX};
-            prim.verts[0] = big;
-            prim.verts[1] = big;
-            prim.verts[2] = big;
-            prim.verts[3] = big;
+            if(d > threshold) {
+                float2 big = {FLT_MAX, FLT_MAX};
+                prim.verts[0] = big;
+                prim.verts[1] = big;
+                prim.verts[2] = big;
+                prim.verts[3] = big;
+            } else if(d < -threshold) {
+                // Completely inside.
+                prim.type = vgerRect;
+                prim.cvs[0] = prim.texcoords[0];
+                prim.cvs[1] = prim.texcoords[3];
+                prim.radius = 0;
+                prim.width = 0;
+            }
         }
-
     }
 }
 

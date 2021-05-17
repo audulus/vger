@@ -91,7 +91,7 @@ struct vger {
     int primCount = 0;
 
     /// Prim buffer capacity.
-    int maxPrims = 65536;
+    int maxPrims = 1048576;
 
     /// Cycle through 3 cv buffers for streaming.
     id<MTLBuffer> cvBuffers[3];
@@ -601,25 +601,30 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint) {
 
                 }
 
-                BBox bounds;
-                bounds.min.x = xInt.a;
-                bounds.max.x = xInt.b;
-                bounds.min.y = scan.yInterval.a;
-                bounds.max.y = scan.yInterval.b;
+                // Divide into horizontal blocks so we can further prune.
+                for(float i=0;i<8;++i) {
+                    BBox bounds;
 
-                // Calculate the prim vertices at this stage,
-                // as we do for glyphs.
-                prim.texcoords[0] = bounds.min;
-                prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-                prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-                prim.texcoords[3] = bounds.max;
+                    bounds.min.x = simd_mix(xInt.a, xInt.b, i/8);
+                    bounds.max.x = simd_mix(xInt.a, xInt.b, (i+1)/8);
+                    bounds.min.y = scan.yInterval.a;
+                    bounds.max.y = scan.yInterval.b;
 
-                for(int i=0;i<4;++i) {
-                    prim.verts[i] = prim.texcoords[i];
+                    // Calculate the prim vertices at this stage,
+                    // as we do for glyphs.
+                    prim.texcoords[0] = bounds.min;
+                    prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
+                    prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
+                    prim.texcoords[3] = bounds.max;
+
+                    for(int i=0;i<4;++i) {
+                        prim.verts[i] = prim.texcoords[i];
+                    }
+
+                    *(p++) = prim;
+                    primCount++;
                 }
 
-                *(p++) = prim;
-                primCount++;
             }
         }
 
