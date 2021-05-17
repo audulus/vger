@@ -131,7 +131,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
     [enc setRenderPipelineState:coarsePipeline];
     [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
-    [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:1];
+    float2 maxWindowSize{maxTilesWidth * tileSize, maxTilesWidth * tileSize};
+    [enc setVertexBytes:&maxWindowSize length:sizeof(maxWindowSize) atIndex:1];
     [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
     [enc setFragmentBuffer:cvBuffer offset:0 atIndex:1];
     [enc setFragmentBuffer:tileBuffer offset:0 atIndex:2];
