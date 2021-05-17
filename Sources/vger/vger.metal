@@ -23,20 +23,17 @@ kernel void vger_prune(uint gid [[thread_position_in_grid]],
     if(gid < primCount) {
         device auto& prim = prims[gid];
 
-        if(prim.type == vgerBezier or prim.type == vgerCurve) {
+        auto center = 0.5 * (prim.texcoords[0] + prim.texcoords[3]);
+        auto tile_size = prim.texcoords[3] - prim.texcoords[0];
 
-            auto center = 0.5 * (prim.texcoords[0] + prim.texcoords[3]);
-            auto tile_size = prim.texcoords[3] - prim.texcoords[0];
-
-            if(sdPrim(prim, cvs, center) > max(tile_size.x, tile_size.y) * 0.5 * SQRT_2) {
-                float2 big = {FLT_MAX, FLT_MAX};
-                prim.verts[0] = big;
-                prim.verts[1] = big;
-                prim.verts[2] = big;
-                prim.verts[3] = big;
-            }
-
+        if(sdPrim(prim, cvs, center) > max(tile_size.x, tile_size.y) * 0.5 * SQRT_2) {
+            float2 big = {FLT_MAX, FLT_MAX};
+            prim.verts[0] = big;
+            prim.verts[1] = big;
+            prim.verts[2] = big;
+            prim.verts[3] = big;
         }
+
     }
 }
 
