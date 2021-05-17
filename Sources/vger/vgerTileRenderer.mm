@@ -24,6 +24,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 @interface vgerTileRenderer() {
     id<MTLRenderPipelineState> coarsePipeline;
     id<MTLComputePipelineState> renderPipeline;
+    id<MTLComputePipelineState> boundsPipeline;
     id<MTLBuffer> tileBuffer;
     id<MTLTexture> coarseDebugTexture;
     MTLRenderPassDescriptor* pass;
@@ -59,6 +60,13 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
         auto renderFunc = [lib newFunctionWithName:@"vger_tile_render"];
         renderPipeline = [device newComputePipelineStateWithFunction:renderFunc error:&error];
+        if(error) {
+            NSLog(@"error creating pipline state: %@", error);
+            abort();
+        }
+
+        auto boundsFunc = [lib newFunctionWithName:@"vger_bounds"];
+        boundsPipeline = [device newComputePipelineStateWithFunction:boundsFunc error:&error];
         if(error) {
             NSLog(@"error creating pipline state: %@", error);
             abort();
@@ -107,6 +115,16 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     if(n == 0) {
         return;
     }
+
+    auto bounds = [buffer computeCommandEncoder];
+    bounds.label = @"bounds encoder";
+    [bounds setComputePipelineState:boundsPipeline];
+    [bounds setBuffer:primBuffer offset:0 atIndex:0];
+    [bounds setBuffer:cvBuffer offset:0 atIndex:1];
+    [bounds setBytes:&n length:sizeof(uint) atIndex:2];
+    [bounds dispatchThreadgroups:MTLSizeMake(n/128+1, 1, 1)
+          threadsPerThreadgroup:MTLSizeMake(128, 1, 1)];
+    [bounds endEncoding];
 
     auto enc = [buffer renderCommandEncoderWithDescriptor:pass];
     enc.label = @"render encoder";
