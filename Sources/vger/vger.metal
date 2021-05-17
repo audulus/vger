@@ -17,6 +17,7 @@ struct VertexOut {
 
 kernel void vger_prune(uint gid [[thread_position_in_grid]],
                        device vgerPrim* prims,
+                       const device float2* cvs,
                        constant uint& primCount) {
 
     if(gid < primCount) {
@@ -27,7 +28,7 @@ kernel void vger_prune(uint gid [[thread_position_in_grid]],
             auto center = 0.5 * (prim.texcoords[0] + prim.texcoords[3]);
             auto tile_size = prim.texcoords[3] - prim.texcoords[0];
 
-            if(sdPrim(prim, nullptr, center) > max(tile_size.x, tile_size.y) * 0.5 * SQRT_2) {
+            if(sdPrim(prim, cvs, center) > max(tile_size.x, tile_size.y) * 0.5 * SQRT_2) {
                 float2 big = {FLT_MAX, FLT_MAX};
                 prim.verts[0] = big;
                 prim.verts[1] = big;
