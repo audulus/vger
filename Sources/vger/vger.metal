@@ -158,6 +158,12 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
             }
         }
 
+        if(prim.type == vgerSegment) {
+            encoder.segment(prim.cvs[0], prim.cvs[1]);
+        }
+
+        encoder.solid(pack_float_to_srgb_unorm4x8(prim.paint.innerColor));
+
         encoder.end();
     }
 
