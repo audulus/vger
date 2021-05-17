@@ -16,14 +16,33 @@
 #import "vgerPathScanner.h"
 #import "vgerGlyphPathCache.h"
 #import "vgerTileRenderer.h"
-#include <vector>
-#include <unordered_map>
-#include <string>
 
 using namespace simd;
 #import "sdf.h"
 #import "bezier.h"
 #import "vger_private.h"
+
+vger::vger() {
+    device = MTLCreateSystemDefaultDevice();
+    renderer = [[vgerRenderer alloc] initWithDevice:device];
+    tileRenderer = [[vgerTileRenderer alloc] initWithDevice:device];
+    glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
+    printf("prim buffer size: %d MB\n", (int)(maxPrims * sizeof(vgerPrim))/(1024*1024));
+    for(int i=0;i<3;++i) {
+        primBuffers[i] = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
+                                       options:MTLResourceStorageModeShared];
+        primBuffers[i].label = @"prim buffer";
+        cvBuffers[i] = [device newBufferWithLength:maxCvs * sizeof(float2)
+                                       options:MTLResourceStorageModeShared];
+        cvBuffers[i].label = @"cv buffer";
+    }
+    txStack.push_back(matrix_identity_float3x3);
+
+    auto desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm width:1 height:1 mipmapped:NO];
+    nullTexture = [device newTextureWithDescriptor:desc];
+
+    textures = [NSMutableArray new];
+}
 
 vgerContext vgerNew() {
     return new vger;

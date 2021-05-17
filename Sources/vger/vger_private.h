@@ -3,6 +3,16 @@
 #ifndef vger_private_h
 #define vger_private_h
 
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include "vgerPathScanner.h"
+#include "vgerGlyphPathCache.h"
+
+@class vgerRenderer;
+@class vgerTileRenderer;
+@class vgerGlyphCache;
+
 /// For caching the layout of strings.
 struct TextLayoutInfo {
     /// The frame in which the string was last rendered. If not the current frame,
@@ -117,27 +127,7 @@ struct vger {
     /// For generating glyph paths.
     vgerGlyphPathCache glyphPathCache;
 
-    vger() {
-        device = MTLCreateSystemDefaultDevice();
-        renderer = [[vgerRenderer alloc] initWithDevice:device];
-        tileRenderer = [[vgerTileRenderer alloc] initWithDevice:device];
-        glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
-        printf("prim buffer size: %d MB\n", (int)(maxPrims * sizeof(vgerPrim))/(1024*1024));
-        for(int i=0;i<3;++i) {
-            primBuffers[i] = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
-                                           options:MTLResourceStorageModeShared];
-            primBuffers[i].label = @"prim buffer";
-            cvBuffers[i] = [device newBufferWithLength:maxCvs * sizeof(float2)
-                                           options:MTLResourceStorageModeShared];
-            cvBuffers[i].label = @"cv buffer";
-        }
-        txStack.push_back(matrix_identity_float3x3);
-
-        auto desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm width:1 height:1 mipmapped:NO];
-        nullTexture = [device newTextureWithDescriptor:desc];
-
-        textures = [NSMutableArray new];
-    }
+    vger();
 
     void addCV(float2 p) {
         if(cvCount < maxCvs) {

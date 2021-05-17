@@ -14,6 +14,7 @@
 #include "nanosvg.h"
 
 #import "../../Sources/vger/sdf.h"
+#import "../../Sources/vger/vger_private.h"
 
 using namespace simd;
 
