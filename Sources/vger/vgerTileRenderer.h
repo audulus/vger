@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
     renderTexture:(id<MTLTexture>)renderTexture
        windowSize:(vector_float2)windowSize;
 
+- (id<MTLTexture>) getDebugTexture;
+
 @end
 
 NS_ASSUME_NONNULL_END

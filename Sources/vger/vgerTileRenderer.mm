@@ -134,4 +134,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
 }
 
+- (id<MTLTexture>) getDebugTexture {
+    return coarseDebugTexture;
+}
+
 @end

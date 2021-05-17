@@ -801,6 +801,10 @@ id<MTLTexture> vgerGetGlyphAtlas(vgerContext vg) {
     return [vg->glyphCache getAltas];
 }
 
+id<MTLTexture> vgerGetCoarseDebugTexture(vgerContext vg) {
+    return [vg->tileRenderer getDebugTexture];
+}
+
 vgerPaint vgerColorPaint(vector_float4 color) {
 
     vgerPaint p;

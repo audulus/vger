@@ -921,16 +921,20 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     vgerEncodeTileRender(vger, commandBuffer, texture);
 
+    auto debugTexture = vgerGetCoarseDebugTexture(vger);
+
     // Sync texture on macOS
     #if TARGET_OS_OSX
     auto blitEncoder = [commandBuffer blitCommandEncoder];
     [blitEncoder synchronizeResource:texture];
+    [blitEncoder synchronizeResource:debugTexture];
     [blitEncoder endEncoding];
     #endif
 
     [commandBuffer commit];
     [commandBuffer waitUntilCompleted];
 
+    showTexture(debugTexture, @"tile_debug.png");
     showTexture(texture, @"tile_render.png");
 }
 

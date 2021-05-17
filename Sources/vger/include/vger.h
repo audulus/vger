@@ -104,6 +104,9 @@ void vgerEncodeTileRender(vgerContext vg, id<MTLCommandBuffer> buf, id<MTLTextur
 
 /// For debugging.
 id<MTLTexture> vgerGetGlyphAtlas(vgerContext);
+
+/// For debugging.
+id<MTLTexture> vgerGetCoarseDebugTexture(vgerContext);
 #endif
 
 /// Create a paint for a constant color.
