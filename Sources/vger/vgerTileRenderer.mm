@@ -149,7 +149,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     render.label = @"tile render encoder";
     [render setComputePipelineState:renderPipeline];
     [render setTexture:renderTexture atIndex:0];
-    [render setBuffer:tileBuffer offset:0 atIndex:2];
+    [render setBuffer:tileBuffer offset:0 atIndex:0];
     [render dispatchThreadgroups:MTLSizeMake(int(windowSize.x/tileSize)+1, int(windowSize.y/tileSize)+1, 1)
            threadsPerThreadgroup:MTLSizeMake(tileSize, tileSize, 1)];
     [render endEncoding];
