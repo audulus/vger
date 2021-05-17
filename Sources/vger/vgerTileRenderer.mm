@@ -62,6 +62,21 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
         tileBuffer = [device newBufferWithLength:tileBufSize * maxTilesWidth * maxTilesWidth * sizeof(int) options:MTLResourceStorageModePrivate];
         printf("tile buffer size: %d MB\n", (int)(tileBuffer.length)/(1024*1024));
 
+        int w = 256;
+        int h = 256;
+
+        auto textureDesc = [MTLTextureDescriptor
+                            texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
+                            width:w
+                            height:h
+                            mipmapped:NO];
+
+        textureDesc.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite;
+        textureDesc.storageMode = MTLStorageModeManaged;
+
+        coarseDebugTexture = [device newTextureWithDescriptor:textureDesc];
+        assert(coarseDebugTexture);
+
         pass = [MTLRenderPassDescriptor new];
         pass.colorAttachments[0].texture = coarseDebugTexture;
         pass.colorAttachments[0].storeAction = MTLStoreActionStore;
