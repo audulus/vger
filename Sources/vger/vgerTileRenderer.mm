@@ -49,6 +49,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
             NSLog(@"error creating pipline state: %@", error);
             abort();
         }
+
+        tileBuffer = [device newBufferWithLength:4096 * 256 * 256 options:MTLResourceStorageModePrivate];
     }
     return self;
 }
@@ -83,10 +85,10 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [render setTexture:renderTexture atIndex:0];
     [render setBuffer:primBuffer offset:0 atIndex:0];
     [render setBuffer:cvBuffer offset:0 atIndex:1];
-    [encode setBuffer:tileBuffer offset:0 atIndex:3];
-    [encode dispatchThreadgroups:MTLSizeMake(int(windowSize.x/16)+1, int(windowSize.y/16)+1, 1)
+    [render setBuffer:tileBuffer offset:0 atIndex:3];
+    [render dispatchThreadgroups:MTLSizeMake(int(windowSize.x/16)+1, int(windowSize.y/16)+1, 1)
            threadsPerThreadgroup:MTLSizeMake(16, 16, 1)];
-    [encode endEncoding];
+    [render endEncoding];
 
 }
 

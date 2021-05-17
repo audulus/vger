@@ -915,6 +915,8 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
         .paint = vgerColorPaint(float4{1,0,1,1})
     };
 
+    vgerRender(vger, &segment);
+
     auto commandBuffer = [queue commandBuffer];
 
     vgerEncodeTileRender(vger, commandBuffer, texture);
