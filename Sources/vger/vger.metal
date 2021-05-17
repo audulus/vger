@@ -313,7 +313,7 @@ kernel void vger_tile_render2(texture2d<half, access::write> outTexture [[textur
     uint y = gid.y;
     float2 xy = float2(x, y);
 
-    half3 rgb = half3(1.0);
+    half3 rgb = half3(0.0);
 
     for(; *src != -1; ++src) {
         device auto& prim = prims[*src];
