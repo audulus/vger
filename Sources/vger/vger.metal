@@ -215,6 +215,8 @@ kernel void vger_tile_encode(const device vgerPrim* prims,
                     }
                 }
             }
+
+            encoder.solid(pack_float_to_srgb_unorm4x8(prim.paint.innerColor));
         }
     }
 
