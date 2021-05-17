@@ -22,9 +22,11 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 }
 
 @interface vgerTileRenderer() {
-    id<MTLComputePipelineState> encodePipeline;
+    id<MTLRenderPipelineState> coarsePipeline;
     id<MTLComputePipelineState> renderPipeline;
     id<MTLBuffer> tileBuffer;
+    id<MTLTexture> coarseDebugTexture;
+    MTLRenderPassDescriptor* pass;
 }
 @end
 
@@ -36,15 +38,21 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     if (self) {
         auto lib = GetMetalLibrary(device);
 
+        auto desc = [MTLRenderPipelineDescriptor new];
+        desc.vertexFunction = [lib newFunctionWithName:@"vger_vertex"];
+        desc.fragmentFunction = [lib newFunctionWithName:@"vger_tile_fragment"];
+
+        auto ad = desc.colorAttachments[0];
+        ad.pixelFormat = MTLPixelFormatBGRA8Unorm;
+
         NSError* error;
-        auto encodeFunc = [lib newFunctionWithName:@"vger_tile_encode2"];
-        encodePipeline = [device newComputePipelineStateWithFunction:encodeFunc error:&error];
+        coarsePipeline = [device newRenderPipelineStateWithDescriptor:desc error:&error];
         if(error) {
             NSLog(@"error creating pipline state: %@", error);
             abort();
         }
 
-        auto renderFunc = [lib newFunctionWithName:@"vger_tile_render2"];
+        auto renderFunc = [lib newFunctionWithName:@"vger_tile_render"];
         renderPipeline = [device newComputePipelineStateWithFunction:renderFunc error:&error];
         if(error) {
             NSLog(@"error creating pipline state: %@", error);
@@ -53,6 +61,12 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
         tileBuffer = [device newBufferWithLength:tileBufSize * maxTilesWidth * maxTilesWidth * sizeof(int) options:MTLResourceStorageModePrivate];
         printf("tile buffer size: %d MB\n", (int)(tileBuffer.length)/(1024*1024));
+
+        pass = [MTLRenderPassDescriptor new];
+        pass.colorAttachments[0].texture = coarseDebugTexture;
+        pass.colorAttachments[0].storeAction = MTLStoreActionStore;
+        pass.colorAttachments[0].loadAction = MTLLoadActionClear;
+        pass.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1);
     }
     return self;
 }
@@ -70,23 +84,28 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
         return;
     }
 
-    auto encode = [buffer computeCommandEncoder];
-    encode.label = @"tile encode encoder";
-    [encode setComputePipelineState:encodePipeline];
-    [encode setBuffer:primBuffer offset:0 atIndex:0];
-    [encode setBuffer:cvBuffer offset:0 atIndex:1];
-    [encode setBytes:&n length:sizeof(uint) atIndex:2];
-    [encode setBuffer:tileBuffer offset:0 atIndex:3];
-    [encode dispatchThreadgroups:MTLSizeMake(16, 16, 1)
-           threadsPerThreadgroup:MTLSizeMake(16, 16, 1)];
-    [encode endEncoding];
+    auto enc = [buffer renderCommandEncoderWithDescriptor:pass];
+    enc.label = @"render encoder";
+
+    [enc setRenderPipelineState:coarsePipeline];
+    [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:1];
+    [enc setFragmentTexture:glyphTexture atIndex:1];
+    [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
+    [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
+    [enc setFragmentBuffer:cvBuffer offset:0 atIndex:1];
+    [enc setFragmentBuffer:tileBuffer offset:0 atIndex:2];
+
+    // XXX: how do we deal with rendering from textures?
+    [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip
+            vertexStart:0
+            vertexCount:4
+          instanceCount:n];
+    [enc endEncoding];
 
     auto render = [buffer computeCommandEncoder];
     render.label = @"tile render encoder";
     [render setComputePipelineState:renderPipeline];
     [render setTexture:renderTexture atIndex:0];
-    [render setBuffer:primBuffer offset:0 atIndex:0];
-    [render setBuffer:cvBuffer offset:0 atIndex:1];
     [render setBuffer:tileBuffer offset:0 atIndex:2];
     [render dispatchThreadgroups:MTLSizeMake(int(windowSize.x/tileSize)+1, int(windowSize.y/tileSize)+1, 1)
            threadsPerThreadgroup:MTLSizeMake(tileSize, tileSize, 1)];
