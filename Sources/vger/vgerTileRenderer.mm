@@ -44,6 +44,11 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
         auto ad = desc.colorAttachments[0];
         ad.pixelFormat = MTLPixelFormatBGRA8Unorm;
+        ad.blendingEnabled = true;
+        ad.sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
+        ad.sourceAlphaBlendFactor = MTLBlendFactorSourceAlpha;
+        ad.destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+        ad.destinationAlphaBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
 
         NSError* error;
         coarsePipeline = [device newRenderPipelineStateWithDescriptor:desc error:&error];
