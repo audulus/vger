@@ -88,7 +88,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [render setBuffer:primBuffer offset:0 atIndex:0];
     [render setBuffer:cvBuffer offset:0 atIndex:1];
     [render setBuffer:tileBuffer offset:0 atIndex:2];
-    [render dispatchThreadgroups:MTLSizeMake(int(windowSize.x/16)+1, int(windowSize.y/16)+1, 1)
+    [render dispatchThreadgroups:MTLSizeMake(int(windowSize.x/tileSize)+1, int(windowSize.y/tileSize)+1, 1)
            threadsPerThreadgroup:MTLSizeMake(tileSize, tileSize, 1)];
     [render endEncoding];
 
