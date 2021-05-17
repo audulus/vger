@@ -26,7 +26,15 @@ enum vgerOp {
     vgerOpLine,
     vgerOpBez,
     vgerOpSolid,
+    vgerOpSegment,
     vgerOpEnd
+};
+
+/// Line segment.
+struct vgerCmdSegment {
+    vgerOp op;
+    float2 a;
+    float2 b;
 };
 
 /// Flip the sign of the df if ray intersects with line.
@@ -60,6 +68,14 @@ union vgerCmd {
 struct TileEncoder {
 
     DEVICE char* dst;
+
+    void segment(float2 a, float2 b) {
+        DEVICE vgerCmdSegment* cmd = (DEVICE vgerCmdSegment*) dst;
+        cmd->op = vgerOpSegment;
+        cmd->a = a;
+        cmd->b = b;
+        dst += sizeof(vgerOpSegment);
+    }
 
     void lineFill(float2 a, float2 b) {
         DEVICE vgerCmdLineFill* cmd = (DEVICE vgerCmdLineFill*) dst;
