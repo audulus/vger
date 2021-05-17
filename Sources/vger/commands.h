@@ -18,7 +18,7 @@ using namespace simd;
 // Rendering commands for experimental tile-based fine rendering.
 // Not yet in use.
 
-#define tileBufSize 32
+#define tileBufSize 64
 #define maxTilesWidth 256
 #define tileSize 16
 
@@ -58,13 +58,6 @@ struct vgerCmdSolid {
     int color;
 };
 
-union vgerCmd {
-    vgerOp op;
-    vgerCmdLineFill line;
-    vgerCmdBezFill bez;
-    vgerCmdSolid solid;
-};
-
 struct TileEncoder {
 
     DEVICE char* dst;
@@ -102,8 +95,8 @@ struct TileEncoder {
     }
 
     void end() {
-        DEVICE vgerCmd* cmd = (DEVICE vgerCmd*) dst;
-        cmd->op = vgerOpEnd;
+        DEVICE vgerOp* cmd = (DEVICE vgerOp*) dst;
+        *cmd = vgerOpEnd;
     }
 
 };
