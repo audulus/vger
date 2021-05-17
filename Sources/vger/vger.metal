@@ -192,7 +192,27 @@ kernel void vger_tile_encode(const device vgerPrim* prims,
                     auto a = cvs[j];
                     auto b = cvs[j+1];
                     auto c = cvs[j+2];
-                    encoder.bezFill(a,b,c);
+
+                    auto m = p.y - tileSize/2;
+                    if(a.y < m and b.y < m and c.y < m) {
+                        continue;
+                    }
+                    m = p.y + tileSize/2;
+                    if(a.y > m and b.y > m and c.y > m) {
+                        continue;
+                    }
+
+                    m = p.x - tileSize/2;
+                    if(a.x < m and b.x < m and c.x < m) {
+                        continue;
+                    }
+
+                    m = p.x + tileSize/2;
+                    if(a.x > m and b.x > m and c.x > m) {
+                        encoder.lineFill(a,c);
+                    } else {
+                        encoder.bezFill(a,b,c);
+                    }
                 }
             }
         }
