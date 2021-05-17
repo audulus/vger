@@ -72,7 +72,11 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
                             mipmapped:NO];
 
         textureDesc.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite;
+#if TARGET_OS_OSX
         textureDesc.storageMode = MTLStorageModeManaged;
+#else
+        textureDesc.storageMode = MTLStorageModeShared;
+#endif
 
         coarseDebugTexture = [device newTextureWithDescriptor:textureDesc];
         assert(coarseDebugTexture);
