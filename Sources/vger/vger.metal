@@ -186,6 +186,10 @@ kernel void vger_tile_encode(const device vgerPrim* prims,
 
         if(d < tileSize * SQRT_2 * 0.5) {
 
+            if(prim.type == vgerSegment) {
+                encoder.segment(prim.cvs[0], prim.cvs[1]);
+            }
+
             if(prim.type == vgerPathFill) {
                 for(int i=0; i<prim.count; i++) {
                     int j = prim.start + 3*i;
@@ -247,6 +251,15 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
         }
 
         switch(op) {
+            case vgerOpSegment: {
+                vgerCmdSegment cmd = *(device vgerCmdSegment*) src;
+
+                d = sdSegment(xy, cmd.a, cmd.b);
+
+                src += sizeof(vgerCmdSegment);
+                break;
+            }
+
             case vgerOpLine: {
                 vgerCmdLineFill cmd = *(device vgerCmdLineFill*) src;
 
