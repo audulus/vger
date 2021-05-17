@@ -168,4 +168,4 @@ struct vger {
     void renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 position);
 };
 
-#endif /* Header_h */
+#endif /* vger_private_h */
