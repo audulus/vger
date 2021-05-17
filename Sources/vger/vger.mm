@@ -13,8 +13,6 @@
 #import "vgerRenderer.h"
 #import "vgerTextureManager.h"
 #import "vgerGlyphCache.h"
-#import "vgerPathScanner.h"
-#import "vgerGlyphPathCache.h"
 #import "vgerTileRenderer.h"
 
 using namespace simd;
