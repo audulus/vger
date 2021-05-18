@@ -314,7 +314,7 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
     // we could let this be done in the write call.
     rgb = select(1.055 * pow(rgb, 1/2.4) - 0.055, 12.92 * rgb, rgb < 0.0031308);
     half4 rgba = half4(rgb, 1.0);
-    outTexture.write(rgba, uint2{gid.x, outTexture.get_height() - gid.y});
+    outTexture.write(rgba, uint2{gid.x, outTexture.get_height() - gid.y - 1});
 
 }
 
