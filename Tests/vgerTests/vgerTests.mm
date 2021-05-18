@@ -940,7 +940,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     showTexture(debugTexture, @"tile_debug.png");
     showTexture(texture, @"tile_render.png");
 
-    auto tileBuf = [vger->tileRenderer getTileBuffer];
+    auto tileBuf = (Tile*) [vger->tileRenderer getTileBuffer];
     assert(tileBuf);
     // Print out tile buffer contents.
     for(int y=31;y>=0;--y) {
@@ -949,9 +949,9 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
             // printf("tile (%d, %d):\n", x, y);
 
             uint tileIx = y * maxTilesWidth + x;
-            const char* src = tileBuf + tileIx * tileBufSize;
+            const Tile& tile = tileBuf[tileIx];
 
-            vgerOp op = *(vgerOp*) src;
+            vgerOp op = *(vgerOp*) tile.commands;
 
             if(op == vgerOpEnd) {
                 printf(" ");
