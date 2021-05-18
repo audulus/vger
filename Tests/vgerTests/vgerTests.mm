@@ -921,9 +921,9 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
             vgerOp op = *(vgerOp*) tile.commands;
 
             if(len == 0) {
-                printf("    ");
+                printf("      ");
             } else {
-                printf(" %2d ", len);
+                printf(" %4d ", len);
             }
         }
         printf("\n");
@@ -1067,7 +1067,7 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
     int w = 512, h = 512;
     float2 sz = {float(w),float(h)};
 
-    constexpr int n = 50;
+    constexpr int n = 15;
     float2 cvs[n];
     for(int i=0;i<n;++i) {
         cvs[i] = sz * rand2();
