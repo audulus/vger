@@ -211,69 +211,6 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 
 }
 
-/*
-kernel void vger_tile_encode(const device vgerPrim* prims,
-                             const device float2* cvs,
-                             constant uint& primCount,
-                             device char *tiles,
-                             uint2 gid [[thread_position_in_grid]]) {
-
-    uint tileIx = gid.y * maxTilesWidth + gid.x;
-    device char *dst = tiles + tileIx * tileBufSize;
-    TileEncoder encoder{dst};
-
-    float2 p = float2(gid * tileSize + tileSize/2);
-
-    for(uint i=0;i<primCount;++i) {
-        device auto& prim = prims[i];
-
-        float d = sdPrim(prim, cvs, p);
-
-        if(d < tileSize * SQRT_2 * 0.5) {
-
-            if(prim.type == vgerSegment) {
-                encoder.segment(prim.cvs[0], prim.cvs[1]);
-            }
-
-            if(prim.type == vgerPathFill) {
-                for(int i=0; i<prim.count; i++) {
-                    int j = prim.start + 3*i;
-                    auto a = cvs[j];
-                    auto b = cvs[j+1];
-                    auto c = cvs[j+2];
-
-                    auto m = p.y - tileSize/2;
-                    if(a.y < m and b.y < m and c.y < m) {
-                        continue;
-                    }
-                    m = p.y + tileSize/2;
-                    if(a.y > m and b.y > m and c.y > m) {
-                        continue;
-                    }
-
-                    m = p.x - tileSize/2;
-                    if(a.x < m and b.x < m and c.x < m) {
-                        continue;
-                    }
-
-                    m = p.x + tileSize/2;
-                    if(a.x > m and b.x > m and c.x > m) {
-                        encoder.lineFill(a,c);
-                    } else {
-                        encoder.bezFill(a,b,c);
-                    }
-                }
-            }
-
-            encoder.solid(pack_float_to_srgb_unorm4x8(prim.paint.innerColor));
-        }
-    }
-
-    encoder.end();
-
-}
-*/
-
 // Not yet used.
 kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture(0)]],
                              const device Tile *tiles [[buffer(0)]],
