@@ -967,4 +967,46 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
 }
 
+- (void) testTileBlend {
+
+    auto vger = vgerNew();
+
+    vgerBegin(vger, 512, 512, 1.0);
+
+    vgerPrim segment {
+        .type = vgerSegment,
+        .cvs = { {0, 0}, {512, 512} },
+        .width = 5,
+        .paint = vgerColorPaint(float4{1,0,1,1})
+    };
+
+    vgerRender(vger, &segment);
+
+    vgerPrim segment2 {
+        .type = vgerSegment,
+        .cvs = { {0, 512}, {512, 0} },
+        .width = 5,
+        .paint = vgerColorPaint(float4{0,1,1,1})
+    };
+
+    vgerRender(vger, &segment2);
+
+    auto commandBuffer = [queue commandBuffer];
+
+    vgerEncodeTileRender(vger, commandBuffer, texture);
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder endEncoding];
+    #endif
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    showTexture(texture, @"tile_blend.png");
+
+}
+
 @end
