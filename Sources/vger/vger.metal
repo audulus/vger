@@ -140,18 +140,19 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
                               device uint *tileLengths [[ raster_order_group(0) ]]) {
 
     device auto& prim = prims[in.primIndex];
+    uint x = (uint) in.position.x;
+    uint y = maxTilesWidth - (uint) in.position.y - 1;
+    uint tileIx = y * maxTilesWidth + x;
+
+    // Always accessing tileLengths seems to work around the compiler bug.
+    uint length = tileLengths[tileIx];
 
     float d = sdPrim(prim, cvs, in.t);
 
     // Are we close enough to output data for the prim?
     if(d < tileSize * SQRT_2 * 0.5) {
 
-        uint x = (uint) in.position.x;
-        uint y = maxTilesWidth - (uint) in.position.y - 1;
-        uint tileIx = y * maxTilesWidth + x;
-
         device Tile& tile = tiles[tileIx];
-        uint length = tileLengths[tileIx];
 
         if(prim.type == vgerRect) {
             tile.append(vgerCmdRect{vgerOpRect, prim.cvs[0], prim.cvs[1], prim.radius}, length);
@@ -169,16 +170,19 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 
         if(prim.type == vgerSegment) {
             tile.append(vgerCmdSegment{vgerOpSegment, prim.cvs[0], prim.cvs[1], prim.width}, length);
-            // tile.segment(prim.cvs[0], prim.cvs[1], prim.width);
+        }
+
+        if(prim.type == vgerCircle) {
+            tile.append(vgerCmdCircle{vgerOpCircle, prim.cvs[0], prim.radius}, length);
         }
 
         tile.append(vgerCmdSolid{vgerOpSolid,
             pack_float_to_srgb_unorm4x8(prim.paint.innerColor)},
                     length);
 
-        tileLengths[tileIx] = length;
-
     }
+
+    tileLengths[tileIx] = length;
 
     // This is just for debugging so we can see what was rendered
     // in the coarse rasterization.

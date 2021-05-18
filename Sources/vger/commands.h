@@ -30,7 +30,8 @@ enum vgerOp {
     vgerOpBez,
     vgerOpSolid,
     vgerOpSegment,
-    vgerOpRect
+    vgerOpRect,
+    vgerOpCircle
 };
 
 /// Line segment.
@@ -44,6 +45,13 @@ struct vgerCmdSegment {
 struct vgerCmdRect {
     vgerOp op;
     packed_float2 a, b;
+    float radius;
+};
+
+/// Round rect.
+struct vgerCmdCircle {
+    vgerOp op;
+    packed_float2 center;
     float radius;
 };
 
