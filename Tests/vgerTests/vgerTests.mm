@@ -920,11 +920,9 @@ static void printTileBuf(Tile* tileBuf) {
             vgerOp op = *(vgerOp*) tile.commands;
 
             if(tile.length == 0) {
-                printf(" ");
-            } else if(op == vgerOpSegment) {
-                printf("*");
+                printf("    ");
             } else {
-                printf("?");
+                printf(" %2d ", tile.length);
             }
 
         }
