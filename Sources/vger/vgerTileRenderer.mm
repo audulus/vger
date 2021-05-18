@@ -22,6 +22,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 }
 
 @interface vgerTileRenderer() {
+    id<MTLComputePipelineState> clearPipeline;
     id<MTLRenderPipelineState> coarsePipeline;
     id<MTLComputePipelineState> renderPipeline;
     id<MTLComputePipelineState> boundsPipeline;
@@ -53,6 +54,13 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
         NSError* error;
         coarsePipeline = [device newRenderPipelineStateWithDescriptor:desc error:&error];
+        if(error) {
+            NSLog(@"error creating pipline state: %@", error);
+            abort();
+        }
+
+        auto clearFunc = [lib newFunctionWithName:@"vger_tile_clear"];
+        clearPipeline = [device newComputePipelineStateWithFunction:clearFunc error:&error];
         if(error) {
             NSLog(@"error creating pipline state: %@", error);
             abort();
@@ -116,6 +124,14 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     if(n == 0) {
         return;
     }
+
+    auto clear = [buffer computeCommandEncoder];
+    clear.label = @"clear encoder";
+    [clear setComputePipelineState:clearPipeline];
+    [clear setBuffer:tileBuffer offset:0 atIndex:0];
+    [clear dispatchThreadgroups:MTLSizeMake(maxTilesWidth/16, maxTilesWidth/16, 1)
+          threadsPerThreadgroup:MTLSizeMake(16, 16, 1)];
+    [clear endEncoding];
 
     auto bounds = [buffer computeCommandEncoder];
     bounds.label = @"bounds encoder";
