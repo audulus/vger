@@ -1062,4 +1062,46 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
 
 }
 
+- (void) testTilePath {
+
+    int w = 512, h = 512;
+    float2 sz = {float(w),float(h)};
+
+    constexpr int n = 50;
+    float2 cvs[n];
+    for(int i=0;i<n;++i) {
+        float theta = 2*M_PI*float(i)/float(n);
+        cvs[i] = sz/2 + 128 * float2{cosf(theta), sinf(theta)};
+    }
+
+    auto vger = vgerNew();
+
+    vgerBegin(vger, w, h, 1.0);
+
+    auto paint = vgerLinearGradient(0, sz, float4{0,1,1,1}, float4{1,0,1,1});
+    vgerFillPath(vger, cvs, n, paint);
+
+    auto commandBuffer = [queue commandBuffer];
+
+    vgerEncodeTileRender(vger, commandBuffer, texture);
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder endEncoding];
+    #endif
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    printTileBuf((Tile*) [vger->tileRenderer getTileBuffer],
+                 [vger->tileRenderer getTileLengthBuffer]);
+
+    vgerDelete(vger);
+
+    showTexture(texture, @"tile_path.png");
+
+}
+
 @end
