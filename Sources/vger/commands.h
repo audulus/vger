@@ -58,36 +58,35 @@ struct vgerCmdSolid {
     int color;
 };
 
-struct TileEncoder {
-
-    DEVICE char* dst;
+struct Tile {
+    uint length;
+    char commands[tileBufSize];
 
     template<class T>
-    void append(const T cmd) {
-        *(DEVICE T*) dst = cmd;
-        dst += sizeof(T);
+    void append(const T cmd) DEVICE {
+        *(DEVICE T*) (commands + length) = cmd;
+        length += sizeof(T);
     }
 
-    void segment(float2 a, float2 b) {
+    void segment(float2 a, float2 b) DEVICE {
         append(vgerCmdSegment{vgerOpSegment, a, b});
     }
 
-    void lineFill(float2 a, float2 b) {
+    void lineFill(float2 a, float2 b) DEVICE {
         append(vgerCmdLineFill{vgerOpLine, a, b});
     }
 
-    void bezFill(float2 a, float2 b, float2 c) {
+    void bezFill(float2 a, float2 b, float2 c) DEVICE {
         append(vgerCmdBezFill{vgerOpBez, a, b, c});
     }
 
-    void solid(int color) {
+    void solid(int color) DEVICE {
         append(vgerCmdSolid{vgerOpSolid, color});
     }
 
-    void end() {
+    void end() DEVICE {
         append(vgerOpEnd);
     }
-
 };
 
 #endif /* commands_h */

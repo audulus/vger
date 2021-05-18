@@ -131,7 +131,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
                               const device float2* cvs,
-                              device char *tiles [[ raster_order_group(0) ]]) {
+                              device Tile *tiles [[ raster_order_group(0) ]]) {
 
     device auto& prim = prims[in.primIndex];
 
@@ -144,7 +144,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
         uint y = maxTilesWidth - (uint) in.position.y;
         uint tileIx = y * maxTilesWidth + x;
 
-        TileEncoder encoder{tiles + tileIx * tileBufSize};
+        device Tile& tile = tiles[tileIx];
 
         if(prim.type == vgerPathFill) {
             for(int i=0; i<prim.count; i++) {
@@ -152,17 +152,17 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
                 auto a = cvs[j];
                 auto b = cvs[j+1];
                 auto c = cvs[j+2];
-                encoder.bezFill(a,b,c);
+                tile.bezFill(a,b,c);
             }
         }
 
         if(prim.type == vgerSegment) {
-            encoder.segment(prim.cvs[0], prim.cvs[1]);
+            tile.segment(prim.cvs[0], prim.cvs[1]);
         }
 
-        encoder.solid(pack_float_to_srgb_unorm4x8(prim.paint.innerColor));
+        tile.solid(pack_float_to_srgb_unorm4x8(prim.paint.innerColor));
 
-        encoder.end();
+        tile.end();
     }
 
     // This is just for debugging so we can see what was rendered
@@ -171,6 +171,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 
 }
 
+/*
 kernel void vger_tile_encode(const device vgerPrim* prims,
                              const device float2* cvs,
                              constant uint& primCount,
@@ -231,15 +232,16 @@ kernel void vger_tile_encode(const device vgerPrim* prims,
     encoder.end();
 
 }
+*/
 
 // Not yet used.
 kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture(0)]],
-                             const device char *tiles [[buffer(0)]],
+                             const device Tile *tiles [[buffer(0)]],
                              uint2 gid [[thread_position_in_grid]],
                              uint2 tgid [[threadgroup_position_in_grid]]) {
 
     uint tileIx = tgid.y * maxTilesWidth + tgid.x;
-    const device char *src = tiles + tileIx * tileBufSize;
+    const device char *src = tiles[tileIx].commands;
     uint x = gid.x;
     uint y = gid.y;
     float2 xy = float2(x, y);
