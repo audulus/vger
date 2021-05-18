@@ -975,18 +975,18 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     vgerPrim segment {
         .type = vgerSegment,
-        .cvs = { {0, 0}, {512, 512} },
+        .cvs = { {128, 128}, {384, 384} },
         .width = 5,
-        .paint = vgerColorPaint(float4{1,0,1,1})
+        .paint = vgerColorPaint(float4{0,1,1,1})
     };
 
     vgerRender(vger, &segment);
 
     vgerPrim segment2 {
         .type = vgerSegment,
-        .cvs = { {0, 512}, {512, 0} },
+        .cvs = { {128, 384}, {384, 128} },
         .width = 5,
-        .paint = vgerColorPaint(float4{0,1,1,1})
+        .paint = vgerColorPaint(float4{1,1,0,1})
     };
 
     vgerRender(vger, &segment2);

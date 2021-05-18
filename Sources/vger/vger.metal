@@ -162,7 +162,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
         }
 
         if(prim.type == vgerSegment) {
-            tile.segment(prim.cvs[0], prim.cvs[1]);
+            tile.segment(prim.cvs[0], prim.cvs[1], prim.width);
         }
 
         tile.solid(pack_float_to_srgb_unorm4x8(prim.paint.innerColor));
@@ -269,7 +269,7 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
             case vgerOpSegment: {
                 vgerCmdSegment cmd = *(device vgerCmdSegment*) src;
 
-                d = sdSegment(xy, cmd.a, cmd.b);
+                d = sdSegment2(xy, cmd.a, cmd.b, cmd.width);
 
                 src += sizeof(vgerCmdSegment);
                 break;

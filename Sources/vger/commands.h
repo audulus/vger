@@ -35,6 +35,7 @@ struct vgerCmdSegment {
     vgerOp op;
     float2 a;
     float2 b;
+    float width;
 };
 
 /// Flip the sign of the df if ray intersects with line.
@@ -68,8 +69,8 @@ struct Tile {
         length += sizeof(T);
     }
 
-    void segment(float2 a, float2 b) DEVICE {
-        append(vgerCmdSegment{vgerOpSegment, a, b});
+    void segment(float2 a, float2 b, float width) DEVICE {
+        append(vgerCmdSegment{vgerOpSegment, a, b, width});
     }
 
     void lineFill(float2 a, float2 b) DEVICE {
