@@ -146,7 +146,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
     if(d < tileSize * SQRT_2 * 0.5) {
 
         uint x = (uint) in.position.x;
-        uint y = maxTilesWidth - (uint) in.position.y;
+        uint y = maxTilesWidth - (uint) in.position.y - 1;
         uint tileIx = y * maxTilesWidth + x;
 
         device Tile& tile = tiles[tileIx];
