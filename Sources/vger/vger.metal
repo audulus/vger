@@ -147,61 +147,61 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
     // Always accessing tileLengths seems to work around the compiler bug.
     uint length = tileLengths[tileIx];
 
-    float d = sdPrim(prim, cvs, in.t);
+    // float d = sdPrim(prim, cvs, in.t);
 
     // Are we close enough to output data for the prim?
-    if(d < tileSize * SQRT_2 * 0.5) {
+    //if(d < tileSize * SQRT_2 * 0.5) {
 
-        device Tile& tile = tiles[tileIx];
+    device Tile& tile = tiles[tileIx];
 
-        switch(prim.type) {
-            case vgerRect:
-                tile.append(vgerCmdRect{vgerOpRect, prim.cvs[0], prim.cvs[1], prim.radius}, length);
-                break;
-            case vgerPathFill:
-                for(int i=0; i<prim.count; i++) {
-                    int j = prim.start + 3*i;
-                    auto a = cvs[j];
-                    auto b = cvs[j+1];
-                    auto c = cvs[j+2];
+    switch(prim.type) {
+        case vgerRect:
+            tile.append(vgerCmdRect{vgerOpRect, prim.cvs[0], prim.cvs[1], prim.radius}, length);
+            break;
+        case vgerPathFill:
+            for(int i=0; i<prim.count; i++) {
+                int j = prim.start + 3*i;
+                auto a = cvs[j];
+                auto b = cvs[j+1];
+                auto c = cvs[j+2];
 
-                    auto m = in.t.y - tileSize/2;
-                    if(a.y < m and b.y < m and c.y < m) {
-                        continue;
-                    }
-                    m = in.t.y + tileSize/2;
-                    if(a.y > m and b.y > m and c.y > m) {
-                        continue;
-                    }
-
-                    m = in.t.x - tileSize/2;
-                    if(a.x < m and b.x < m and c.x < m) {
-                        continue;
-                    }
-
-                    m = in.t.x + tileSize/2;
-                    if(a.x > m and b.x > m and c.x > m) {
-                        tile.append(vgerCmdLineFill{vgerOpLine,a,c}, length);
-                    } else {
-                        tile.append(vgerCmdBezFill{vgerOpBez,a,b,c}, length);
-                    }
+                auto m = in.t.y - tileSize/2;
+                if(a.y < m and b.y < m and c.y < m) {
+                    continue;
                 }
-                break;
-            case vgerSegment:
-                tile.append(vgerCmdSegment{vgerOpSegment, prim.cvs[0], prim.cvs[1], prim.width}, length);
-                break;
-            case vgerCircle:
-                tile.append(vgerCmdCircle{vgerOpCircle, prim.cvs[0], prim.radius}, length);
-                break;
-            default:
-                break;
-        }
+                m = in.t.y + tileSize/2;
+                if(a.y > m and b.y > m and c.y > m) {
+                    continue;
+                }
 
-        tile.append(vgerCmdSolid{vgerOpSolid,
-            pack_float_to_srgb_unorm4x8(prim.paint.innerColor)},
-                    length);
+                m = in.t.x - tileSize/2;
+                if(a.x < m and b.x < m and c.x < m) {
+                    continue;
+                }
 
+                m = in.t.x + tileSize/2;
+                if(a.x > m and b.x > m and c.x > m) {
+                    tile.append(vgerCmdLineFill{vgerOpLine,a,c}, length);
+                } else {
+                    tile.append(vgerCmdBezFill{vgerOpBez,a,b,c}, length);
+                }
+            }
+            break;
+        case vgerSegment:
+            tile.append(vgerCmdSegment{vgerOpSegment, prim.cvs[0], prim.cvs[1], prim.width}, length);
+            break;
+        case vgerCircle:
+            tile.append(vgerCmdCircle{vgerOpCircle, prim.cvs[0], prim.radius}, length);
+            break;
+        default:
+            break;
     }
+
+    tile.append(vgerCmdSolid{vgerOpSolid,
+        pack_float_to_srgb_unorm4x8(prim.paint.innerColor)},
+                length);
+
+    //}
 
     tileLengths[tileIx] = length;
 
