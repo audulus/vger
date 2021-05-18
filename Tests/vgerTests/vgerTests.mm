@@ -1064,6 +1064,9 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
 
 - (void) testTilePath {
 
+    XCTAssertEqual(sizeof(vgerCmdBezFill), 28);
+    XCTAssertEqual(sizeof(vgerCmdLineFill), 20);
+
     int w = 512, h = 512;
     float2 sz = {float(w),float(h)};
 
