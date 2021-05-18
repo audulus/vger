@@ -167,7 +167,6 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 
         tile.solid(pack_float_to_srgb_unorm4x8(prim.paint.innerColor));
 
-        tile.end();
     }
 
     // This is just for debugging so we can see what was rendered
@@ -247,6 +246,7 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
 
     uint tileIx = tgid.y * maxTilesWidth + tgid.x;
     const device char *src = tiles[tileIx].commands;
+    const device char *end = src + tiles[tileIx].length;
     uint x = gid.x;
     uint y = gid.y;
     float2 xy = float2(x, y);
@@ -258,7 +258,7 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
     half3 rgb = half3(0.0);
     float d = 1e9;
 
-    while(true) {
+    while(src < end) {
         vgerOp op = *(device vgerOp*) src;
 
         if(op == vgerOpEnd) {
