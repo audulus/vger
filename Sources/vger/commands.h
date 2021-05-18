@@ -33,8 +33,7 @@ enum vgerOp {
 /// Line segment.
 struct vgerCmdSegment {
     vgerOp op;
-    float2 a;
-    float2 b;
+    packed_float2 a, b;
     float width;
 };
 

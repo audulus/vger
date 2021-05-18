@@ -932,7 +932,7 @@ static void printTileBuf(Tile* tileBuf) {
 
 - (void) testBasicTileRender {
 
-    XCTAssertEqual(sizeof(vgerCmdSegment), 32);
+    XCTAssertEqual(sizeof(vgerCmdSegment), 24);
     XCTAssertEqual(sizeof(vgerCmdSolid), 8);
 
     auto vger = vgerNew();
