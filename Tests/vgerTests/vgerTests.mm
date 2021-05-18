@@ -14,7 +14,9 @@
 #include "nanosvg.h"
 
 #import "../../Sources/vger/sdf.h"
+#import "../../Sources/vger/commands.h"
 #import "../../Sources/vger/vger_private.h"
+#import "../../Sources/vger/vgerTileRenderer.h"
 
 using namespace simd;
 
@@ -911,7 +913,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     vgerPrim segment {
         .type = vgerSegment,
-        .cvs = { {10, 10}, {100, 100} },
+        .cvs = { {0, 0}, {512, 512} },
         .width = 5,
         .paint = vgerColorPaint(float4{1,0,1,1})
     };
@@ -937,6 +939,31 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     showTexture(debugTexture, @"tile_debug.png");
     showTexture(texture, @"tile_render.png");
+
+    auto tileBuf = [vger->tileRenderer getTileBuffer];
+    assert(tileBuf);
+    // Print out tile buffer contents.
+    for(int y=0;y<32;++y) {
+        for(int x=0;x<32;++x) {
+            // printf("tile (%d, %d):\n", x, y);
+
+            uint tileIx = y * maxTilesWidth + x;
+            const char* src = tileBuf + tileIx * tileBufSize;
+
+            vgerOp op = *(vgerOp*) src;
+
+            if(op == vgerOpEnd) {
+                printf(" ");
+            } else if(op == vgerOpSegment) {
+                printf("*");
+            } else {
+                printf("?");
+            }
+
+        }
+        printf("\n");
+    }
+
 }
 
 @end

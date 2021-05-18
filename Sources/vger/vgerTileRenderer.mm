@@ -72,7 +72,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
             abort();
         }
 
-        tileBuffer = [device newBufferWithLength:tileBufSize * maxTilesWidth * maxTilesWidth * sizeof(int) options:MTLResourceStorageModePrivate];
+        tileBuffer = [device newBufferWithLength:tileBufSize * maxTilesWidth * maxTilesWidth * sizeof(int) options:MTLResourceStorageModeShared];
         printf("tile buffer size: %d MB\n", (int)(tileBuffer.length)/(1024*1024));
 
         int w = maxTilesWidth;
@@ -157,6 +157,10 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
 - (id<MTLTexture>) getDebugTexture {
     return coarseDebugTexture;
+}
+
+- (const char*) getTileBuffer {
+    return (const char*) tileBuffer.contents;
 }
 
 @end

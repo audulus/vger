@@ -141,7 +141,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
     if(d < tileSize * SQRT_2 * 0.5) {
 
         uint x = (uint) in.position.x;
-        uint y = (uint) in.position.y;
+        uint y = maxTilesWidth - (uint) in.position.y;
         uint tileIx = y * maxTilesWidth + x;
 
         TileEncoder encoder{tiles + tileIx * tileBufSize};
@@ -167,7 +167,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 
     // This is just for debugging so we can see what was rendered
     // in the coarse rasterization.
-    return float4(1,0,1,1);
+    return float4(in.position.x/32, 0, (maxTilesWidth-in.position.y)/32, 1);
 
 }
 
@@ -244,7 +244,7 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
     uint y = gid.y;
     float2 xy = float2(x, y);
 
-    half3 rgb = half3(1.0);
+    half3 rgb = half3(0.0);
     float d = 1e9;
 
     while(true) {
