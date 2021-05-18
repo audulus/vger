@@ -1016,4 +1016,47 @@ static void printTileBuf(Tile* tileBuf) {
 
 }
 
+- (void) testTileRoundRect {
+
+    XCTAssertEqual(sizeof(vgerCmdSegment), 24);
+    XCTAssertEqual(sizeof(vgerCmdSolid), 8);
+
+    auto vger = vgerNew();
+
+    vgerBegin(vger, 512, 512, 1.0);
+
+    vgerPrim rect {
+        .type = vgerRect,
+        .cvs = { {128, 128}, {384, 384} },
+        .width = 5,
+        .radius = 32,
+        .paint = vgerColorPaint(float4{1,0,1,1})
+    };
+
+    vgerRender(vger, &rect);
+
+    auto commandBuffer = [queue commandBuffer];
+
+    vgerEncodeTileRender(vger, commandBuffer, texture);
+
+    auto debugTexture = vgerGetCoarseDebugTexture(vger);
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder synchronizeResource:debugTexture];
+    [blitEncoder endEncoding];
+    #endif
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    showTexture(debugTexture, @"tile_debug.png");
+    showTexture(texture, @"tile_render.png");
+
+    printTileBuf((Tile*) [vger->tileRenderer getTileBuffer]);
+
+}
+
 @end

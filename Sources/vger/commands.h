@@ -28,6 +28,7 @@ enum vgerOp {
     vgerOpBez,
     vgerOpSolid,
     vgerOpSegment,
+    vgerOpRect
 };
 
 /// Line segment.
@@ -35,6 +36,13 @@ struct vgerCmdSegment {
     vgerOp op;
     packed_float2 a, b;
     float width;
+};
+
+/// Round rect.
+struct vgerCmdRect {
+    vgerOp op;
+    packed_float2 a, b;
+    float radius;
 };
 
 /// Flip the sign of the df if ray intersects with line.
@@ -67,6 +75,10 @@ struct Tile {
 
     void segment(float2 a, float2 b, float width) DEVICE {
         append(vgerCmdSegment{vgerOpSegment, a, b, width});
+    }
+
+    void rect(float2 a, float2 b, float radius) DEVICE {
+        append(vgerCmdRect{vgerOpRect, a, b, radius});
     }
 
     void lineFill(float2 a, float2 b) DEVICE {

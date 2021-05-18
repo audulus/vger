@@ -151,6 +151,10 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 
         device Tile& tile = tiles[tileIx];
 
+        //if(prim.type == vgerRect) {
+        //    tile.rect(prim.cvs[0], prim.cvs[1], prim.radius);
+        //}
+
         if(prim.type == vgerPathFill) {
             for(int i=0; i<prim.count; i++) {
                 int j = prim.start + 3*i;
@@ -272,6 +276,16 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
                 d = sdSegment2(xy, cmd.a, cmd.b, cmd.width);
 
                 src += sizeof(vgerCmdSegment);
+                break;
+            }
+
+            case vgerOpRect: {
+                vgerCmdRect cmd = *(device vgerCmdRect*) src;
+                auto center = .5*(cmd.a + cmd.b);
+                auto size = cmd.b - cmd.a;
+                d = sdBox(xy - center, .5*size, cmd.radius);
+
+                src += sizeof(vgerCmdRect);
                 break;
             }
 
