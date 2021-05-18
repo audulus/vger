@@ -194,7 +194,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
             tile.append(vgerCmdCircle{vgerOpCircle, prim.cvs[0], prim.radius}, length);
             break;
         case vgerBezier:
-            tile.append(vgerCmdBezStroke{vgerOpBezStroke, prim.cvs[0], prim.cvs[1], prim.width}, length);
+            tile.append(vgerCmdBezStroke{vgerOpBezStroke, prim.cvs[0], prim.cvs[1], prim.cvs[2], prim.width}, length);
         default:
             break;
     }
