@@ -27,6 +27,7 @@ using namespace simd;
 enum vgerOp {
     vgerOpEnd,
     vgerOpLine,
+    vgerOpBezStroke,
     vgerOpBez,
     vgerOpSolid,
     vgerOpSegment,
@@ -38,6 +39,12 @@ enum vgerOp {
 struct vgerCmdSegment {
     vgerOp op;
     packed_float2 a, b;
+    float width;
+};
+
+struct vgerCmdBezStroke {
+    vgerOp op;
+    packed_float2 a, b, c;
     float width;
 };
 
