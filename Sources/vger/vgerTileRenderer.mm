@@ -38,6 +38,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 {
     self = [super init];
     if (self) {
+
+        assert(device.rasterOrderGroupsSupported);
         auto lib = GetMetalLibrary(device);
 
         auto desc = [MTLRenderPipelineDescriptor new];
