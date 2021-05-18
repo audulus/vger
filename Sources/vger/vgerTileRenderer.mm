@@ -57,28 +57,28 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
         NSError* error;
         coarsePipeline = [device newRenderPipelineStateWithDescriptor:desc error:&error];
         if(error) {
-            NSLog(@"error creating pipline state: %@", error);
+            NSLog(@"error creating pipeline state: %@", error);
             abort();
         }
 
         auto clearFunc = [lib newFunctionWithName:@"vger_tile_clear"];
         clearPipeline = [device newComputePipelineStateWithFunction:clearFunc error:&error];
         if(error) {
-            NSLog(@"error creating pipline state: %@", error);
+            NSLog(@"error creating pipeline state: %@", error);
             abort();
         }
 
         auto renderFunc = [lib newFunctionWithName:@"vger_tile_render"];
         renderPipeline = [device newComputePipelineStateWithFunction:renderFunc error:&error];
         if(error) {
-            NSLog(@"error creating pipline state: %@", error);
+            NSLog(@"error creating pipeline state: %@", error);
             abort();
         }
 
         auto boundsFunc = [lib newFunctionWithName:@"vger_bounds"];
         boundsPipeline = [device newComputePipelineStateWithFunction:boundsFunc error:&error];
         if(error) {
-            NSLog(@"error creating pipline state: %@", error);
+            NSLog(@"error creating pipeline state: %@", error);
             abort();
         }
 
