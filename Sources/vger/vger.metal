@@ -154,26 +154,27 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 
         device Tile& tile = tiles[tileIx];
 
-        if(prim.type == vgerRect) {
-            tile.append(vgerCmdRect{vgerOpRect, prim.cvs[0], prim.cvs[1], prim.radius}, length);
-        }
-
-        if(prim.type == vgerPathFill) {
-            for(int i=0; i<prim.count; i++) {
-                int j = prim.start + 3*i;
-                auto a = cvs[j];
-                auto b = cvs[j+1];
-                auto c = cvs[j+2];
-                tile.append(vgerCmdBezFill{vgerOpBez,a,b,c}, length);
-            }
-        }
-
-        if(prim.type == vgerSegment) {
-            tile.append(vgerCmdSegment{vgerOpSegment, prim.cvs[0], prim.cvs[1], prim.width}, length);
-        }
-
-        if(prim.type == vgerCircle) {
-            tile.append(vgerCmdCircle{vgerOpCircle, prim.cvs[0], prim.radius}, length);
+        switch(prim.type) {
+            case vgerRect:
+                tile.append(vgerCmdRect{vgerOpRect, prim.cvs[0], prim.cvs[1], prim.radius}, length);
+                break;
+            case vgerPathFill:
+                for(int i=0; i<prim.count; i++) {
+                    int j = prim.start + 3*i;
+                    auto a = cvs[j];
+                    auto b = cvs[j+1];
+                    auto c = cvs[j+2];
+                    tile.append(vgerCmdBezFill{vgerOpBez,a,b,c}, length);
+                }
+                break;
+            case vgerSegment:
+                tile.append(vgerCmdSegment{vgerOpSegment, prim.cvs[0], prim.cvs[1], prim.width}, length);
+                break;
+            case vgerCircle:
+                tile.append(vgerCmdCircle{vgerOpCircle, prim.cvs[0], prim.radius}, length);
+                break;
+            default:
+                break;
         }
 
         tile.append(vgerCmdSolid{vgerOpSolid,
