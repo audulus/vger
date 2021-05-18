@@ -905,6 +905,33 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     vgerDelete(vger);
 }
 
+static void printTileBuf(Tile* tileBuf) {
+
+    assert(tileBuf);
+    // Print out tile buffer contents.
+    for(int y=31;y>=0;--y) {
+        printf("%2d: ", y);
+        for(int x=0;x<32;++x) {
+            // printf("tile (%d, %d):\n", x, y);
+
+            uint tileIx = y * maxTilesWidth + x;
+            const Tile& tile = tileBuf[tileIx];
+
+            vgerOp op = *(vgerOp*) tile.commands;
+
+            if(tile.length == 0) {
+                printf(" ");
+            } else if(op == vgerOpSegment) {
+                printf("*");
+            } else {
+                printf("?");
+            }
+
+        }
+        printf("\n");
+    }
+}
+
 - (void) testBasicTileRender {
 
     auto vger = vgerNew();
@@ -940,30 +967,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     showTexture(debugTexture, @"tile_debug.png");
     showTexture(texture, @"tile_render.png");
 
-    auto tileBuf = (Tile*) [vger->tileRenderer getTileBuffer];
-    assert(tileBuf);
-    // Print out tile buffer contents.
-    for(int y=31;y>=0;--y) {
-        printf("%2d: ", y);
-        for(int x=0;x<32;++x) {
-            // printf("tile (%d, %d):\n", x, y);
-
-            uint tileIx = y * maxTilesWidth + x;
-            const Tile& tile = tileBuf[tileIx];
-
-            vgerOp op = *(vgerOp*) tile.commands;
-
-            if(tile.length == 0) {
-                printf(" ");
-            } else if(op == vgerOpSegment) {
-                printf("*");
-            } else {
-                printf("?");
-            }
-
-        }
-        printf("\n");
-    }
+    printTileBuf((Tile*) [vger->tileRenderer getTileBuffer]);
 
 }
 
@@ -1006,6 +1010,8 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     [commandBuffer waitUntilCompleted];
 
     showTexture(texture, @"tile_blend.png");
+
+    printTileBuf((Tile*) [vger->tileRenderer getTileBuffer]);
 
 }
 
