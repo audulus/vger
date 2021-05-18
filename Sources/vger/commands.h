@@ -62,41 +62,30 @@ struct TileEncoder {
 
     DEVICE char* dst;
 
+    template<class T>
+    void append(const T cmd) {
+        *(DEVICE T*) dst = cmd;
+        dst += sizeof(T);
+    }
+
     void segment(float2 a, float2 b) {
-        DEVICE vgerCmdSegment* cmd = (DEVICE vgerCmdSegment*) dst;
-        cmd->op = vgerOpSegment;
-        cmd->a = a;
-        cmd->b = b;
-        dst += sizeof(vgerCmdSegment);
+        append(vgerCmdSegment{vgerOpSegment, a, b});
     }
 
     void lineFill(float2 a, float2 b) {
-        DEVICE vgerCmdLineFill* cmd = (DEVICE vgerCmdLineFill*) dst;
-        cmd->op = vgerOpLine;
-        cmd->a = a;
-        cmd->b = b;
-        dst += sizeof(vgerCmdLineFill);
+        append(vgerCmdLineFill{vgerOpLine, a, b});
     }
 
     void bezFill(float2 a, float2 b, float2 c) {
-        DEVICE vgerCmdBezFill* cmd = (DEVICE vgerCmdBezFill*) dst;
-        cmd->op = vgerOpBez;
-        cmd->a = a;
-        cmd->b = b;
-        cmd->c = c;
-        dst += sizeof(vgerCmdBezFill);
+        append(vgerCmdBezFill{vgerOpBez, a, b, c});
     }
 
     void solid(int color) {
-        DEVICE vgerCmdSolid* cmd = (DEVICE vgerCmdSolid*) dst;
-        cmd->op = vgerOpSolid;
-        cmd->color = color;
-        dst += sizeof(vgerCmdSolid);
+        append(vgerCmdSolid{vgerOpSolid, color});
     }
 
     void end() {
-        DEVICE vgerOp* cmd = (DEVICE vgerOp*) dst;
-        *cmd = vgerOpEnd;
+        append(vgerOpEnd);
     }
 
 };
