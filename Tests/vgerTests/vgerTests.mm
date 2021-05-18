@@ -953,7 +953,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
             vgerOp op = *(vgerOp*) tile.commands;
 
-            if(op == vgerOpEnd) {
+            if(tile.length == 0) {
                 printf(" ");
             } else if(op == vgerOpSegment) {
                 printf("*");
