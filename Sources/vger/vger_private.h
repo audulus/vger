@@ -122,7 +122,7 @@ struct vger {
     float devicePxRatio = 1.0;
 
     /// For speeding up path rendering.
-    vgerPathScanner scan;
+    vgerPathScanner scanner;
 
     /// For generating glyph paths.
     vgerGlyphPathCache glyphPathCache;
@@ -139,9 +139,9 @@ struct vger {
     CTLineRef createCTLine(const char* str);
     CTFrameRef createCTFrame(const char* str, float breakRowWidth);
 
-    void fillPath(float2* cvs, int count, vgerPaint paint);
+    void fillPath(float2* cvs, int count, vgerPaint paint, bool scan);
 
-    void fillCubicPath(float2* cvs, int count, vgerPaint paint);
+    void fillCubicPath(float2* cvs, int count, vgerPaint paint, bool scan);
 
     void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 

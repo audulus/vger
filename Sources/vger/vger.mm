@@ -410,25 +410,23 @@ void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, flo
 
 }
 
-bool scanPaths = true;
-
-void vgerFillPath(vgerContext vg, float2* cvs, int count, vgerPaint paint) {
-    vg->fillPath(cvs, count, paint);
+void vgerFillPath(vgerContext vg, float2* cvs, int count, vgerPaint paint, bool scan) {
+    vg->fillPath(cvs, count, paint, scan);
 }
 
-void vger::fillPath(float2* cvs, int count, vgerPaint paint) {
+void vger::fillPath(float2* cvs, int count, vgerPaint paint, bool scan) {
 
     if(count < 3) {
         return;
     }
 
-    if(scanPaths) {
+    if(scan) {
 
-        scan.begin(cvs, count);
+        scanner.begin(cvs, count);
 
-        while(scan.next()) {
+        while(scanner.next()) {
 
-            int n = scan.activeCount;
+            int n = scanner.activeCount;
 
             vgerPrim prim = {
                 .type = vgerPathFill,
@@ -442,11 +440,11 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint) {
 
                 Interval xInt{FLT_MAX, -FLT_MAX};
 
-                for(int a = scan.first; a != -1; a = scan.segments[a].next) {
+                for(int a = scanner.first; a != -1; a = scanner.segments[a].next) {
 
-                    assert(a < scan.segments.size());
+                    assert(a < scanner.segments.size());
                     for(int i=0;i<3;++i) {
-                        auto p = scan.segments[a].cvs[i];
+                        auto p = scanner.segments[a].cvs[i];
                         addCV(p);
                         xInt.a = std::min(xInt.a, p.x);
                         xInt.b = std::max(xInt.b, p.x);
@@ -457,8 +455,8 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint) {
                 BBox bounds;
                 bounds.min.x = xInt.a;
                 bounds.max.x = xInt.b;
-                bounds.min.y = scan.yInterval.a;
-                bounds.max.y = scan.yInterval.b;
+                bounds.min.y = scanner.yInterval.a;
+                bounds.max.y = scanner.yInterval.b;
 
                 // Calculate the prim vertices at this stage,
                 // as we do for glyphs.
@@ -476,7 +474,7 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint) {
             }
         }
 
-        assert(scan.activeCount == 0);
+        assert(scanner.activeCount == 0);
 
     } else {
 
@@ -523,11 +521,11 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint) {
     }
 }
 
-void vgerFillCubicPath(vgerContext vg, float2* cvs, int count, vgerPaint paint) {
-    vg->fillCubicPath(cvs, count, paint);
+void vgerFillCubicPath(vgerContext vg, float2* cvs, int count, vgerPaint paint, bool scan) {
+    vg->fillCubicPath(cvs, count, paint, scan);
 }
 
-void vger::fillCubicPath(float2* cvs, int count, vgerPaint paint) {
+void vger::fillCubicPath(float2* cvs, int count, vgerPaint paint, bool scan) {
 
     points.resize(0);
 
@@ -541,7 +539,7 @@ void vger::fillCubicPath(float2* cvs, int count, vgerPaint paint) {
         points.push_back(q[5]);
     }
 
-    fillPath(points.data(), points.size(), paint);
+    fillPath(points.data(), points.size(), paint, scan);
 
 }
 
