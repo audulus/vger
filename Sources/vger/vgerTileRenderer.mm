@@ -187,4 +187,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     return (const char*) tileBuffer.contents;
 }
 
+- (const uint*) getTileLengthBuffer {
+    return (const uint*) lengthBuffer.contents;
+}
+
 @end

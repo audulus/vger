@@ -74,7 +74,6 @@ struct vgerCmdSolid {
 };
 
 struct Tile {
-    uint length;
     char commands[tileBufSize];
 
     template<class T>
@@ -83,35 +82,6 @@ struct Tile {
         len += sizeof(T);
     }
 
-    template<class T>
-    void append(const T cmd) DEVICE {
-        *(DEVICE T*) (commands + length) = cmd;
-        length += sizeof(T);
-    }
-
-    void segment(float2 a, float2 b, float width) DEVICE {
-        append(vgerCmdSegment{vgerOpSegment, a, b, width});
-    }
-
-    void rect(float2 a, float2 b, float radius) DEVICE {
-        append(vgerCmdRect{vgerOpRect, a, b, radius});
-    }
-
-    void lineFill(float2 a, float2 b) DEVICE {
-        append(vgerCmdLineFill{vgerOpLine, a, b});
-    }
-
-    void bezFill(float2 a, float2 b, float2 c) DEVICE {
-        append(vgerCmdBezFill{vgerOpBez, a, b, c});
-    }
-
-    void solid(uint color) DEVICE {
-        append(vgerCmdSolid{vgerOpSolid, color});
-    }
-
-    void end() DEVICE {
-        append(vgerOpEnd);
-    }
 };
 
 #endif /* commands_h */

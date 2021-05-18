@@ -905,7 +905,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     vgerDelete(vger);
 }
 
-static void printTileBuf(Tile* tileBuf) {
+static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
 
     assert(tileBuf);
     // Print out tile buffer contents.
@@ -916,15 +916,15 @@ static void printTileBuf(Tile* tileBuf) {
 
             uint tileIx = y * maxTilesWidth + x;
             const Tile& tile = tileBuf[tileIx];
+            uint len = tileLengthBuf[tileIx];
 
             vgerOp op = *(vgerOp*) tile.commands;
 
-            if(tile.length == 0) {
+            if(len == 0) {
                 printf("    ");
             } else {
-                printf(" %2d ", tile.length);
+                printf(" %2d ", len);
             }
-
         }
         printf("\n");
     }
@@ -968,7 +968,8 @@ static void printTileBuf(Tile* tileBuf) {
     showTexture(debugTexture, @"tile_debug.png");
     showTexture(texture, @"tile_render.png");
 
-    printTileBuf((Tile*) [vger->tileRenderer getTileBuffer]);
+    printTileBuf((Tile*) [vger->tileRenderer getTileBuffer],
+                 [vger->tileRenderer getTileLengthBuffer]);
 
 }
 
@@ -1012,7 +1013,8 @@ static void printTileBuf(Tile* tileBuf) {
 
     showTexture(texture, @"tile_blend.png");
 
-    printTileBuf((Tile*) [vger->tileRenderer getTileBuffer]);
+    printTileBuf((Tile*) [vger->tileRenderer getTileBuffer],
+                 [vger->tileRenderer getTileLengthBuffer]);
 
 }
 
@@ -1055,7 +1057,8 @@ static void printTileBuf(Tile* tileBuf) {
     showTexture(debugTexture, @"tile_debug.png");
     showTexture(texture, @"tile_render.png");
 
-    printTileBuf((Tile*) [vger->tileRenderer getTileBuffer]);
+    printTileBuf((Tile*) [vger->tileRenderer getTileBuffer],
+                 [vger->tileRenderer getTileLengthBuffer]);
 
 }
 
