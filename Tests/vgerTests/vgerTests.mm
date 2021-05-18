@@ -944,6 +944,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     assert(tileBuf);
     // Print out tile buffer contents.
     for(int y=0;y<32;++y) {
+        printf("%2d: ", y);
         for(int x=0;x<32;++x) {
             // printf("tile (%d, %d):\n", x, y);
 
