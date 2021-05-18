@@ -27,6 +27,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     id<MTLComputePipelineState> renderPipeline;
     id<MTLComputePipelineState> boundsPipeline;
     id<MTLBuffer> tileBuffer;
+    id<MTLBuffer> lengthBuffer;
     id<MTLTexture> coarseDebugTexture;
     MTLRenderPassDescriptor* pass;
 }
@@ -85,6 +86,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
         tileBuffer = [device newBufferWithLength:sizeof(Tile) * maxTilesWidth * maxTilesWidth
                                          options:MTLResourceStorageModeShared];
         printf("tile buffer size: %d MB\n", (int)(tileBuffer.length)/(1024*1024));
+        lengthBuffer = [device newBufferWithLength:sizeof(uint) * maxTilesWidth * maxTilesWidth
+                                         options:MTLResourceStorageModeShared];
 
         int w = maxTilesWidth;
         int h = maxTilesWidth;
@@ -130,7 +133,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     auto clear = [buffer computeCommandEncoder];
     clear.label = @"clear encoder";
     [clear setComputePipelineState:clearPipeline];
-    [clear setBuffer:tileBuffer offset:0 atIndex:0];
+    [clear setBuffer:lengthBuffer offset:0 atIndex:0];
     [clear dispatchThreadgroups:MTLSizeMake(maxTilesWidth/16, maxTilesWidth/16, 1)
           threadsPerThreadgroup:MTLSizeMake(16, 16, 1)];
     [clear endEncoding];
@@ -155,6 +158,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
     [enc setFragmentBuffer:cvBuffer offset:0 atIndex:1];
     [enc setFragmentBuffer:tileBuffer offset:0 atIndex:2];
+    [enc setFragmentBuffer:lengthBuffer offset:0 atIndex:3];
 
     // XXX: how do we deal with rendering from textures?
     [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip
@@ -168,6 +172,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [render setComputePipelineState:renderPipeline];
     [render setTexture:renderTexture atIndex:0];
     [render setBuffer:tileBuffer offset:0 atIndex:0];
+    [render setBuffer:lengthBuffer offset:0 atIndex:1];
     [render dispatchThreadgroups:MTLSizeMake(int(windowSize.x/tileSize)+1, int(windowSize.y/tileSize)+1, 1)
            threadsPerThreadgroup:MTLSizeMake(tileSize, tileSize, 1)];
     [render endEncoding];

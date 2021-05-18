@@ -127,16 +127,17 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 
 }
 
-kernel void vger_tile_clear(device Tile *tiles [[buffer(0)]],
+kernel void vger_tile_clear(device uint *tileLengths [[buffer(0)]],
                             uint2 gid [[thread_position_in_grid]]) {
 
-    tiles[gid.y * maxTilesWidth + gid.x].length = 0;
+    tileLengths[gid.y * maxTilesWidth + gid.x] = 0;
 }
 
 fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
                               const device float2* cvs,
-                              device Tile *tiles [[ raster_order_group(0) ]]) {
+                              device Tile *tiles,
+                              device uint *tileLengths [[ raster_order_group(0) ]]) {
 
     device auto& prim = prims[in.primIndex];
 
@@ -150,10 +151,11 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
         uint tileIx = y * maxTilesWidth + x;
 
         device Tile& tile = tiles[tileIx];
+        uint length = tileLengths[tileIx];
 
-        //if(prim.type == vgerRect) {
-        //    tile.rect(prim.cvs[0], prim.cvs[1], prim.radius);
-        //}
+        if(prim.type == vgerRect) {
+            tile.append(vgerCmdRect{vgerOpRect, prim.cvs[0], prim.cvs[1], prim.radius}, length);
+        }
 
         if(prim.type == vgerPathFill) {
             for(int i=0; i<prim.count; i++) {
@@ -161,15 +163,20 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
                 auto a = cvs[j];
                 auto b = cvs[j+1];
                 auto c = cvs[j+2];
-                tile.bezFill(a,b,c);
+                tile.append(vgerCmdBezFill{vgerOpBez,a,b,c}, length);
             }
         }
 
         if(prim.type == vgerSegment) {
-            tile.segment(prim.cvs[0], prim.cvs[1], prim.width);
+            tile.append(vgerCmdSegment{vgerOpSegment, prim.cvs[0], prim.cvs[1], prim.width}, length);
+            // tile.segment(prim.cvs[0], prim.cvs[1], prim.width);
         }
 
-        tile.solid(pack_float_to_srgb_unorm4x8(prim.paint.innerColor));
+        tile.append(vgerCmdSolid{vgerOpSolid,
+            pack_float_to_srgb_unorm4x8(prim.paint.innerColor)},
+                    length);
+
+        tileLengths[tileIx] = length;
 
     }
 
@@ -245,12 +252,13 @@ kernel void vger_tile_encode(const device vgerPrim* prims,
 // Not yet used.
 kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture(0)]],
                              const device Tile *tiles [[buffer(0)]],
+                             device uint *tileLengths [[buffer(1)]],
                              uint2 gid [[thread_position_in_grid]],
                              uint2 tgid [[threadgroup_position_in_grid]]) {
 
     uint tileIx = tgid.y * maxTilesWidth + tgid.x;
     const device char *src = tiles[tileIx].commands;
-    const device char *end = src + tiles[tileIx].length;
+    const device char *end = src + tileLengths[tileIx];
     uint x = gid.x;
     uint y = gid.y;
     float2 xy = float2(x, y);

@@ -7,8 +7,10 @@
 
 #ifdef __METAL_VERSION__
 #define DEVICE device
+#define THREAD thread
 #else
 #define DEVICE
+#define THREAD
 
 #include <simd/simd.h>
 using namespace simd;
@@ -60,12 +62,18 @@ struct vgerCmdBezFill {
 /// Set the color.
 struct vgerCmdSolid {
     vgerOp op;
-    int color;
+    uint color;
 };
 
 struct Tile {
     uint length;
     char commands[tileBufSize];
+
+    template<class T>
+    void append(const T cmd, THREAD uint& len) DEVICE {
+        *(DEVICE T*) (commands + len) = cmd;
+        len += sizeof(T);
+    }
 
     template<class T>
     void append(const T cmd) DEVICE {
@@ -89,7 +97,7 @@ struct Tile {
         append(vgerCmdBezFill{vgerOpBez, a, b, c});
     }
 
-    void solid(int color) DEVICE {
+    void solid(uint color) DEVICE {
         append(vgerCmdSolid{vgerOpSolid, color});
     }
 
