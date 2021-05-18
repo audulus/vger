@@ -127,6 +127,11 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 
 }
 
+kernel void vger_tile_clear(device Tile *tiles [[buffer(0)]],
+                            uint2 gid [[thread_position_in_grid]]) {
+
+    tiles[gid.y * maxTilesWidth + gid.x].length = 0;
+}
 
 fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
