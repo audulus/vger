@@ -147,12 +147,16 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
     // Always accessing tileLengths seems to work around the compiler bug.
     uint length = tileLengths[tileIx];
 
-    // float d = sdPrim(prim, cvs, in.t);
-
-    // Are we close enough to output data for the prim?
-    //if(d < tileSize * SQRT_2 * 0.5) {
+    float d = sdPrim(prim, cvs, in.t);
 
     device Tile& tile = tiles[tileIx];
+
+    // Are we close enough to output data for the prim?
+
+    if(d > tileSize * SQRT_2 * 0.5) {
+        tile.append(vgerCmdSolid{vgerOpFillTile, pack_float_to_srgb_unorm4x8(float4(0,1,0,1))}, length);
+        //tile.append(vgerOpEnd, length);
+    }
 
     switch(prim.type) {
         case vgerRect:
@@ -204,6 +208,11 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
                 length);
 
     //}
+
+    if(d < -tileSize * SQRT_2 * 0.5 ) {
+        tile.append(vgerCmdSolid{vgerOpFillTile, pack_float_to_srgb_unorm4x8(float4(0,0,1,1))}, length);
+        //tile.append(vgerOpEnd, length);
+    }
 
     tileLengths[tileIx] = length;
 
