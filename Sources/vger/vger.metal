@@ -274,6 +274,7 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
 
             case vgerOpBez: {
                 vgerCmdBezFill cmd = *(device vgerCmdBezFill*) src;
+                d = copysign(min(abs(d), sdBezierApprox2(xy, cmd.a, cmd.b, cmd.c)), d);
 
                 if(lineTest(xy, cmd.a, cmd.c)) {
                     d = -d;
