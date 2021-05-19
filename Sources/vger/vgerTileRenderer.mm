@@ -93,7 +93,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
         int h = MAX_TILES_WIDTH;
 
         auto textureDesc = [MTLTextureDescriptor
-                            texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
+                            texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm
                             width:w
                             height:h
                             mipmapped:NO];
