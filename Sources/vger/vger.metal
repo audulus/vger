@@ -154,7 +154,10 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
     // Are we close enough to output data for the prim?
 
     if(d < -TILE_SIZE_PIXELS * SQRT_2 * 0.5 ) {
-        tile.append(vgerCmdSolid{vgerOpFillTile, pack_float_to_srgb_unorm4x8(float4(0,0,1,1))}, length);
+        if(prim.paint.innerColor.a == 1.0) {
+            length = 0;
+        }
+        tile.append(vgerCmdSolid{vgerOpFillTile, pack_float_to_srgb_unorm4x8(prim.paint.innerColor)}, length);
     } else if(d < TILE_SIZE_PIXELS * SQRT_2 * 0.5) {
 
         switch(prim.type) {
