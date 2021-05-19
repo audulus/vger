@@ -57,6 +57,12 @@ CGImageRef createImage(id<MTLTexture> texture) {
         case MTLPixelFormatRGBA8Unorm:
             [texture getBytes:imageBytes.data() bytesPerRow:w * 4 fromRegion:MTLRegionMake2D(0, 0, w, h) mipmapLevel:0];
             break;
+        case MTLPixelFormatBGRA8Unorm:
+            [texture getBytes:imageBytes.data() bytesPerRow:w * 4 fromRegion:MTLRegionMake2D(0, 0, w, h) mipmapLevel:0];
+            for(auto i=0;i<imageBytes.size()/4;++i) {
+                std::swap(imageBytes[4*i], imageBytes[4*i+2]);
+            }
+            break;
         case MTLPixelFormatA8Unorm: {
             std::vector<UInt8> tmpBytes(w*h);
             [texture getBytes:tmpBytes.data() bytesPerRow:w fromRegion:MTLRegionMake2D(0, 0, w, h) mipmapLevel:0];
