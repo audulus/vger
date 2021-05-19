@@ -153,7 +153,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 
     // Are we close enough to output data for the prim?
 
-    if(d > tileSize * SQRT_2 * 0.5) {
+    if(d > TILE_SIZE_PIXELS * SQRT_2 * 0.5) {
         tile.append(vgerCmdSolid{vgerOpFillTile, pack_float_to_srgb_unorm4x8(float4(0,1,0,1))}, length);
         //tile.append(vgerOpEnd, length);
     }
@@ -169,21 +169,21 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
                 auto b = cvs[j+1];
                 auto c = cvs[j+2];
 
-                auto m = in.t.y - tileSize/2;
+                auto m = in.t.y - TILE_SIZE_PIXELS/2;
                 if(a.y < m and b.y < m and c.y < m) {
                     continue;
                 }
-                m = in.t.y + tileSize/2;
+                m = in.t.y + TILE_SIZE_PIXELS/2;
                 if(a.y > m and b.y > m and c.y > m) {
                     continue;
                 }
 
-                m = in.t.x - tileSize/2;
+                m = in.t.x - TILE_SIZE_PIXELS/2;
                 if(a.x < m and b.x < m and c.x < m) {
                     continue;
                 }
 
-                m = in.t.x + tileSize/2;
+                m = in.t.x + TILE_SIZE_PIXELS/2;
                 if(a.x > m and b.x > m and c.x > m) {
                     tile.append(vgerCmdLineFill{vgerOpLine,a,c}, length);
                 } else {
@@ -209,7 +209,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 
     //}
 
-    if(d < -tileSize * SQRT_2 * 0.5 ) {
+    if(d < -TILE_SIZE_PIXELS * SQRT_2 * 0.5 ) {
         tile.append(vgerCmdSolid{vgerOpFillTile, pack_float_to_srgb_unorm4x8(float4(0,0,1,1))}, length);
         //tile.append(vgerOpEnd, length);
     }

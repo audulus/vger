@@ -153,7 +153,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
     [enc setRenderPipelineState:coarsePipeline];
     [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
-    float2 maxWindowSize{MAX_TILES_WIDTH * tileSize, MAX_TILES_WIDTH * tileSize};
+    float2 maxWindowSize{MAX_TILES_WIDTH * TILE_SIZE_PIXELS, MAX_TILES_WIDTH * TILE_SIZE_PIXELS};
     [enc setVertexBytes:&maxWindowSize length:sizeof(maxWindowSize) atIndex:1];
     [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
     [enc setFragmentBuffer:cvBuffer offset:0 atIndex:1];
@@ -173,8 +173,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [render setTexture:renderTexture atIndex:0];
     [render setBuffer:tileBuffer offset:0 atIndex:0];
     [render setBuffer:lengthBuffer offset:0 atIndex:1];
-    [render dispatchThreadgroups:MTLSizeMake(int(windowSize.x/tileSize)+1, int(windowSize.y/tileSize)+1, 1)
-           threadsPerThreadgroup:MTLSizeMake(tileSize, tileSize, 1)];
+    [render dispatchThreadgroups:MTLSizeMake(int(windowSize.x/TILE_SIZE_PIXELS)+1, int(windowSize.y/TILE_SIZE_PIXELS)+1, 1)
+           threadsPerThreadgroup:MTLSizeMake(TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, 1)];
     [render endEncoding];
 
 }

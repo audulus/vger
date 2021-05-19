@@ -22,7 +22,7 @@ using namespace simd;
 
 #define TILE_BUF_SIZE 4096
 #define MAX_TILES_WIDTH 256
-#define tileSize 16
+#define TILE_SIZE_PIXELS 16
 
 enum vgerOp {
     vgerOpEnd,
