@@ -23,7 +23,6 @@ using namespace simd;
 vger::vger() {
     device = MTLCreateSystemDefaultDevice();
     renderer = [[vgerRenderer alloc] initWithDevice:device];
-    tileRenderer = [[vgerTileRenderer alloc] initWithDevice:device];
     glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
     printf("prim buffer size: %d MB\n", (int)(maxPrims * sizeof(vgerPrim))/(1024*1024));
     for(int i=0;i<3;++i) {
@@ -595,6 +594,11 @@ void vgerEncodeTileRender(vgerContext vg, id<MTLCommandBuffer> buf, id<MTLTextur
 }
 
 void vger::encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture) {
+
+    // Create tile renderer on demand, since it uses a lot of RAM.
+    if(tileRenderer == nil) {
+        tileRenderer = [[vgerTileRenderer alloc] initWithDevice:device];
+    }
 
     [tileRenderer encodeTo:buf
                      prims:primBuffers[curBuffer]
