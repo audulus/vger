@@ -11,6 +11,8 @@ class TileRenderer: NSObject, MTKViewDelegate {
     var device: MTLDevice!
     var queue: MTLCommandQueue!
     var renderCallback : ((OpaquePointer) -> Void)?
+    var textureRenderer: TextureRenderer!
+    var renderTexture: MTLTexture!
 
     static let MaxBuffers = 3
     private let inflightSemaphore = DispatchSemaphore(value: MaxBuffers)
@@ -18,10 +20,14 @@ class TileRenderer: NSObject, MTKViewDelegate {
     init(device: MTLDevice) {
         self.device = device
         queue = device.makeCommandQueue()
+        textureRenderer = TextureRenderer(device: device, pixelFormat: .bgra8Unorm)
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
 
+        let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .bgra8Unorm, width: Int(size.width), height: Int(size.height), mipmapped: false)
+        desc.usage = [.shaderRead, .shaderWrite]
+        renderTexture = device.makeTexture(descriptor: desc)
     }
 
     func draw(in view: MTKView) {
@@ -53,7 +59,10 @@ class TileRenderer: NSObject, MTKViewDelegate {
 
             renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1)
 
-            vgerEncodeTileRender(vg!, commandBuffer, currentDrawable.texture)
+            vgerEncodeTileRender(vg!, commandBuffer, renderTexture)
+
+            textureRenderer.encode(to: commandBuffer, pass: renderPassDescriptor, texture: renderTexture)
+
             commandBuffer.present(currentDrawable)
         }
         commandBuffer.commit()
