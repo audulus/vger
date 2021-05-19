@@ -32,7 +32,8 @@ enum vgerOp {
     vgerOpSolid,
     vgerOpSegment,
     vgerOpRect,
-    vgerOpCircle
+    vgerOpCircle,
+    vgerOpFillTile
 };
 
 /// Line segment.

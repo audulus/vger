@@ -287,6 +287,15 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
                 break;
             }
 
+            case vgerOpFillTile: {
+                vgerCmdSolid cmd = *(device vgerCmdSolid*) src;
+                half4 c = unpack_unorm4x8_srgb_to_half(cmd.color);
+                rgb = c.rgb;
+                d = 1e9;
+                src += sizeof(vgerCmdSolid);
+                break;
+            }
+
             case vgerOpSolid: {
                 vgerCmdSolid cmd = *(device vgerCmdSolid*) src;
                 half4 c = unpack_unorm4x8_srgb_to_half(cmd.color);
