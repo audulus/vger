@@ -349,7 +349,7 @@ inline bool pointInsidePath(const DEVICE vgerPrim& prim, const DEVICE float2* cv
 
 }
 
-inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p) {
+inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p, bool exact=false) {
     float d = FLT_MAX;
     float s = 1;
     switch(prim.type) {
@@ -394,7 +394,11 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
                 auto b = cvs[j+1];
                 auto c = cvs[j+2];
 
-                d = min(d, sdBezierApprox2(p, a, b, c));
+                if(exact) {
+                    d = min(d, sdBezier(p, a, b, c));
+                } else {
+                    d = min(d, sdBezierApprox2(p, a, b, c));
+                }
 
                 if(lineTest(p, a, c)) {
                     s = -s;

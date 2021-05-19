@@ -147,7 +147,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
     // Always accessing tileLengths seems to work around the compiler bug.
     uint length = tileLengths[tileIx];
 
-    float d = sdPrim(prim, cvs, in.t);
+    float d = sdPrim(prim, cvs, in.t, /*exact*/true);
 
     device Tile& tile = tiles[tileIx];
 
