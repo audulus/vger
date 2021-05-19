@@ -1072,9 +1072,10 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
 
     constexpr int n = 15;
     float2 cvs[n];
-    for(int i=0;i<n;++i) {
+    for(int i=0;i<n-1;++i) {
         cvs[i] = sz * rand2();
     }
+    cvs[n-1] = cvs[0];
 
     auto vger = vgerNew();
 
