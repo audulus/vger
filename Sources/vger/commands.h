@@ -20,7 +20,7 @@ using namespace simd;
 // Rendering commands for experimental tile-based fine rendering.
 // Not yet in use.
 
-#define tileBufSize 4096
+#define TILE_BUF_SIZE 4096
 #define maxTilesWidth 256
 #define tileSize 16
 
@@ -82,7 +82,7 @@ struct vgerCmdSolid {
 };
 
 struct Tile {
-    char commands[tileBufSize];
+    char commands[TILE_BUF_SIZE];
 
     template<class T>
     void append(const T cmd, THREAD uint& len) DEVICE {
