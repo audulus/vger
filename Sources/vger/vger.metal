@@ -133,6 +133,14 @@ kernel void vger_tile_clear(device uint *tileLengths [[buffer(0)]],
     tileLengths[gid.y * MAX_TILES_WIDTH + gid.x] = 0;
 }
 
+short2 f2s(float2 p) {
+    return short2(SHRT_MAX * (p / (TILE_SIZE_PIXELS * MAX_TILES_WIDTH)));
+}
+
+float2 s2f(short2 p) {
+    return (float2(p) * TILE_SIZE_PIXELS * MAX_TILES_WIDTH) / SHRT_MAX;
+}
+
 fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
                               const device float2* cvs,
@@ -185,9 +193,9 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 
                 m = in.t.x + TILE_SIZE_PIXELS/2;
                 if(a.x > m and b.x > m and c.x > m) {
-                    tile.append(vgerCmdLineFill{vgerOpLine,a,c}, length);
+                    tile.append(vgerCmdLineFill{vgerOpLine,f2s(a),f2s(c)}, length);
                 } else {
-                    tile.append(vgerCmdBezFill{vgerOpBez,a,b,c}, length);
+                    tile.append(vgerCmdBezFill{vgerOpBez,f2s(a),f2s(b),f2s(c)}, length);
                 }
             }
             break;
@@ -273,7 +281,7 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
             case vgerOpLine: {
                 vgerCmdLineFill cmd = *(device vgerCmdLineFill*) src;
 
-                if(lineTest(xy, cmd.a, cmd.b)) {
+                if(lineTest(xy, s2f(cmd.a), s2f(cmd.b))) {
                     d = -d;
                 }
 
@@ -283,13 +291,16 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
 
             case vgerOpBez: {
                 vgerCmdBezFill cmd = *(device vgerCmdBezFill*) src;
-                d = copysign(min(abs(d), sdBezierApprox2(xy, cmd.a, cmd.b, cmd.c)), d);
+                auto a = s2f(cmd.a);
+                auto b = s2f(cmd.b);
+                auto c = s2f(cmd.c);
+                d = copysign(min(abs(d), sdBezierApprox2(xy, a, b, c)), d);
 
-                if(lineTest(xy, cmd.a, cmd.c)) {
+                if(lineTest(xy, a, c)) {
                     d = -d;
                 }
 
-                if(bezierTest(xy, cmd.a, cmd.b, cmd.c)) {
+                if(bezierTest(xy, a, b, c)) {
                     d = -d;
                 }
 
