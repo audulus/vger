@@ -122,6 +122,11 @@ auto white = vgerColorPaint(float4{1,1,1,1});
 auto cyan = vgerColorPaint(float4{0,1,1,1});
 auto magenta = vgerColorPaint(float4{1,0,1,1});
 
+- (void) testSizes {
+    XCTAssertEqual(sizeof(vgerPaint), 96);
+    XCTAssertEqual(sizeof(vgerPrim), 256);
+}
+
 - (void) testBasic {
 
     float theta = 0;
