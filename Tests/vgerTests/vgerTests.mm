@@ -47,7 +47,7 @@ using namespace simd;
                         mipmapped:NO];
 
     textureDesc.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite;
-    textureDesc.storageMode = MTLStorageModeManaged;
+    textureDesc.storageMode = MTLStorageModeShared;
 
     texture = [device newTextureWithDescriptor:textureDesc];
     assert(texture);
@@ -565,7 +565,9 @@ void renderPaths(NVGcontext* vg, const std::vector<vgerPrim>& primArray) {
 
     writeCGImage(createImage(imageBits.data(), w, h), (__bridge CFURLRef)tmpURL);
 
+#if TARGET_OS_OSX
     system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
+#endif
 }
 
 static void textAt(vgerContext vger, float x, float y, const char* str) {

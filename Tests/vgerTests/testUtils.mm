@@ -2,6 +2,10 @@
 
 #include "testUtils.h"
 #include <vector>
+#import <ImageIO/ImageIO.h>
+#if !TARGET_OS_OSX
+#import <MobileCoreServices/MobileCoreServices.h>
+#endif
 
 void writeCGImage(CGImageRef image, CFURLRef url) {
     auto dest = CGImageDestinationCreateWithURL(url, kUTTypePNG, 1, nil);
@@ -75,7 +79,9 @@ void showTexture(id<MTLTexture> texture, NSString* name) {
     NSLog(@"saving to %@", tmpURL);
     CGImageRef image = createImage(texture);
     writeCGImage(image, (__bridge CFURLRef)tmpURL);
+#if TARGET_OS_OSX
     system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
+#endif
     CGImageRelease(image);
 
 }
@@ -105,7 +111,9 @@ bool checkTexture(id<MTLTexture> texture, NSString* name) {
     bool equal = [NSFileManager.defaultManager contentsEqualAtPath:baselineURL.path andPath:tmpURL.path];
 
     if(!equal) {
+#if TARGET_OS_OSX
         system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
+#endif
     }
 
     return equal;

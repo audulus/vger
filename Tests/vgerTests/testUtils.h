@@ -4,6 +4,7 @@
 #define TestUtils_h
 
 #include <Foundation/Foundation.h>
+#include <CoreGraphics/CoreGraphics.h>
 #include <Metal/Metal.h>
 
 void writeCGImage(CGImageRef image, CFURLRef url);

@@ -2,3 +2,7 @@
 
 @import MetalKit;
 @import XCTest;
+@import ImageIO;
+#if !TARGET_OS_OSX
+@import MobileCoreServices;
+#endif
