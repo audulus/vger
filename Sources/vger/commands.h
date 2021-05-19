@@ -86,8 +86,10 @@ struct Tile {
 
     template<class T>
     void append(const T cmd, THREAD uint& len) DEVICE {
-        *(DEVICE T*) (commands + len) = cmd;
-        len += sizeof(T);
+        if(len + sizeof(T) < TILE_BUF_SIZE) {
+            *(DEVICE T*) (commands + len) = cmd;
+            len += sizeof(T);
+        }
     }
 
 };
