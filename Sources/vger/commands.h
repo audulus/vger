@@ -66,13 +66,13 @@ struct vgerCmdCircle {
 /// Flip the sign of the df if ray intersects with line.
 struct vgerCmdLineFill {
     vgerOp op;
-    short2 a, b;
+    packed_float2 a, b;
 };
 
 /// Flip the sign of the df if point is inside the bezier.
 struct vgerCmdBezFill {
     vgerOp op;
-    short2 a, b, c;
+    packed_float2 a, b, c;
 };
 
 /// Set the color.
