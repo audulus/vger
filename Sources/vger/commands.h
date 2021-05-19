@@ -21,7 +21,7 @@ using namespace simd;
 // Not yet in use.
 
 #define TILE_BUF_SIZE 4096
-#define maxTilesWidth 256
+#define MAX_TILES_WIDTH 256
 #define tileSize 16
 
 enum vgerOp {

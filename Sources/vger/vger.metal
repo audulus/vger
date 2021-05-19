@@ -130,7 +130,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 kernel void vger_tile_clear(device uint *tileLengths [[buffer(0)]],
                             uint2 gid [[thread_position_in_grid]]) {
 
-    tileLengths[gid.y * maxTilesWidth + gid.x] = 0;
+    tileLengths[gid.y * MAX_TILES_WIDTH + gid.x] = 0;
 }
 
 fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
@@ -141,8 +141,8 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 
     device auto& prim = prims[in.primIndex];
     uint x = (uint) in.position.x;
-    uint y = maxTilesWidth - (uint) in.position.y - 1;
-    uint tileIx = y * maxTilesWidth + x;
+    uint y = MAX_TILES_WIDTH - (uint) in.position.y - 1;
+    uint tileIx = y * MAX_TILES_WIDTH + x;
 
     // Always accessing tileLengths seems to work around the compiler bug.
     uint length = tileLengths[tileIx];
@@ -218,7 +218,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 
     // This is just for debugging so we can see what was rendered
     // in the coarse rasterization.
-    return float4(in.position.x/32, 0, (maxTilesWidth-in.position.y)/32, 1);
+    return float4(in.position.x/32, 0, (MAX_TILES_WIDTH-in.position.y)/32, 1);
 
 }
 
@@ -229,7 +229,7 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
                              uint2 gid [[thread_position_in_grid]],
                              uint2 tgid [[threadgroup_position_in_grid]]) {
 
-    uint tileIx = tgid.y * maxTilesWidth + tgid.x;
+    uint tileIx = tgid.y * MAX_TILES_WIDTH + tgid.x;
     const device char *src = tiles[tileIx].commands;
     const device char *end = src + tileLengths[tileIx];
     uint x = gid.x;

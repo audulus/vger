@@ -919,7 +919,7 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
         for(int x=0;x<32;++x) {
             // printf("tile (%d, %d):\n", x, y);
 
-            uint tileIx = y * maxTilesWidth + x;
+            uint tileIx = y * MAX_TILES_WIDTH + x;
             const Tile& tile = tileBuf[tileIx];
             uint len = tileLengthBuf[tileIx];
 

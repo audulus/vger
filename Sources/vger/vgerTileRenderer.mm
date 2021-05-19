@@ -83,14 +83,14 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
             abort();
         }
 
-        tileBuffer = [device newBufferWithLength:sizeof(Tile) * maxTilesWidth * maxTilesWidth
+        tileBuffer = [device newBufferWithLength:sizeof(Tile) * MAX_TILES_WIDTH * MAX_TILES_WIDTH
                                          options:MTLResourceStorageModeShared];
         printf("tile buffer size: %d MB\n", (int)(tileBuffer.length)/(1024*1024));
-        lengthBuffer = [device newBufferWithLength:sizeof(uint) * maxTilesWidth * maxTilesWidth
+        lengthBuffer = [device newBufferWithLength:sizeof(uint) * MAX_TILES_WIDTH * MAX_TILES_WIDTH
                                          options:MTLResourceStorageModeShared];
 
-        int w = maxTilesWidth;
-        int h = maxTilesWidth;
+        int w = MAX_TILES_WIDTH;
+        int h = MAX_TILES_WIDTH;
 
         auto textureDesc = [MTLTextureDescriptor
                             texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
@@ -134,7 +134,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     clear.label = @"clear encoder";
     [clear setComputePipelineState:clearPipeline];
     [clear setBuffer:lengthBuffer offset:0 atIndex:0];
-    [clear dispatchThreadgroups:MTLSizeMake(maxTilesWidth/16, maxTilesWidth/16, 1)
+    [clear dispatchThreadgroups:MTLSizeMake(MAX_TILES_WIDTH/16, MAX_TILES_WIDTH/16, 1)
           threadsPerThreadgroup:MTLSizeMake(16, 16, 1)];
     [clear endEncoding];
 
@@ -153,7 +153,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
     [enc setRenderPipelineState:coarsePipeline];
     [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
-    float2 maxWindowSize{maxTilesWidth * tileSize, maxTilesWidth * tileSize};
+    float2 maxWindowSize{MAX_TILES_WIDTH * tileSize, MAX_TILES_WIDTH * tileSize};
     [enc setVertexBytes:&maxWindowSize length:sizeof(maxWindowSize) atIndex:1];
     [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
     [enc setFragmentBuffer:cvBuffer offset:0 atIndex:1];
