@@ -29,6 +29,7 @@ enum vgerOp {
     vgerOpLine,
     vgerOpBezStroke,
     vgerOpBez,
+    vgerOpBezIndirect,
     vgerOpSolid,
     vgerOpSegment,
     vgerOpRect,
@@ -73,6 +74,12 @@ struct vgerCmdLineFill {
 struct vgerCmdBezFill {
     vgerOp op;
     packed_float2 a, b, c;
+};
+
+/// Flip the sign of the df if point is inside the bezier.
+struct vgerCmdBezFillIndirect {
+    vgerOp op;
+    int index; /// Index of first point in cvs buffer.
 };
 
 /// Set the color.

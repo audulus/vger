@@ -173,6 +173,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [render setTexture:renderTexture atIndex:0];
     [render setBuffer:tileBuffer offset:0 atIndex:0];
     [render setBuffer:lengthBuffer offset:0 atIndex:1];
+    [render setBuffer:cvBuffer offset:0 atIndex:2];
     [render dispatchThreadgroups:MTLSizeMake(int(windowSize.x/TILE_SIZE_PIXELS)+1, int(windowSize.y/TILE_SIZE_PIXELS)+1, 1)
            threadsPerThreadgroup:MTLSizeMake(TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, 1)];
     [render endEncoding];

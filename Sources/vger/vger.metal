@@ -223,6 +223,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture(0)]],
                              const device Tile *tiles [[buffer(0)]],
                              device uint *tileLengths [[buffer(1)]],
+                             device float2 *cvs,
                              uint2 gid [[thread_position_in_grid]],
                              uint2 tgid [[threadgroup_position_in_grid]]) {
 
@@ -293,6 +294,25 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
                 }
 
                 if(bezierTest(xy, cmd.a, cmd.b, cmd.c)) {
+                    d = -d;
+                }
+
+                src += sizeof(vgerCmdBezFill);
+                break;
+            }
+
+            case vgerOpBezIndirect: {
+                vgerCmdBezFillIndirect cmd = *(device vgerCmdBezFillIndirect*) src;
+                auto a = cvs[cmd.index];
+                auto b = cvs[cmd.index+1];
+                auto c = cvs[cmd.index+2];
+                d = copysign(min(abs(d), sdBezierApprox2(xy, a, b, c)), d);
+
+                if(lineTest(xy, a, c)) {
+                    d = -d;
+                }
+
+                if(bezierTest(xy, a, b, c)) {
                     d = -d;
                 }
 
