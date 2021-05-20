@@ -18,6 +18,12 @@ I was previously using nanovg for Audulus, which was consuming too much CPU for 
 
 vger isn't cross-platform (just iOS and macOS), but the API is simple enough that it could be ported fairly easily. If Audulus goes cross-platform again, I will port vger to vulkan or wgpu.
 
+## How it works
+
+vger draws a quad for each primitive and computes the actual primitive shape in the fragment function. For path fills, vger splits paths into horizontal slabs (see `vgerPathScanner`) to reduce the number of tests in the fragment function.
+
+The bezier path fill case is somewhat original. To avoid having to solve quadratic equations (which has numerical issues, and some guy patented the couple lines of code to fix it), the fragment function uses a sort-of reverse Loop-Blinn. To determine if a point is inside or outside, vger tests against the lines formed between the endpoints of each bezier curve, flipping inside/outside for each intersection with a +x ray from the point. Then vger tests the point against the area btween the bezier segment and the line, flipping inside/outside again if inside. This avoids the pre-computation of Loop-Blin, the AA issues of Kokojima, and the patent issue of Slug.
+
 ## Status
 
 - ✅ Quadratic bezier strokes 
