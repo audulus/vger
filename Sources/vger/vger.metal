@@ -189,7 +189,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
                     if(a.x > m and b.x > m and c.x > m) {
                         tile.append(vgerCmdLineFill{vgerOpLine,a,c}, length);
                     } else {
-                        tile.append(vgerCmdBezFill{vgerOpBez,a,b,c}, length);
+                        tile.append(vgerCmdBezFillIndirect{vgerOpBezIndirect,j}, length);
                     }
                 }
                 break;
