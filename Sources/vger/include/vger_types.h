@@ -98,6 +98,7 @@ typedef struct {
 
 } vgerPrim;
 
+/// Text alignment.
 enum vgerAlign {
     // Horizontal align
     VGER_ALIGN_LEFT      = 1<<0, // Default, align text horizontally to left.
