@@ -12,6 +12,10 @@ Here's an early screenshot from vger in use for Audulus:
 
 <img src="bootstrap.png">
 
+Here's it rendering that svg tiger (the cubic curves are converted to quadratic by a lousy method, and I've omitted the strokes):
+
+<img src="tiger.png">
+
 ## Why?
 
 I was previously using nanovg for Audulus, which was consuming too much CPU for the immediate-mode UI. nanovg is certainly more full featured, but for Audulus, vger maintains 120fps while nanovg falls to 30fps on my 120Hz iPad because of CPU-side path tessellation, and other overhead. vger renders analytically without tessellation, leaning heavily on the fragment shader.
