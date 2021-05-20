@@ -316,7 +316,7 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
                     d = -d;
                 }
 
-                src += sizeof(vgerCmdBezFill);
+                src += sizeof(vgerCmdBezFillIndirect);
                 break;
             }
 
