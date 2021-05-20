@@ -237,6 +237,12 @@ kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture
         return;
     }
 
+    // Show overflows.
+    if(tileLengths[tileIx] > 4000) {
+        outTexture.write(half4(1.0, 0.0, 1.0, 1.0), uint2{gid.x, outTexture.get_height() - gid.y - 1});
+        return;
+    }
+
     half3 rgb = half3(0.0);
     float d = 1e9;
 
