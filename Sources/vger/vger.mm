@@ -504,7 +504,7 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint, bool scan) {
                 addCV(start);
             }
 
-            auto bounds = sdPrimBounds(prim, (float2*) cvBuffers[curBuffer].contents).inset(-1);
+            auto bounds = sdPrimBounds(prim, (float2*) cvBuffers[curBuffer].contents).inset(-10);
             prim.texcoords[0] = bounds.min;
             prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
             prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
