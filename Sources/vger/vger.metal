@@ -147,69 +147,51 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
     // Always accessing tileLengths seems to work around the compiler bug.
     uint length = tileLengths[tileIx];
 
-    float d = sdPrim(prim, cvs, in.t, /*exact*/true);
-
     device Tile& tile = tiles[tileIx];
 
-    // Are we close enough to output data for the prim?
+    switch(prim.type) {
+        case vgerRect:
+            tile.append(vgerCmdRect{vgerOpRect, prim.cvs[0], prim.cvs[1], prim.radius}, length);
+            break;
+        case vgerPathFill:
+            for(int i=0; i<prim.count; i++) {
+                int j = prim.start + 3*i;
+                auto a = cvs[j];
+                auto b = cvs[j+1];
+                auto c = cvs[j+2];
 
-    if(d < -TILE_SIZE_PIXELS * SQRT_2 * 0.5 ) {
-        if(prim.paint.innerColor.a == 1.0) {
-            length = 0;
-        }
-        tile.append(vgerCmdSolid{vgerOpFillTile, pack_float_to_srgb_unorm4x8(prim.paint.innerColor)}, length);
-    } else if(d < TILE_SIZE_PIXELS * SQRT_2 * 0.5) {
-
-        switch(prim.type) {
-            case vgerRect:
-                tile.append(vgerCmdRect{vgerOpRect, prim.cvs[0], prim.cvs[1], prim.radius}, length);
-                break;
-            case vgerPathFill:
-                for(int i=0; i<prim.count; i++) {
-                    int j = prim.start + 3*i;
-                    auto a = cvs[j];
-                    auto b = cvs[j+1];
-                    auto c = cvs[j+2];
-
-                    auto m = in.t.y - TILE_SIZE_PIXELS/2;
-                    if(a.y < m and b.y < m and c.y < m) {
-                        continue;
-                    }
-                    m = in.t.y + TILE_SIZE_PIXELS/2;
-                    if(a.y > m and b.y > m and c.y > m) {
-                        continue;
-                    }
-
-                    m = in.t.x - TILE_SIZE_PIXELS/2;
-                    if(a.x < m and b.x < m and c.x < m) {
-                        continue;
-                    }
-
-                    m = in.t.x + TILE_SIZE_PIXELS/2;
-                    if(a.x > m and b.x > m and c.x > m) {
-                        tile.append(vgerCmdLineFill{vgerOpLine,a,c}, length);
-                    } else {
-                        tile.append(vgerCmdBezFillIndirect{vgerOpBezIndirect,j}, length);
-                    }
+                auto m = in.t.y - TILE_SIZE_PIXELS/2;
+                if(a.y < m and b.y < m and c.y < m) {
+                    continue;
                 }
-                break;
-            case vgerSegment:
-                tile.append(vgerCmdSegment{vgerOpSegment, prim.cvs[0], prim.cvs[1], prim.width}, length);
-                break;
-            case vgerCircle:
-                tile.append(vgerCmdCircle{vgerOpCircle, prim.cvs[0], prim.radius}, length);
-                break;
-            case vgerBezier:
-                tile.append(vgerCmdBezStroke{vgerOpBezStroke, prim.cvs[0], prim.cvs[1], prim.cvs[2], prim.width}, length);
-            default:
-                break;
-        }
+                m = in.t.y + TILE_SIZE_PIXELS/2;
+                if(a.y > m and b.y > m and c.y > m) {
+                    continue;
+                }
 
-        tile.append(vgerCmdSolid{vgerOpSolid,
-            pack_float_to_srgb_unorm4x8(prim.paint.innerColor)},
-                    length);
+                m = in.t.x - TILE_SIZE_PIXELS/2;
+                if(a.x < m and b.x < m and c.x < m) {
+                    continue;
+                }
 
+                tile.append(vgerCmdBezFillIndirect{vgerOpBezIndirect,j}, length);
+            }
+            break;
+        case vgerSegment:
+            tile.append(vgerCmdSegment{vgerOpSegment, prim.cvs[0], prim.cvs[1], prim.width}, length);
+            break;
+        case vgerCircle:
+            tile.append(vgerCmdCircle{vgerOpCircle, prim.cvs[0], prim.radius}, length);
+            break;
+        case vgerBezier:
+            tile.append(vgerCmdBezStroke{vgerOpBezStroke, prim.cvs[0], prim.cvs[1], prim.cvs[2], prim.width}, length);
+        default:
+            break;
     }
+
+    tile.append(vgerCmdSolid{vgerOpSolid,
+        pack_float_to_srgb_unorm4x8(prim.paint.innerColor)},
+                length);
 
     tileLengths[tileIx] = length;
 
