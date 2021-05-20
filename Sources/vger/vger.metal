@@ -101,8 +101,9 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
         auto c = prim.paint.innerColor;
         return float4(c.rgb, c.a * glyphs.sample(glyphSampler, in.t).a);
     }
-    
-    float d = sdPrim(prim, cvs, in.t);
+
+    float fw = length(fwidth(in.t));
+    float d = sdPrim(prim, cvs, in.t, /*exact*/false, fw);
 
     //if(d > 2*sw) {
     //    discard_fragment();
@@ -122,7 +123,6 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
         color = tex.sample(textureSampler, t);
     }
 
-    float fw = length(fwidth(in.t));
     return mix(float4(color.rgb,0.0), color, 1.0-smoothstep(-fw/2,fw/2,d) );
 
 }
