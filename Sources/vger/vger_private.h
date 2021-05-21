@@ -66,7 +66,7 @@ struct vger {
     vgerTileRenderer* tileRenderer;
 
     /// Transform matrix stack.
-    std::vector<matrix_float3x3> txStack;
+    std::vector<float3x3> txStack;
 
     /// We cycle through three scenes for streaming.
     vgerScene scenes[3];
@@ -96,7 +96,7 @@ struct vger {
     uint16_t xformCount = 0;
 
     /// Pointer to the next transform.
-    matrix_float3x3* xformPtr;
+    float3x3* xformPtr;
 
     /// How many paints?
     uint16_t paintCount = 0;
