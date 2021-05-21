@@ -6,6 +6,7 @@ using namespace metal;
 #include "include/vger_types.h"
 #include "sdf.h"
 #include "commands.h"
+#include "accel.h"
 
 #define SQRT_2 1.414213562373095
 
@@ -62,10 +63,6 @@ kernel void vger_prune(uint gid [[thread_position_in_grid]],
 
     }
 }
-
-struct Accel {
-    char s[8][8];
-};
 
 kernel void vger_accel(uint2 gid [[thread_position_in_threadgroup]],
                        uint2 tgid [[threadgroup_position_in_grid]],
