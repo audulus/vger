@@ -265,6 +265,8 @@ void vger::renderGlyphPath(CGGlyph glyph, short paint, float2 position, short xf
 
 CTLineRef vger::createCTLine(const char* str) {
 
+    assert(str);
+
     auto attributes = @{ NSFontAttributeName : (__bridge id)glyphPathCache.ctFont };
     auto string = [NSString stringWithUTF8String:str];
     auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
@@ -279,6 +281,12 @@ CTLineRef vger::createCTLine(const char* str) {
 bool glyphPaths = false;
 
 void vger::renderText(const char* str, float4 color, int align) {
+
+    assert(str);
+
+    if(str[0] == 0) {
+        return;
+    }
     
     auto paint = vgerColorPaint(this, color);
     auto xform = addxform(txStack.back());
@@ -333,6 +341,15 @@ void vger::renderText(const char* str, float4 color, int align) {
 
 void vgerTextBounds(vgerContext vg, const char* str, float2* min, float2* max, int align) {
 
+    assert(str);
+    assert(min);
+    assert(max);
+
+    if(str[0] == 0) {
+        *min = *max = float2{0,0};
+        return;
+    }
+
     auto line = vg->createCTLine(str);
 
     auto bounds = CTLineGetImageBounds(line, nil);
@@ -357,6 +374,8 @@ static constexpr float big = 10000;
 
 CTFrameRef vger::createCTFrame(const char* str, float breakRowWidth) {
 
+    assert(str);
+
     auto attributes = @{ NSFontAttributeName : (__bridge id)[glyphCache getFont] };
     auto string = [NSString stringWithUTF8String:str];
     auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
@@ -374,6 +393,12 @@ CTFrameRef vger::createCTFrame(const char* str, float breakRowWidth) {
 }
 
 void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int align) {
+
+    assert(str);
+
+    if(str[0] == 0) {
+        return;
+    }
 
     auto paint = vgerColorPaint(this, color);
     auto scale = averageScale(txStack.back()) * devicePxRatio;
@@ -406,11 +431,21 @@ void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int
 
 void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, float2* min, float2* max, int align) {
 
+    assert(str);
+    assert(min);
+    assert(max);
+
+    if(str[0] == 0) {
+        *min = *max = float2{0,0};
+        return;
+    }
+
     CFRange entire = CFRangeMake(0, 0);
 
     auto frame = vg->createCTFrame(str, breakRowWidth);
 
     NSArray *lines = (__bridge id)CTFrameGetLines(frame);
+    assert(lines);
 
     CGPoint lastOrigin;
     CTFrameGetLineOrigins(frame, CFRangeMake(lines.count-1, 1), &lastOrigin);
