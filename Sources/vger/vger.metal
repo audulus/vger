@@ -63,6 +63,37 @@ kernel void vger_prune(uint gid [[thread_position_in_grid]],
     }
 }
 
+struct Accel {
+    char s[8][8];
+};
+
+kernel void vger_accel(uint2 gid [[thread_position_in_threadgroup]],
+                       uint2 tgid [[threadgroup_position_in_grid]],
+                       const device vgerPrim* prims,
+                       const device float2* cvs,
+                       device Accel* accel) {
+
+    device auto& prim = prims[tgid.x];
+
+    float2 primMin = prim.texcoords[0];
+    float2 primMax = prim.texcoords[3];
+    float2 sz = (primMax - primMin)/8;
+    float l = length_squared(sz);
+
+    float2 t = (float2(gid)+.5) * sz + primMin;
+
+    float d = sdPrim(prim, cvs, t, /*exact*/true);
+
+    char r = 0;
+    if(d*d > l) {
+        r = sign(d);
+    }
+
+    accel[tgid.x].s[gid.x][gid.y] = r;
+
+}
+
+
 vertex VertexOut vger_vertex(uint vid [[vertex_id]],
                              uint iid [[instance_id]],
                              const device vgerPrim* prims,
