@@ -531,7 +531,7 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
     } else {
 
-        bool closed = simd_equal(cvs[0], cvs[count-1]);
+        bool closed = equal(cvs[0], cvs[count-1]);
 
         vgerPrim prim = {
             .type = vgerPathFill,
