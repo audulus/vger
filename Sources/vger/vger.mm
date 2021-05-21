@@ -151,7 +151,7 @@ void vgerText(vgerContext vg, const char* str, float4 color, int align) {
     vg->renderText(str, color, align);
 }
 
-bool vger::renderCachedText(const TextLayoutKey& key, short paint, short xform) {
+bool vger::renderCachedText(const TextLayoutKey& key, uint16_t paint, short xform) {
 
     // Do we already have text in the cache?
     auto iter = textCache.find(key);
@@ -176,7 +176,7 @@ bool vger::renderCachedText(const TextLayoutKey& key, short paint, short xform) 
     return false;
 }
 
-void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, short paint, float2 offset, float scale, short xform) {
+void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, uint16_t paint, float2 offset, float scale, short xform) {
 
     CFRange entire = CFRangeMake(0, 0);
 
@@ -237,7 +237,7 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, short paint,
 
 }
 
-void vger::renderGlyphPath(CGGlyph glyph, short paint, float2 position, short xform) {
+void vger::renderGlyphPath(CGGlyph glyph, uint16_t paint, float2 position, short xform) {
 
     auto& info = glyphPathCache.getInfo(glyph);
     auto n = cvCount;
@@ -458,11 +458,11 @@ void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, flo
 
 }
 
-void vgerFillPath(vgerContext vg, float2* cvs, int count, short paint, bool scan) {
+void vgerFillPath(vgerContext vg, float2* cvs, int count, uint16_t paint, bool scan) {
     vg->fillPath(cvs, count, paint, scan);
 }
 
-void vger::fillPath(float2* cvs, int count, short paint, bool scan) {
+void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
     if(count < 3) {
         return;
@@ -571,11 +571,11 @@ void vger::fillPath(float2* cvs, int count, short paint, bool scan) {
     }
 }
 
-void vgerFillCubicPath(vgerContext vg, float2* cvs, int count, short paint, bool scan) {
+void vgerFillCubicPath(vgerContext vg, float2* cvs, int count, uint16_t paint, bool scan) {
     vg->fillCubicPath(cvs, count, paint, scan);
 }
 
-void vger::fillCubicPath(float2* cvs, int count, short paint, bool scan) {
+void vger::fillCubicPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
     points.resize(0);
 
@@ -710,7 +710,7 @@ id<MTLTexture> vgerGetCoarseDebugTexture(vgerContext vg) {
     return [vg->tileRenderer getDebugTexture];
 }
 
-short vgerColorPaint(vgerContext vg, vector_float4 color) {
+uint16_t vgerColorPaint(vgerContext vg, vector_float4 color) {
 
     vgerPaint p;
     p.xform = matrix_identity_float3x3;
@@ -721,7 +721,7 @@ short vgerColorPaint(vgerContext vg, vector_float4 color) {
     return vg->addPaint(p);
 }
 
-short vgerLinearGradient(vgerContext vg, vector_float2 start, vector_float2 end,
+uint16_t vgerLinearGradient(vgerContext vg, vector_float2 start, vector_float2 end,
                              vector_float4 innerColor, vector_float4 outerColor) {
 
     vgerPaint p;
@@ -746,7 +746,7 @@ short vgerLinearGradient(vgerContext vg, vector_float2 start, vector_float2 end,
 
 }
 
-short vgerImagePattern(vgerContext vg, vector_float2 origin, vector_float2 size, float angle,
+uint16_t vgerImagePattern(vgerContext vg, vector_float2 origin, vector_float2 size, float angle,
                            int image, float alpha) {
 
     vgerPaint p;

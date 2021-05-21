@@ -99,7 +99,7 @@ struct vger {
     matrix_float3x3* xformPtr;
 
     /// How many paints?
-    short paintCount = 0;
+    uint16_t paintCount = 0;
 
     /// Pointer to the next paint.
     vgerPaint* paintPtr;
@@ -165,23 +165,23 @@ struct vger {
     CTLineRef createCTLine(const char* str);
     CTFrameRef createCTFrame(const char* str, float breakRowWidth);
 
-    void fillPath(float2* cvs, int count, short paint, bool scan);
+    void fillPath(float2* cvs, int count, uint16_t paint, bool scan);
 
-    void fillCubicPath(float2* cvs, int count, short paint, bool scan);
+    void fillCubicPath(float2* cvs, int count, uint16_t paint, bool scan);
 
     void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 
     void encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture);
 
-    bool renderCachedText(const TextLayoutKey& key, short paint, short xform);
+    bool renderCachedText(const TextLayoutKey& key, uint16_t paint, short xform);
 
-    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, short paint, float2 offset, float scale, short xform);
+    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, uint16_t paint, float2 offset, float scale, short xform);
 
     void renderText(const char* str, float4 color, int align);
 
     void renderTextBox(const char* str, float breakRowWidth, float4 color, int align);
 
-    void renderGlyphPath(CGGlyph glyph, short paint, float2 position, short xform);
+    void renderGlyphPath(CGGlyph glyph, uint16_t paint, float2 position, short xform);
 };
 
 #endif /* vger_private_h */

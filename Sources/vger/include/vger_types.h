@@ -81,7 +81,7 @@ typedef struct {
     int count;
 
     /// Index of paint applied to drawing region.
-    short paint;
+    uint16_t paint;
 
     /// Glyph region index.
     short glyph;
