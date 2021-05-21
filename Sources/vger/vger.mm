@@ -727,25 +727,7 @@ uint16_t vgerColorPaint(vgerContext vg, vector_float4 color) {
 uint16_t vgerLinearGradient(vgerContext vg, vector_float2 start, vector_float2 end,
                              vector_float4 innerColor, vector_float4 outerColor) {
 
-    vgerPaint p;
-
-    // Calculate transform aligned to the line
-    vector_float2 d = end - start;
-    if(simd_length(d) < 0.0001f) {
-        d = float2{0,1};
-    }
-
-    p.xform = simd_inverse(matrix_float3x3{
-        float3{d.x, d.y, 0},
-        float3{-d.y, d.x, 0},
-        float3{start.x, start.y, 1}
-    });
-
-    p.innerColor = innerColor;
-    p.outerColor = outerColor;
-    p.image = -1;
-
-    return vg->addPaint(p);
+    return vg->addPaint(makeLinearGradient(start, end, innerColor, outerColor));
 
 }
 

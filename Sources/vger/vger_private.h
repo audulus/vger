@@ -184,4 +184,28 @@ struct vger {
     void renderGlyphPath(CGGlyph glyph, uint16_t paint, float2 position, uint16_t xform);
 };
 
+inline vgerPaint makeLinearGradient(float2 start, float2 end,
+                                    float4 innerColor, float4 outerColor) {
+    
+    vgerPaint p;
+
+    // Calculate transform aligned to the line
+    float2 d = end - start;
+    if(simd_length(d) < 0.0001f) {
+        d = float2{0,1};
+    }
+
+    p.xform = simd_inverse(float3x3{
+        float3{d.x, d.y, 0},
+        float3{-d.y, d.x, 0},
+        float3{start.x, start.y, 1}
+    });
+
+    p.innerColor = innerColor;
+    p.outerColor = outerColor;
+    p.image = -1;
+
+    return p;
+}
+
 #endif /* vger_private_h */

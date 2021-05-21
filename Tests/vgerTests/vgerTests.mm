@@ -647,42 +647,35 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
 - (void) testPaint {
 
-    /*
-    auto p = vgerColorPaint(float4{.1,.2,.3,.4});
-
-    auto c = applyPaint(p, float2{5,7});
-
-    XCTAssertTrue(simd_equal(c, float4{.1,.2,.3,.4}));
-
-    p = vgerLinearGradient(float2{0,0}, float2{1,0}, float4(0), float4(1));
+    auto p = makeLinearGradient(float2{0,0}, float2{1,0}, float4(0), float4(1));
 
     XCTAssertTrue(simd_equal(applyPaint(p, float2{0,0}), float4(0)));
     XCTAssertTrue(simd_equal(applyPaint(p, float2{.5,0}), float4(.5)));
     XCTAssertTrue(simd_equal(applyPaint(p, float2{1,0}), float4(1)));
 
-    p = vgerLinearGradient(float2{0,0}, float2{0,1}, float4(0), float4(1));
+    p = makeLinearGradient(float2{0,0}, float2{0,1}, float4(0), float4(1));
 
     XCTAssertTrue(simd_equal(applyPaint(p, float2{0,0}), float4(0)));
     XCTAssertTrue(simd_equal(applyPaint(p, float2{0,1}), float4(1)));
 
-    p = vgerLinearGradient(float2{1,0}, float2{2,0}, float4(0), float4(1));
+    p = makeLinearGradient(float2{1,0}, float2{2,0}, float4(0), float4(1));
     XCTAssertTrue(simd_equal(applyPaint(p, float2{0,0}), float4(0)));
     XCTAssertTrue(simd_equal(applyPaint(p, float2{1,0}), float4(0)));
     XCTAssertTrue(simd_equal(applyPaint(p, float2{1.5,0}), float4(.5)));
     XCTAssertTrue(simd_equal(applyPaint(p, float2{2,0}), float4(1)));
     XCTAssertTrue(simd_equal(applyPaint(p, float2{3,0}), float4(1)));
 
-    p = vgerLinearGradient(float2{1,2}, float2{2,3}, float4(0), float4(1));
+    p = makeLinearGradient(float2{1,2}, float2{2,3}, float4(0), float4(1));
     XCTAssertTrue(simd_equal(applyPaint(p, float2{1,2}), float4(0)));
     XCTAssertTrue(simd_equal(applyPaint(p, float2{2,3}), float4(1)));
 
-    p = vgerLinearGradient(float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1});
+    p = makeLinearGradient(float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1});
     XCTAssertTrue(simd_length(applyPaint(p, float2{400,100}) - float4{0,1,1,1}) < 0.001f);
 
-    c = applyPaint(p, float2{425,125});
+    auto c = applyPaint(p, float2{425,125});
     XCTAssertTrue(simd_length(c - float4{.5,.5,1,1}) < 0.001f);
     XCTAssertTrue(simd_equal(applyPaint(p, float2{450,150}), float4{1,0,1,1}));
-     */
+
 }
 
 - (void) testTextAlgin {
