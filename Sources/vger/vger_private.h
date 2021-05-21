@@ -74,7 +74,7 @@ struct vger {
     int curBuffer = 0;
 
     /// Pointer to the next prim to be saved in the buffer.
-    vgerPrim* p;
+    vgerPrim* primPtr;
 
     /// Number of prims we've saved in the buffer.
     int primCount = 0;

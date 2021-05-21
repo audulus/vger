@@ -51,7 +51,7 @@ void vgerDelete(vgerContext vg) {
 
 void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devicePxRatio) {
     vg->curBuffer = (vg->curBuffer+1)%3;
-    vg->p = (vgerPrim*) vg->primBuffers[vg->curBuffer].contents;
+    vg->primPtr = (vgerPrim*) vg->primBuffers[vg->curBuffer].contents;
     vg->primCount = 0;
     vg->cv = (float2*) vg->cvBuffers[vg->curBuffer].contents;
     vg->cvCount = 0;
@@ -98,9 +98,9 @@ vector_int2 vgerTextureSize(vgerContext vg, int texID) {
 void vgerRender(vgerContext vg, const vgerPrim* prim) {
 
     if(vg->primCount < vg->maxPrims) {
-        *vg->p = *prim;
-        vg->p->xform = vg->txStack.back();
-        vg->p++;
+        *vg->primPtr = *prim;
+        vg->primPtr->xform = vg->txStack.back();
+        vg->primPtr++;
         vg->primCount++;
     }
 
@@ -149,12 +149,12 @@ bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint) {
         info.lastFrame = currentFrame;
         for(auto& prim : info.prims) {
             if(primCount < maxPrims) {
-                *p = prim;
-                p->paint = paint;
+                *primPtr = prim;
+                primPtr->paint = paint;
                 // Keep the old image index.
-                p->paint.image = prim.paint.image;
-                p->xform = txStack.back();
-                p++;
+                primPtr->paint.image = prim.paint.image;
+                primPtr->xform = txStack.back();
+                primPtr++;
                 primCount++;
             }
         }
@@ -215,8 +215,8 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPa
                 textInfo.prims.push_back(prim);
 
                 if(primCount < maxPrims) {
-                    *this->p = prim;
-                    this->p++;
+                    *this->primPtr = prim;
+                    this->primPtr++;
                     primCount++;
                 }
             }
@@ -235,11 +235,11 @@ void vger::renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 positio
     
     for(auto& prim : info.prims) {
         if(primCount < maxPrims) {
-            *p = prim;
-            p->xform = txStack.back();
-            p->paint = paint;
-            p->start += n;
-            p++;
+            *primPtr = prim;
+            primPtr->xform = txStack.back();
+            primPtr->paint = paint;
+            primPtr->start += n;
+            primPtr++;
             primCount++;
         }
     }
@@ -468,7 +468,7 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint, bool scan) {
                     prim.verts[i] = prim.texcoords[i];
                 }
 
-                *(p++) = prim;
+                *(primPtr++) = prim;
                 primCount++;
             }
         }
@@ -514,7 +514,7 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint, bool scan) {
                 prim.verts[i] = prim.texcoords[i];
             }
 
-            *(p++) = prim;
+            *(primPtr++) = prim;
             primCount++;
         }
     }
