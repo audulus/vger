@@ -713,7 +713,7 @@ id<MTLTexture> vgerGetCoarseDebugTexture(vgerContext vg) {
     return [vg->tileRenderer getDebugTexture];
 }
 
-uint16_t vgerColorPaint(vgerContext vg, vector_float4 color) {
+uint16_t vgerColorPaint(vgerContext vg, float4 color) {
 
     vgerPaint p;
     p.xform = matrix_identity_float3x3;
@@ -724,26 +724,26 @@ uint16_t vgerColorPaint(vgerContext vg, vector_float4 color) {
     return vg->addPaint(p);
 }
 
-uint16_t vgerLinearGradient(vgerContext vg, vector_float2 start, vector_float2 end,
-                             vector_float4 innerColor, vector_float4 outerColor) {
+uint16_t vgerLinearGradient(vgerContext vg, float2 start, float2 end,
+                             float4 innerColor, float4 outerColor) {
 
     return vg->addPaint(makeLinearGradient(start, end, innerColor, outerColor));
 
 }
 
-uint16_t vgerImagePattern(vgerContext vg, vector_float2 origin, vector_float2 size, float angle,
+uint16_t vgerImagePattern(vgerContext vg, float2 origin, float2 size, float angle,
                            int image, float alpha) {
 
     vgerPaint p;
     p.image = image;
 
-    matrix_float3x3 R = {
+    float3x3 R = {
         float3{ cosf(angle), sinf(angle), 0 },
         float3{ -sinf(angle), cosf(angle), 0 },
         float3{ -origin.x, -origin.y, 1}
     };
 
-    matrix_float3x3 S = {
+    float3x3 S = {
         float3{ 1/size.x, 0, 0 },
         float3{ 0, 1/size.y, 0},
         float3{ 0, 0, 1}
