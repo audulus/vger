@@ -53,7 +53,7 @@ void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devi
     vg->curBuffer = (vg->curBuffer+1)%3;
     vg->primPtr = (vgerPrim*) vg->primBuffers[vg->curBuffer].contents;
     vg->primCount = 0;
-    vg->cv = (float2*) vg->cvBuffers[vg->curBuffer].contents;
+    vg->cvPtr = (float2*) vg->cvBuffers[vg->curBuffer].contents;
     vg->cvCount = 0;
     vg->windowSize = {windowWidth, windowHeight};
     vg->devicePxRatio = devicePxRatio;

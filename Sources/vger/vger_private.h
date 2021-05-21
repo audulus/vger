@@ -86,7 +86,7 @@ struct vger {
     id<MTLBuffer> cvBuffers[3];
 
     /// Pointer to the next cv to be saved in the buffer.
-    float2* cv;
+    float2* cvPtr;
 
     /// Number of cvs we've saved in the current cv buffer.
     int cvCount = 0;
@@ -131,7 +131,7 @@ struct vger {
 
     void addCV(float2 p) {
         if(cvCount < maxCvs) {
-            *(cv++) = p;
+            *(cvPtr++) = p;
             cvCount++;
         }
     }
