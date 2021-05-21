@@ -109,14 +109,14 @@ id<MTLTexture> vgerGetGlyphAtlas(vgerContext);
 id<MTLTexture> vgerGetCoarseDebugTexture(vgerContext);
 #endif
 
-/// Create a paint for a constant color.
+/// Create a paint for a constant color. Returns paint index. Paints are cleared each frame.
 short vgerColorPaint(vgerContext vg, vector_float4 color);
 
-/// Create a paint for a linear gradient.
+/// Create a paint for a linear gradient. Returns paint index. Paints are cleared each frame.
 short vgerLinearGradient(vgerContext vg, vector_float2 start, vector_float2 end,
                              vector_float4 innerColor, vector_float4 outerColor);
 
-/// Create a paint using a texture image.
+/// Create a paint using a texture image. Returns paint index. Paints are cleared each frame.
 short vgerImagePattern(vgerContext vg, vector_float2 origin, vector_float2 size, float angle,
                            int image, float alpha);
 
