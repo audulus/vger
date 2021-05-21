@@ -68,7 +68,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
         printf("accel buffer size: %d MB\n", (int)(maxPrims * sizeof(Accel))/(1024*1024));
 
         auto accelFunc = [lib newFunctionWithName:@"vger_accel"];
-        accelPipeline = [device newComputePipelineStateWithFunction:boundsFunc error:&error];
+        accelPipeline = [device newComputePipelineStateWithFunction:accelFunc error:&error];
         if(error) {
             NSLog(@"error creating pipline state: %@", error);
             abort();
@@ -100,6 +100,16 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
           threadsPerThreadgroup:MTLSizeMake(128, 1, 1)];
     [bounds endEncoding];
 
+    auto accel = [buffer computeCommandEncoder];
+    accel.label = @"accel encoder";
+    [accel setComputePipelineState:accelPipeline];
+    [accel setBuffer:primBuffer offset:0 atIndex:0];
+    [accel setBuffer:cvBuffer offset:0 atIndex:1];
+    [accel setBuffer:accelBuffer offset:0 atIndex:2];
+    [accel dispatchThreadgroups:MTLSizeMake(n, 1, 1)
+          threadsPerThreadgroup:MTLSizeMake(ACCEL_SIZE, ACCEL_SIZE, 1)];
+    [accel endEncoding];
+
     auto enc = [buffer renderCommandEncoderWithDescriptor:pass];
     enc.label = @"render encoder";
     
@@ -109,6 +119,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
     [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
     [enc setFragmentBuffer:cvBuffer offset:0 atIndex:1];
+    [enc setFragmentBuffer:accelBuffer offset:0 atIndex:2];
 
     vgerPrim* p = (vgerPrim*) primBuffer.contents;
     int currentTexture = -1;

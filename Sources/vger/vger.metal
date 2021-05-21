@@ -114,12 +114,12 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
 fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
                               const device float2* cvs,
+                              const device Accel* accels,
                               texture2d<float, access::sample> tex,
                               texture2d<float, access::sample> glyphs) {
 
     device auto& prim = prims[in.primIndex];
-
-
+    device auto& accel = accels[in.primIndex];
 
     if(prim.type == vgerGlyph) {
 
@@ -129,6 +129,19 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 
         auto c = prim.paint.innerColor;
         return float4(c.rgb, c.a * glyphs.sample(glyphSampler, in.t).a);
+    }
+
+    int2 idx = int2(ACCEL_SIZE * (in.t - prim.texcoords[0]) / (prim.texcoords[3] - prim.texcoords[0]));
+
+    char s = accel.s[idx.x][idx.y];
+    if(s == 1) {
+        // Completely outside the prim.
+        //return float4(.5,.5,.5,.5);
+        discard_fragment();
+    } else if(s == -1) {
+        //return float4(.7,.7,.7,.5);
+        // Completely inside.
+        return applyPaint(prim.paint, in.t);
     }
 
     float fw = length(fwidth(in.t));
