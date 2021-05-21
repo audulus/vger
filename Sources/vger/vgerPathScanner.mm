@@ -36,7 +36,7 @@ void vgerPathScanner::begin(vector_float2 *cvs, int count) {
     // Close the path if necessary.
     auto start = segments.front().cvs[0];
     auto end = segments.back().cvs[2];
-    if(!simd_equal(start, end)) {
+    if(!equal(start, end)) {
         segments.push_back({end, (start+end)/2, start});
     }
 
@@ -80,7 +80,7 @@ static void pathElement(void *info, const CGPathElement *element) {
             break;
 
         case kCGPathElementCloseSubpath:
-            if(!simd_equal(p, start)) {
+            if(!equal(p, start)) {
                 scan->segments.push_back({p, (p+start)/2, start});
             }
             p = start;
