@@ -6,15 +6,6 @@
 
 using namespace simd;
 
-Interval vgerPathScanner::Segment::yInterval() const {
-    // Fatten the interval slightly to prevent artifacts by
-    // slightly missing a curve in a band.
-    return {
-        std::min(cvs[0].y, std::min(cvs[1].y, cvs[2].y)) - 1,
-        std::max(cvs[0].y, std::max(cvs[1].y, cvs[2].y)) + 1
-    };
-}
-
 bool operator<(const vgerPathScanner::Node& a, const vgerPathScanner::Node& b) {
     return std::tie(a.y, a.seg, a.end) < std::tie(b.y, b.seg, b.end);
 }

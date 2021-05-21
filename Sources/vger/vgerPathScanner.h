@@ -16,7 +16,23 @@ struct vgerPathScanner {
         int next = -1;
         int previous = -1;
 
-        Interval yInterval() const;
+        Interval yInterval() const {
+            return {
+                // Fatten the interval slightly to prevent artifacts by
+                // slightly missing a curve in a band.
+                std::min(cvs[0].y, std::min(cvs[1].y, cvs[2].y)) - 1,
+                std::max(cvs[0].y, std::max(cvs[1].y, cvs[2].y)) + 1
+            };
+        }
+
+        Interval xInterval() const {
+            return {
+                // Fatten the interval slightly to prevent artifacts by
+                // slightly missing a curve in a band.
+                std::min(cvs[0].x, std::min(cvs[1].x, cvs[2].x)) - 1,
+                std::max(cvs[0].x, std::max(cvs[1].x, cvs[2].x)) + 1
+            };
+        }
     };
 
     struct Node {
