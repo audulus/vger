@@ -216,7 +216,7 @@ static void SplitBezier(float t,
         .paint = vgerColorPaint(vger, float4{0,1,1,1})
     };
 
-    XCTAssertTrue(simd_equal(vgerTransform(vger, float2{0,0}), float2{0, 0}));
+    XCTAssertTrue(equal(vgerTransform(vger, float2{0,0}), float2{0, 0}));
 
     vgerRender(vger, &p);
 
@@ -288,7 +288,7 @@ static void SplitBezier(float t,
     auto idx = vgerAddMTLTexture(vger, tex);
 
     auto sz = vgerTextureSize(vger, idx);
-    XCTAssert(simd_equal(sz, simd_int2(256)));
+    XCTAssert(equal(sz, simd_int2(256)));
 
     vgerPrim p = {
         .type = vgerRect,
@@ -649,32 +649,32 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     auto p = makeLinearGradient(float2{0,0}, float2{1,0}, float4(0), float4(1));
 
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{0,0}), float4(0)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{.5,0}), float4(.5)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{1,0}), float4(1)));
+    XCTAssertTrue(equal(applyPaint(p, float2{0,0}), float4(0)));
+    XCTAssertTrue(equal(applyPaint(p, float2{.5,0}), float4(.5)));
+    XCTAssertTrue(equal(applyPaint(p, float2{1,0}), float4(1)));
 
     p = makeLinearGradient(float2{0,0}, float2{0,1}, float4(0), float4(1));
 
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{0,0}), float4(0)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{0,1}), float4(1)));
+    XCTAssertTrue(equal(applyPaint(p, float2{0,0}), float4(0)));
+    XCTAssertTrue(equal(applyPaint(p, float2{0,1}), float4(1)));
 
     p = makeLinearGradient(float2{1,0}, float2{2,0}, float4(0), float4(1));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{0,0}), float4(0)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{1,0}), float4(0)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{1.5,0}), float4(.5)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{2,0}), float4(1)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{3,0}), float4(1)));
+    XCTAssertTrue(equal(applyPaint(p, float2{0,0}), float4(0)));
+    XCTAssertTrue(equal(applyPaint(p, float2{1,0}), float4(0)));
+    XCTAssertTrue(equal(applyPaint(p, float2{1.5,0}), float4(.5)));
+    XCTAssertTrue(equal(applyPaint(p, float2{2,0}), float4(1)));
+    XCTAssertTrue(equal(applyPaint(p, float2{3,0}), float4(1)));
 
     p = makeLinearGradient(float2{1,2}, float2{2,3}, float4(0), float4(1));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{1,2}), float4(0)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{2,3}), float4(1)));
+    XCTAssertTrue(equal(applyPaint(p, float2{1,2}), float4(0)));
+    XCTAssertTrue(equal(applyPaint(p, float2{2,3}), float4(1)));
 
     p = makeLinearGradient(float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1});
     XCTAssertTrue(simd_length(applyPaint(p, float2{400,100}) - float4{0,1,1,1}) < 0.001f);
 
     auto c = applyPaint(p, float2{425,125});
     XCTAssertTrue(simd_length(c - float4{.5,.5,1,1}) < 0.001f);
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{450,150}), float4{1,0,1,1}));
+    XCTAssertTrue(equal(applyPaint(p, float2{450,150}), float4{1,0,1,1}));
 
 }
 
