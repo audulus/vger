@@ -35,7 +35,10 @@ vger::vger() {
         auto xforms = [device newBufferWithLength:maxPrims * sizeof(simd_float3x3) options:MTLResourceStorageModeShared];
         xforms.label = @"xform buffer";
 
-        scenes[i] = {prims, cvs, xforms};
+        auto paints = [device newBufferWithLength:maxPrims * sizeof(vgerPaint) options:MTLResourceStorageModeShared];
+        paints.label = @"paints buffer";
+
+        scenes[i] = {prims, cvs, xforms, paints};
     }
     txStack.push_back(matrix_identity_float3x3);
 
@@ -62,6 +65,8 @@ void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devi
     vg->cvCount = 0;
     vg->xformPtr = (float3x3*) scene.xforms.contents;
     vg->xformCount = 0;
+    vg->paintPtr = (vgerPaint*) scene.paints.contents;
+    vg->paintCount = 0;
     vg->windowSize = {windowWidth, windowHeight};
     vg->devicePxRatio = devicePxRatio;
 }
@@ -146,7 +151,7 @@ void vgerText(vgerContext vg, const char* str, float4 color, int align) {
     vg->renderText(str, color, align);
 }
 
-bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint, short xform) {
+bool vger::renderCachedText(const TextLayoutKey& key, short paint, short xform) {
 
     // Do we already have text in the cache?
     auto iter = textCache.find(key);
@@ -159,7 +164,7 @@ bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint, sh
                 *primPtr = prim;
                 primPtr->paint = paint;
                 // Keep the old image index.
-                primPtr->paint.image = prim.paint.image;
+                // primPtr->paint.image = prim.paint.image;
                 primPtr->xform = xform;
                 primPtr++;
                 primCount++;
@@ -171,7 +176,7 @@ bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint, sh
     return false;
 }
 
-void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, float2 offset, float scale, short xform) {
+void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, short paint, float2 offset, float scale, short xform) {
 
     CFRange entire = CFRangeMake(0, 0);
 
@@ -217,7 +222,7 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPa
                     .xform = xform
                 };
 
-                prim.paint.image = info.regionIndex;
+                prim.glyph = info.regionIndex;
 
                 textInfo.prims.push_back(prim);
 
@@ -232,7 +237,7 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPa
 
 }
 
-void vger::renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 position, short xform) {
+void vger::renderGlyphPath(CGGlyph glyph, short paint, float2 position, short xform) {
 
     auto& info = glyphPathCache.getInfo(glyph);
     auto n = cvCount;
@@ -275,8 +280,7 @@ bool glyphPaths = false;
 
 void vger::renderText(const char* str, float4 color, int align) {
     
-    auto paint = vgerColorPaint(color);
-
+    auto paint = vgerColorPaint(this, color);
     auto xform = addxform(txStack.back());
     
     if(glyphPaths) {
@@ -371,7 +375,7 @@ CTFrameRef vger::createCTFrame(const char* str, float breakRowWidth) {
 
 void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int align) {
 
-    auto paint = vgerColorPaint(color);
+    auto paint = vgerColorPaint(this, color);
     auto scale = averageScale(txStack.back()) * devicePxRatio;
     auto key = TextLayoutKey{std::string(str), scale, align, breakRowWidth};
     auto xform = addxform(txStack.back());
@@ -419,11 +423,11 @@ void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, flo
 
 }
 
-void vgerFillPath(vgerContext vg, float2* cvs, int count, vgerPaint paint, bool scan) {
+void vgerFillPath(vgerContext vg, float2* cvs, int count, short paint, bool scan) {
     vg->fillPath(cvs, count, paint, scan);
 }
 
-void vger::fillPath(float2* cvs, int count, vgerPaint paint, bool scan) {
+void vger::fillPath(float2* cvs, int count, short paint, bool scan) {
 
     if(count < 3) {
         return;
@@ -532,11 +536,11 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint, bool scan) {
     }
 }
 
-void vgerFillCubicPath(vgerContext vg, float2* cvs, int count, vgerPaint paint, bool scan) {
+void vgerFillCubicPath(vgerContext vg, float2* cvs, int count, short paint, bool scan) {
     vg->fillCubicPath(cvs, count, paint, scan);
 }
 
-void vger::fillCubicPath(float2* cvs, int count, vgerPaint paint, bool scan) {
+void vger::fillCubicPath(float2* cvs, int count, short paint, bool scan) {
 
     points.resize(0);
 
@@ -577,7 +581,7 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
     for(int i=0;i<primCount;++i) {
         auto& prim = primp[i];
         if(prim.type == vgerGlyph) {
-            auto r = glyphRects[prim.paint.image-1];
+            auto r = glyphRects[prim.glyph-1];
             for(int i=0;i<4;++i) {
                 prim.texcoords[i] += float2{float(r.x), float(r.y)};
             }
@@ -671,7 +675,7 @@ id<MTLTexture> vgerGetCoarseDebugTexture(vgerContext vg) {
     return [vg->tileRenderer getDebugTexture];
 }
 
-vgerPaint vgerColorPaint(vector_float4 color) {
+short vgerColorPaint(vgerContext vg, vector_float4 color) {
 
     vgerPaint p;
     p.xform = matrix_identity_float3x3;
@@ -679,10 +683,10 @@ vgerPaint vgerColorPaint(vector_float4 color) {
     p.outerColor = color;
     p.image = -1;
 
-    return p;
+    return vg->addPaint(p);
 }
 
-vgerPaint vgerLinearGradient(vector_float2 start, vector_float2 end,
+short vgerLinearGradient(vgerContext vg, vector_float2 start, vector_float2 end,
                              vector_float4 innerColor, vector_float4 outerColor) {
 
     vgerPaint p;
@@ -703,11 +707,11 @@ vgerPaint vgerLinearGradient(vector_float2 start, vector_float2 end,
     p.outerColor = outerColor;
     p.image = -1;
 
-    return p;
+    return vg->addPaint(p);
 
 }
 
-vgerPaint vgerImagePattern(vector_float2 origin, vector_float2 size, float angle,
+short vgerImagePattern(vgerContext vg, vector_float2 origin, vector_float2 size, float angle,
                            int image, float alpha) {
 
     vgerPaint p;
@@ -729,5 +733,5 @@ vgerPaint vgerImagePattern(vector_float2 origin, vector_float2 size, float angle
 
     p.innerColor = p.outerColor = float4{1,1,1,alpha};
 
-    return p;
+    return vg->addPaint(p);
 }

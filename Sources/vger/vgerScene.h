@@ -9,6 +9,7 @@ struct vgerScene {
     id<MTLBuffer> prims;  // vgerPrim
     id<MTLBuffer> cvs;    // float2
     id<MTLBuffer> xforms; // float3x3
+    id<MTLBuffer> paints; // vgerPaint
 };
 
 #endif /* scene_h */

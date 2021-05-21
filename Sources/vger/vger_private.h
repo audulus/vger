@@ -98,6 +98,12 @@ struct vger {
     /// Pointer to the next transform.
     matrix_float3x3* xformPtr;
 
+    /// How many paints?
+    short paintCount = 0;
+
+    /// Pointer to the next paint.
+    vgerPaint* paintPtr;
+
     /// Atlas for finding glyph images.
     vgerGlyphCache* glyphCache;
 
@@ -148,26 +154,34 @@ struct vger {
         return 0;
     }
 
+    short addPaint(const vgerPaint& paint) {
+        if(paintCount < maxPrims) {
+            *(paintPtr++) = paint;
+            return paintCount++;
+        }
+        return 0;
+    }
+
     CTLineRef createCTLine(const char* str);
     CTFrameRef createCTFrame(const char* str, float breakRowWidth);
 
-    void fillPath(float2* cvs, int count, vgerPaint paint, bool scan);
+    void fillPath(float2* cvs, int count, short paint, bool scan);
 
-    void fillCubicPath(float2* cvs, int count, vgerPaint paint, bool scan);
+    void fillCubicPath(float2* cvs, int count, short paint, bool scan);
 
     void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 
     void encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture);
 
-    bool renderCachedText(const TextLayoutKey& key, const vgerPaint& paint, short xform);
+    bool renderCachedText(const TextLayoutKey& key, short paint, short xform);
 
-    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, float2 offset, float scale, short xform);
+    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, short paint, float2 offset, float scale, short xform);
 
     void renderText(const char* str, float4 color, int align);
 
     void renderTextBox(const char* str, float breakRowWidth, float4 color, int align);
 
-    void renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 position, short xform);
+    void renderGlyphPath(CGGlyph glyph, short paint, float2 position, short xform);
 };
 
 #endif /* vger_private_h */

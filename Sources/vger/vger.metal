@@ -115,12 +115,12 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
 fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
                               const device float2* cvs,
+                              const device vgerPaint* paints,
                               texture2d<float, access::sample> tex,
                               texture2d<float, access::sample> glyphs) {
 
     device auto& prim = prims[in.primIndex];
-
-
+    device auto& paint = paints[prim.paint];
 
     if(prim.type == vgerGlyph) {
 
@@ -128,7 +128,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                                           min_filter::linear,
                                           coord::pixel);
 
-        auto c = prim.paint.innerColor;
+        auto c = paint.innerColor;
         return float4(c.rgb, c.a * glyphs.sample(glyphSampler, in.t).a);
     }
 
@@ -141,14 +141,14 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 
     float4 color;
 
-    if(prim.paint.image == -1) {
-        color = applyPaint(prim.paint, in.t);
+    if(paint.image == -1) {
+        color = applyPaint(paint, in.t);
     } else {
 
         constexpr sampler textureSampler (mag_filter::linear,
                                           min_filter::linear);
 
-        auto t = (prim.paint.xform * float3(in.t,1)).xy;
+        auto t = (paint.xform * float3(in.t,1)).xy;
         t.y = 1.0 - t.y;
         color = tex.sample(textureSampler, t);
     }
@@ -166,8 +166,9 @@ kernel void vger_tile_clear(device uint *tileLengths [[buffer(0)]],
 fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
                               const device float2* cvs,
+                              const device vgerPaint* paints,
                               device Tile *tiles,
-                              device uint *tileLengths [[ raster_order_group(0) ]]) {
+                              device uint *tileLengths [[ /*raster_order_group(0)*/ ]]) {
 
     device auto& prim = prims[in.primIndex];
     uint x = (uint) in.position.x;
@@ -234,7 +235,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
     }
 
     tile.append(vgerCmdSolid{vgerOpSolid,
-        pack_float_to_srgb_unorm4x8(prim.paint.innerColor)},
+        pack_float_to_srgb_unorm4x8(paints[prim.paint].innerColor)},
                 length);
 
     //}

@@ -80,8 +80,11 @@ typedef struct {
     /// Number of control vertices (vgerCurve and vgerPathFill)
     int count;
 
-    /// How to shade the primitive.
-    vgerPaint paint;
+    /// Index of paint applied to drawing region.
+    short paint;
+
+    /// Glyph region index.
+    short glyph;
     
     /// Vertices of the quad we're rendering.
     vector_float2 verts[4];

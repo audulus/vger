@@ -96,17 +96,19 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:2];
     [enc setFragmentBuffer:scene.prims offset:0 atIndex:0];
     [enc setFragmentBuffer:scene.cvs offset:0 atIndex:1];
+    [enc setFragmentBuffer:scene.paints offset:0 atIndex:2];
 
     vgerPrim* p = (vgerPrim*) scene.prims.contents;
+    vgerPaint* paints = (vgerPaint*) scene.paints.contents;
     int currentTexture = -1;
     int m = 0;
     int offset = 0;
     for(int i=0;i<n;++i) {
 
-        int imageID = p->paint.image;
+        int imageID = paints[p->paint].image;
 
         // Texture ID changed, render.
-        if(p->type != vgerGlyph and imageID != -1 and imageID != currentTexture) {
+        if(imageID != -1 and imageID != currentTexture) {
 
             if(m) {
                 [enc setVertexBufferOffset:offset atIndex:0];

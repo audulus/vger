@@ -157,8 +157,9 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [enc setVertexBytes:&maxWindowSize length:sizeof(maxWindowSize) atIndex:2];
     [enc setFragmentBuffer:scene.prims offset:0 atIndex:0];
     [enc setFragmentBuffer:scene.cvs offset:0 atIndex:1];
-    [enc setFragmentBuffer:tileBuffer offset:0 atIndex:2];
-    [enc setFragmentBuffer:lengthBuffer offset:0 atIndex:3];
+    [enc setFragmentBuffer:scene.paints offset:0 atIndex:2];
+    [enc setFragmentBuffer:tileBuffer offset:0 atIndex:3];
+    [enc setFragmentBuffer:lengthBuffer offset:0 atIndex:4];
 
     // XXX: how do we deal with rendering from textures?
     [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip

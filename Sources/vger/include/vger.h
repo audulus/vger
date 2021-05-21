@@ -71,10 +71,10 @@ void vgerTextBox(vgerContext, const char* str, float breakRowWidth, vector_float
 void vgerTextBoxBounds(vgerContext, const char* str, float breakRowWidth, vector_float2* min, vector_float2* max, int align);
 
 /// Fill a path bounded by quadratic bezier segments.
-void vgerFillPath(vgerContext, vector_float2* cvs, int count, vgerPaint paint, bool scan);
+void vgerFillPath(vgerContext, vector_float2* cvs, int count, short paint, bool scan);
 
 /// Fill a path bounded by cubic bezier segments (crude approximation)).
-void vgerFillCubicPath(vgerContext vg, vector_float2* cvs, int count, vgerPaint paint, bool scan);
+void vgerFillCubicPath(vgerContext vg, vector_float2* cvs, int count, short paint, bool scan);
 
 /// Translates current coordinate system.
 void vgerTranslate(vgerContext, vector_float2 t);
@@ -110,14 +110,14 @@ id<MTLTexture> vgerGetCoarseDebugTexture(vgerContext);
 #endif
 
 /// Create a paint for a constant color.
-vgerPaint vgerColorPaint(vector_float4 color);
+short vgerColorPaint(vgerContext vg, vector_float4 color);
 
 /// Create a paint for a linear gradient.
-vgerPaint vgerLinearGradient(vector_float2 start, vector_float2 end,
+short vgerLinearGradient(vgerContext vg, vector_float2 start, vector_float2 end,
                              vector_float4 innerColor, vector_float4 outerColor);
 
 /// Create a paint using a texture image.
-vgerPaint vgerImagePattern(vector_float2 origin, vector_float2 size, float angle,
+short vgerImagePattern(vgerContext vg, vector_float2 origin, vector_float2 size, float angle,
                            int image, float alpha);
 
 #ifdef __cplusplus
