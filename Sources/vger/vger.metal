@@ -64,6 +64,7 @@ kernel void vger_prune(uint gid [[thread_position_in_grid]],
     }
 }
 
+/// Computes an 8x8 acceleration structure for a primitive.
 kernel void vger_accel(uint2 gid [[thread_position_in_threadgroup]],
                        uint2 tgid [[threadgroup_position_in_grid]],
                        const device vgerPrim* prims,
