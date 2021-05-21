@@ -25,6 +25,9 @@ vger::vger() {
     renderer = [[vgerRenderer alloc] initWithDevice:device];
     glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
     printf("prim buffer size: %d MB\n", (int)(maxPrims * sizeof(vgerPrim))/(1024*1024));
+    printf("cv buffer size: %d MB\n", (int)(maxCvs * sizeof(float2))/(1024*1024));
+    printf("xform buffer size: %d MB\n", (int)(maxPrims * sizeof(simd_float3x3))/(1024*1024));
+    printf("paints buffer size: %d MB\n", (int)(maxPrims * sizeof(vgerPaint))/(1024*1024));
     for(int i=0;i<3;++i) {
         auto prims = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
                                        options:MTLResourceStorageModeShared];
