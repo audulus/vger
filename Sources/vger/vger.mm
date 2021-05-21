@@ -26,14 +26,16 @@ vger::vger() {
     glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
     printf("prim buffer size: %d MB\n", (int)(maxPrims * sizeof(vgerPrim))/(1024*1024));
     for(int i=0;i<3;++i) {
-        primBuffers[i] = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
+        auto prims = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
                                        options:MTLResourceStorageModeShared];
-        primBuffers[i].label = @"prim buffer";
-        cvBuffers[i] = [device newBufferWithLength:maxCvs * sizeof(float2)
+        prims.label = @"prim buffer";
+        auto cvs = [device newBufferWithLength:maxCvs * sizeof(float2)
                                        options:MTLResourceStorageModeShared];
-        cvBuffers[i].label = @"cv buffer";
-        xformBuffers[i] = [device newBufferWithLength:maxPrims * sizeof(simd_float3x3) options:MTLResourceStorageModeShared];
-        xformBuffers[i].label = @"xform buffer";
+        cvs.label = @"cv buffer";
+        auto xforms = [device newBufferWithLength:maxPrims * sizeof(simd_float3x3) options:MTLResourceStorageModeShared];
+        xforms.label = @"xform buffer";
+
+        scenes[i] = {prims, cvs, xforms};
     }
     txStack.push_back(matrix_identity_float3x3);
 
@@ -53,11 +55,12 @@ void vgerDelete(vgerContext vg) {
 
 void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devicePxRatio) {
     vg->curBuffer = (vg->curBuffer+1)%3;
-    vg->primPtr = (vgerPrim*) vg->primBuffers[vg->curBuffer].contents;
+    auto& scene = vg->scenes[vg->curBuffer];
+    vg->primPtr = (vgerPrim*) scene.prims.contents;
     vg->primCount = 0;
-    vg->cvPtr = (float2*) vg->cvBuffers[vg->curBuffer].contents;
+    vg->cvPtr = (float2*) scene.cvs.contents;
     vg->cvCount = 0;
-    vg->xformPtr = (float3x3*) vg->xformBuffers[vg->curBuffer].contents;
+    vg->xformPtr = (float3x3*) scene.xforms.contents;
     vg->xformCount = 0;
     vg->windowSize = {windowWidth, windowHeight};
     vg->devicePxRatio = devicePxRatio;
@@ -513,7 +516,7 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint, bool scan) {
                 addCV(start);
             }
 
-            auto bounds = sdPrimBounds(prim, (float2*) cvBuffers[curBuffer].contents).inset(-1);
+            auto bounds = sdPrimBounds(prim, (float2*) scenes[curBuffer].cvs.contents).inset(-1);
             prim.texcoords[0] = bounds.min;
             prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
             prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
@@ -569,7 +572,8 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
     [glyphCache update:buf];
 
     auto glyphRects = [glyphCache getRects];
-    auto primp = (vgerPrim*) primBuffers[curBuffer].contents;
+    auto& scene = scenes[curBuffer];
+    auto primp = (vgerPrim*) scene.prims.contents;
     for(int i=0;i<primCount;++i) {
         auto& prim = primp[i];
         if(prim.type == vgerGlyph) {
@@ -582,9 +586,7 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
 
     [renderer encodeTo:buf
                   pass:pass
-                 prims:primBuffers[curBuffer]
-                   cvs:cvBuffers[curBuffer]
-                xforms:xformBuffers[curBuffer]
+                 scene:scene
                  count:primCount
               textures:textures
           glyphTexture:[glyphCache getAltas]
@@ -611,9 +613,7 @@ void vger::encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTextu
     }
 
     [tileRenderer encodeTo:buf
-                     prims:primBuffers[curBuffer]
-                       cvs:cvBuffers[curBuffer]
-                    xforms:xformBuffers[curBuffer]
+                     scene:scenes[curBuffer]
                      count:primCount
                   textures:textures
               glyphTexture:[glyphCache getAltas]

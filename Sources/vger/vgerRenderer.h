@@ -4,6 +4,7 @@
 #import <Metal/Metal.h>
 #include <simd/simd.h>
 #include "vger_types.h"
+#include "vgerScene.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,9 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param texture texture to sample for textured prims
 - (void) encodeTo:(id<MTLCommandBuffer>) buffer
              pass:(MTLRenderPassDescriptor*) pass
-            prims:(id<MTLBuffer>) primBuffer
-              cvs:(id<MTLBuffer>) cvBuffer
-           xforms:(id<MTLBuffer>)xformBuffer
+            scene:(vgerScene) scene
             count:(int)n
          textures:(NSArray<id<MTLTexture>>*)textures
      glyphTexture:(id<MTLTexture>)glyphTexture

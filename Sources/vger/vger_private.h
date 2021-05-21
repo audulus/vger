@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include "vgerPathScanner.h"
 #include "vgerGlyphPathCache.h"
+#include "vgerScene.h"
 
 @class vgerRenderer;
 @class vgerTileRenderer;
@@ -67,8 +68,8 @@ struct vger {
     /// Transform matrix stack.
     std::vector<matrix_float3x3> txStack;
 
-    /// We cycle through three prim buffers for streaming.
-    id<MTLBuffer> primBuffers[3];
+    /// We cycle through three scenes for streaming.
+    vgerScene scenes[3];
 
     /// The prim buffer we're currently using.
     int curBuffer = 0;
@@ -82,9 +83,6 @@ struct vger {
     /// Prim buffer capacity.
     int maxPrims = 65536;
 
-    /// Cycle through 3 cv buffers for streaming.
-    id<MTLBuffer> cvBuffers[3];
-
     /// Pointer to the next cv to be saved in the buffer.
     float2* cvPtr;
 
@@ -93,9 +91,6 @@ struct vger {
 
     /// CV buffer capacity.
     int maxCvs = 1024*1024;
-
-    /// Buffer for sharing transforms between prims.
-    id<MTLBuffer> xformBuffers[3];
 
     /// How many xforms?
     short xformCount = 0;
