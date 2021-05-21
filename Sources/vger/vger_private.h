@@ -191,11 +191,11 @@ inline vgerPaint makeLinearGradient(float2 start, float2 end,
 
     // Calculate transform aligned to the line
     float2 d = end - start;
-    if(simd_length(d) < 0.0001f) {
+    if(length(d) < 0.0001f) {
         d = float2{0,1};
     }
 
-    p.xform = simd_inverse(float3x3{
+    p.xform = inverse(float3x3{
         float3{d.x, d.y, 0},
         float3{-d.y, d.x, 0},
         float3{start.x, start.y, 1}
