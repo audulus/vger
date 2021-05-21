@@ -664,7 +664,7 @@ void vger::encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTextu
 
 }
 
-void vgerTranslate(vgerContext vg, vector_float2 t) {
+void vgerTranslate(vgerContext vg, float2 t) {
     auto M = matrix_identity_float3x3;
     M.columns[2] = vector3(t, 1);
 
@@ -673,7 +673,7 @@ void vgerTranslate(vgerContext vg, vector_float2 t) {
 }
 
 /// Scales current coordinate system.
-void vgerScale(vgerContext vg, vector_float2 s) {
+void vgerScale(vgerContext vg, float2 s) {
     auto M = matrix_identity_float3x3;
     M.columns[0].x = s.x;
     M.columns[1].y = s.y;
@@ -683,7 +683,7 @@ void vgerScale(vgerContext vg, vector_float2 s) {
 }
 
 /// Transforms a point according to the current transformation.
-vector_float2 vgerTransform(vgerContext vg, vector_float2 p) {
+float2 vgerTransform(vgerContext vg, float2 p) {
     auto& M = vg->txStack.back();
     auto q = matrix_multiply(M, float3{p.x,p.y,1.0});
     return {q.x/q.z, q.y/q.z};
