@@ -154,7 +154,7 @@ struct vger {
         return 0;
     }
 
-    short addPaint(const vgerPaint& paint) {
+    uint16_t addPaint(const vgerPaint& paint) {
         if(paintCount < maxPrims) {
             *(paintPtr++) = paint;
             return paintCount++;
