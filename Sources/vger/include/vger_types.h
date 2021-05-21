@@ -90,7 +90,7 @@ typedef struct {
     vector_float2 verts[4];
 
     /// Index of transform applied to drawing region.
-    short xform;
+    uint16_t xform;
     
     /// Texture coordinates of quad.
     vector_float2 texcoords[4];

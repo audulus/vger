@@ -93,7 +93,7 @@ struct vger {
     int maxCvs = 1024*1024;
 
     /// How many xforms?
-    short xformCount = 0;
+    uint16_t xformCount = 0;
 
     /// Pointer to the next transform.
     matrix_float3x3* xformPtr;
@@ -146,7 +146,7 @@ struct vger {
         }
     }
 
-    short addxform(const matrix_float3x3& M) {
+    uint16_t addxform(const matrix_float3x3& M) {
         if(xformCount < maxPrims) {
             *(xformPtr++) = M;
             return xformCount++;
@@ -173,15 +173,15 @@ struct vger {
 
     void encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture);
 
-    bool renderCachedText(const TextLayoutKey& key, uint16_t paint, short xform);
+    bool renderCachedText(const TextLayoutKey& key, uint16_t paint, uint16_t xform);
 
-    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, uint16_t paint, float2 offset, float scale, short xform);
+    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, uint16_t paint, float2 offset, float scale, uint16_t xform);
 
     void renderText(const char* str, float4 color, int align);
 
     void renderTextBox(const char* str, float breakRowWidth, float4 color, int align);
 
-    void renderGlyphPath(CGGlyph glyph, uint16_t paint, float2 position, short xform);
+    void renderGlyphPath(CGGlyph glyph, uint16_t paint, float2 position, uint16_t xform);
 };
 
 #endif /* vger_private_h */
