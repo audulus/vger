@@ -32,6 +32,8 @@ vger::vger() {
         cvBuffers[i] = [device newBufferWithLength:maxCvs * sizeof(float2)
                                        options:MTLResourceStorageModeShared];
         cvBuffers[i].label = @"cv buffer";
+        xformBuffers[i] = [device newBufferWithLength:maxPrims * sizeof(simd_float3x3) options:MTLResourceStorageModeShared];
+        xformBuffers[i].label = @"xform buffer";
     }
     txStack.push_back(matrix_identity_float3x3);
 
@@ -55,6 +57,8 @@ void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devi
     vg->primCount = 0;
     vg->cvPtr = (float2*) vg->cvBuffers[vg->curBuffer].contents;
     vg->cvCount = 0;
+    vg->xformPtr = (float3x3*) vg->xformBuffers[vg->curBuffer].contents;
+    vg->xformCount = 0;
     vg->windowSize = {windowWidth, windowHeight};
     vg->devicePxRatio = devicePxRatio;
 }
@@ -99,7 +103,7 @@ void vgerRender(vgerContext vg, const vgerPrim* prim) {
 
     if(vg->primCount < vg->maxPrims) {
         *vg->primPtr = *prim;
-        vg->primPtr->xform = vg->txStack.back();
+        vg->primPtr->xform = vg->addxform(vg->txStack.back());
         vg->primPtr++;
         vg->primCount++;
     }
@@ -139,7 +143,7 @@ void vgerText(vgerContext vg, const char* str, float4 color, int align) {
     vg->renderText(str, color, align);
 }
 
-bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint) {
+bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint, short xform) {
 
     // Do we already have text in the cache?
     auto iter = textCache.find(key);
@@ -153,7 +157,7 @@ bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint) {
                 primPtr->paint = paint;
                 // Keep the old image index.
                 primPtr->paint.image = prim.paint.image;
-                primPtr->xform = txStack.back();
+                primPtr->xform = xform;
                 primPtr++;
                 primCount++;
             }
@@ -164,7 +168,7 @@ bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint) {
     return false;
 }
 
-void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, float2 offset, float scale) {
+void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, float2 offset, float scale, short xform) {
 
     CFRange entire = CFRangeMake(0, 0);
 
@@ -207,7 +211,7 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPa
                         float2{GLYPH_MARGIN,   originY-h},
                         float2{GLYPH_MARGIN+w, originY-h},
                     },
-                    .xform = txStack.back()
+                    .xform = xform
                 };
 
                 prim.paint.image = info.regionIndex;
@@ -225,7 +229,7 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPa
 
 }
 
-void vger::renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 position) {
+void vger::renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 position, short xform) {
 
     auto& info = glyphPathCache.getInfo(glyph);
     auto n = cvCount;
@@ -236,7 +240,7 @@ void vger::renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 positio
     for(auto& prim : info.prims) {
         if(primCount < maxPrims) {
             *primPtr = prim;
-            primPtr->xform = txStack.back();
+            primPtr->xform = xform;
             primPtr->paint = paint;
             primPtr->start += n;
             primPtr++;
@@ -269,6 +273,8 @@ bool glyphPaths = false;
 void vger::renderText(const char* str, float4 color, int align) {
     
     auto paint = vgerColorPaint(color);
+
+    auto xform = addxform(txStack.back());
     
     if(glyphPaths) {
 
@@ -289,7 +295,7 @@ void vger::renderText(const char* str, float4 color, int align) {
                 CGRect r = CTRunGetImageBounds(run, nil, CFRangeMake(i, 1));
                 float2 p = float2{float(r.origin.x), float(r.origin.y)} + offset;
 
-                renderGlyphPath(glyphs[i], paint, p);
+                renderGlyphPath(glyphs[i], paint, p, xform);
             }
         }
 
@@ -300,7 +306,7 @@ void vger::renderText(const char* str, float4 color, int align) {
         auto scale = averageScale(txStack.back()) * devicePxRatio;
         auto key = TextLayoutKey{std::string(str), scale, align};
         
-        if(renderCachedText(key, paint)) {
+        if(renderCachedText(key, paint, xform)) {
             return;
         }
 
@@ -310,7 +316,7 @@ void vger::renderText(const char* str, float4 color, int align) {
         auto& textInfo = textCache[key];
         textInfo.lastFrame = currentFrame;
 
-        renderTextLine(line, textInfo, paint, alignOffset(line, align), scale);
+        renderTextLine(line, textInfo, paint, alignOffset(line, align), scale, xform);
 
         CFRelease(line);
         
@@ -365,8 +371,9 @@ void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int
     auto paint = vgerColorPaint(color);
     auto scale = averageScale(txStack.back()) * devicePxRatio;
     auto key = TextLayoutKey{std::string(str), scale, align, breakRowWidth};
+    auto xform = addxform(txStack.back());
 
-    if(renderCachedText(key, paint)) {
+    if(renderCachedText(key, paint, xform)) {
         return;
     }
 
@@ -384,7 +391,7 @@ void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int
     for(id obj in lines) {
         CTLineRef line = (__bridge CTLineRef)obj;
         auto o = lineOrigins[lineIndex++];
-        renderTextLine(line, textInfo, paint, float2{float(o.x),float(o.y)-big}, scale);
+        renderTextLine(line, textInfo, paint, float2{float(o.x),float(o.y)-big}, scale, xform);
     }
 
     CFRelease(frame);
@@ -419,6 +426,8 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint, bool scan) {
         return;
     }
 
+    auto xform = addxform(txStack.back());
+
     if(scan) {
 
         scanner.begin(cvs, count);
@@ -430,7 +439,7 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint, bool scan) {
             vgerPrim prim = {
                 .type = vgerPathFill,
                 .paint = paint,
-                .xform = txStack.back(),
+                .xform = xform,
                 .start = cvCount,
                 .count = n
             };
@@ -482,7 +491,7 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint, bool scan) {
         vgerPrim prim = {
             .type = vgerPathFill,
             .paint = paint,
-            .xform = txStack.back(),
+            .xform = xform,
             .start = cvCount,
             .count = (count-1)/2 + !closed,
             .width = 0
@@ -575,6 +584,7 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
                   pass:pass
                  prims:primBuffers[curBuffer]
                    cvs:cvBuffers[curBuffer]
+                xforms:xformBuffers[curBuffer]
                  count:primCount
               textures:textures
           glyphTexture:[glyphCache getAltas]
@@ -603,6 +613,7 @@ void vger::encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTextu
     [tileRenderer encodeTo:buf
                      prims:primBuffers[curBuffer]
                        cvs:cvBuffers[curBuffer]
+                    xforms:xformBuffers[curBuffer]
                      count:primCount
                   textures:textures
               glyphTexture:[glyphCache getAltas]

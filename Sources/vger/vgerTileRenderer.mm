@@ -120,6 +120,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 - (void) encodeTo:(id<MTLCommandBuffer>) buffer
             prims:(id<MTLBuffer>) primBuffer
               cvs:(id<MTLBuffer>) cvBuffer
+           xforms:(id<MTLBuffer>) xformBuffer
             count:(int)n
          textures:(NSArray<id<MTLTexture>>*)textures
      glyphTexture:(id<MTLTexture>)glyphTexture
@@ -153,8 +154,9 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
     [enc setRenderPipelineState:coarsePipeline];
     [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
+    [enc setVertexBuffer:xformBuffer offset:0 atIndex:1];
     float2 maxWindowSize{MAX_TILES_WIDTH * TILE_SIZE_PIXELS, MAX_TILES_WIDTH * TILE_SIZE_PIXELS};
-    [enc setVertexBytes:&maxWindowSize length:sizeof(maxWindowSize) atIndex:1];
+    [enc setVertexBytes:&maxWindowSize length:sizeof(maxWindowSize) atIndex:2];
     [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
     [enc setFragmentBuffer:cvBuffer offset:0 atIndex:1];
     [enc setFragmentBuffer:tileBuffer offset:0 atIndex:2];

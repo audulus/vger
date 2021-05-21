@@ -124,7 +124,7 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
 
 - (void) testSizes {
     XCTAssertEqual(sizeof(vgerPaint), 96);
-    XCTAssertEqual(sizeof(vgerPrim), 256);
+    XCTAssertEqual(sizeof(vgerPrim), 224);
 }
 
 - (void) testBasic {

@@ -68,6 +68,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
              pass:(MTLRenderPassDescriptor*) pass
             prims:(id<MTLBuffer>) primBuffer
               cvs:(id<MTLBuffer>) cvBuffer
+           xforms:(id<MTLBuffer>) xformBuffer
             count:(int)n
          textures:(NSArray<id<MTLTexture>>*)textures
      glyphTexture:(id<MTLTexture>)glyphTexture
@@ -91,9 +92,10 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     enc.label = @"render encoder";
     
     [enc setRenderPipelineState:pipeline];
-    [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:1];
     [enc setFragmentTexture:glyphTexture atIndex:1];
     [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
+    [enc setVertexBuffer:xformBuffer offset:0 atIndex:1];
+    [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:2];
     [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
     [enc setFragmentBuffer:cvBuffer offset:0 atIndex:1];
 

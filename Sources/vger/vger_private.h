@@ -94,6 +94,15 @@ struct vger {
     /// CV buffer capacity.
     int maxCvs = 1024*1024;
 
+    /// Buffer for sharing transforms between prims.
+    id<MTLBuffer> xformBuffers[3];
+
+    /// How many xforms?
+    short xformCount = 0;
+
+    /// Pointer to the next transform.
+    matrix_float3x3* xformPtr;
+
     /// Atlas for finding glyph images.
     vgerGlyphCache* glyphCache;
 
@@ -136,6 +145,14 @@ struct vger {
         }
     }
 
+    short addxform(const matrix_float3x3& M) {
+        if(xformCount < maxPrims) {
+            *(xformPtr++) = M;
+            return xformCount++;
+        }
+        return 0;
+    }
+
     CTLineRef createCTLine(const char* str);
     CTFrameRef createCTFrame(const char* str, float breakRowWidth);
 
@@ -147,15 +164,15 @@ struct vger {
 
     void encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture);
 
-    bool renderCachedText(const TextLayoutKey& key, const vgerPaint& paint);
+    bool renderCachedText(const TextLayoutKey& key, const vgerPaint& paint, short xform);
 
-    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, float2 offset, float scale);
+    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, float2 offset, float scale, short xform);
 
     void renderText(const char* str, float4 color, int align);
 
     void renderTextBox(const char* str, float breakRowWidth, float4 color, int align);
 
-    void renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 position);
+    void renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 position, short xform);
 };
 
 #endif /* vger_private_h */

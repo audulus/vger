@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) encodeTo:(id<MTLCommandBuffer>) buffer
             prims:(id<MTLBuffer>) primBuffer
               cvs:(id<MTLBuffer>) cvBuffer
+           xforms:(id<MTLBuffer>) xformBuffer
             count:(int)n
          textures:(NSArray<id<MTLTexture>>*)textures
      glyphTexture:(id<MTLTexture>)glyphTexture

@@ -86,12 +86,8 @@ typedef struct {
     /// Vertices of the quad we're rendering.
     vector_float2 verts[4];
 
-    /// Transform applied to drawing region.
-#ifdef __METAL_VERSION__
-    float3x3 xform;
-#else
-    matrix_float3x3 xform;
-#endif
+    /// Index of transform applied to drawing region.
+    short xform;
     
     /// Texture coordinates of quad.
     vector_float2 texcoords[4];
