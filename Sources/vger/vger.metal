@@ -75,7 +75,7 @@ kernel void vger_accel(uint2 gid [[thread_position_in_threadgroup]],
 
     float2 primMin = prim.texcoords[0];
     float2 primMax = prim.texcoords[3];
-    float2 sz = (primMax - primMin)/8;
+    float2 sz = (primMax - primMin)/ACCEL_SIZE;
     float l = length_squared(sz);
 
     float2 t = (float2(gid)+.5) * sz + primMin;

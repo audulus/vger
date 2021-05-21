@@ -2,6 +2,7 @@
 
 #import "vgerRenderer.h"
 #import "vgerBundleHelper.h"
+#import "accel.h"
 
 static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
@@ -23,6 +24,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 @interface vgerRenderer() {
     id<MTLRenderPipelineState> pipeline;
     id<MTLComputePipelineState> boundsPipeline;
+    id<MTLBuffer> accelBuffer;
+    id<MTLComputePipelineState> accelPipeline;
 }
 @end
 
@@ -55,6 +58,17 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
         auto boundsFunc = [lib newFunctionWithName:@"vger_bounds"];
         boundsPipeline = [device newComputePipelineStateWithFunction:boundsFunc error:&error];
+        if(error) {
+            NSLog(@"error creating pipline state: %@", error);
+            abort();
+        }
+
+        int maxPrims = 65536;
+        accelBuffer = [device newBufferWithLength:maxPrims*sizeof(Accel) options:MTLResourceStorageModePrivate];
+        printf("accel buffer size: %d MB\n", (int)(maxPrims * sizeof(Accel))/(1024*1024));
+
+        auto accelFunc = [lib newFunctionWithName:@"vger_accel"];
+        accelPipeline = [device newComputePipelineStateWithFunction:boundsFunc error:&error];
         if(error) {
             NSLog(@"error creating pipline state: %@", error);
             abort();
