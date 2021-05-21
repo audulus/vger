@@ -282,6 +282,11 @@ struct BBox {
         return {min+d, max-d};
     }
 
+    void expand(float2 p) {
+        min = simd::min(min, p);
+        max = simd::max(max, p);
+    }
+
     float2 size() const { return max - min; }
 };
 
@@ -314,8 +319,7 @@ inline BBox sdPrimBounds(const DEVICE vgerPrim& prim, const DEVICE float2* cvs) 
         case vgerPathFill: {
             b = {FLT_MAX, -FLT_MAX};
             for(int i=0;i<prim.count*3;++i) {
-                b.min = min(b.min, cvs[prim.start+i]);
-                b.max = max(b.max, cvs[prim.start+i]);
+                b.expand(cvs[prim.start+i]);
             }
             break;
         }
