@@ -7,7 +7,7 @@
 using namespace simd;
 
 bool operator<(const vgerPathScanner::Node& a, const vgerPathScanner::Node& b) {
-    return std::tie(a.y, a.seg, a.end) < std::tie(b.y, b.seg, b.end);
+    return std::tie(a.coord, a.seg, a.end) < std::tie(b.coord, b.seg, b.end);
 }
 
 void vgerPathScanner::_init() {
@@ -106,11 +106,11 @@ void vgerPathScanner::begin(CGPathRef path) {
 
 bool vgerPathScanner::next() {
 
-    float y = nodes[index].y;
+    float y = nodes[index].coord;
     yInterval.a = y;
 
     // Activate and deactivate segments.
-    for(;index < nodes.size() && nodes[index].y == y; ++index) {
+    for(;index < nodes.size() && nodes[index].coord == y; ++index) {
         auto& node = nodes[index];
         if(node.end) {
             --activeCount;
@@ -137,7 +137,7 @@ bool vgerPathScanner::next() {
     }
 
     if(index < nodes.size()) {
-        yInterval.b = nodes[index].y;
+        yInterval.b = nodes[index].coord;
     }
 
     return index < nodes.size();

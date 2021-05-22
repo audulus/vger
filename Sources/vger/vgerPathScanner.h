@@ -36,7 +36,7 @@ struct vgerPathScanner {
     };
 
     struct Node {
-        float y;
+        float coord;
         int seg;
         bool end;
     };
