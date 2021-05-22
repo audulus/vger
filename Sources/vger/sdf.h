@@ -316,13 +316,16 @@ inline BBox sdPrimBounds(const DEVICE vgerPrim& prim, const DEVICE float2* cvs) 
             b = BBox{prim.cvs[0], prim.cvs[1]};
             break;
         case vgerCurve:
-        case vgerPathFill: {
+        case vgerPathFill:
+        case vgerPathTest: {
             b = {FLT_MAX, -FLT_MAX};
             for(int i=0;i<prim.count*3;++i) {
                 b.expand(cvs[prim.start+i]);
             }
             break;
         }
+        default:
+            break;
     }
     return b.inset(-prim.width);
 }
@@ -391,6 +394,7 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
         case vgerWire:
             d = sdWire(p, prim.cvs[0], prim.cvs[1]);
             break;
+        case vgerPathTest:
         case vgerPathFill:
             for(int i=0; i<prim.count; i++) {
                 int j = prim.start + 3*i;
@@ -433,6 +437,9 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
 
             }
             d *= s;
+            break;
+        case vgerPathInside:
+            d = -1e9;
             break;
         default:
             break;

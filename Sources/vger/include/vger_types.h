@@ -38,7 +38,13 @@ typedef enum {
     vgerGlyph,
 
     /// Path fills.
-    vgerPathFill
+    vgerPathFill,
+
+    /// Used internally to accelerate path fills.
+    vgerPathTest,
+
+    /// Completely inside another prim, just fill.
+    vgerPathInside
 
 } vgerPrimType;
 

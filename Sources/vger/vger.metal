@@ -23,20 +23,34 @@ kernel void vger_bounds(uint gid [[thread_position_in_grid]],
                         constant uint& primCount) {
 
     if(gid < primCount) {
-        device auto& p = prims[gid];
+        device auto& prim = prims[gid];
 
-        if(p.type != vgerGlyph and p.type != vgerPathFill) {
+        if(prim.type != vgerGlyph and prim.type != vgerPathFill and prim.type != vgerPathTest) {
 
-            auto bounds = sdPrimBounds(p, cvs).inset(-1);
-            p.texcoords[0] = bounds.min;
-            p.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-            p.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-            p.texcoords[3] = bounds.max;
+            auto bounds = sdPrimBounds(prim, cvs).inset(-1);
+            prim.texcoords[0] = bounds.min;
+            prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
+            prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
+            prim.texcoords[3] = bounds.max;
 
             for(int i=0;i<4;++i) {
-                p.verts[i] = p.texcoords[i];
+                prim.verts[i] = prim.texcoords[i];
             }
 
+        }
+
+        if(prim.type == vgerPathTest) {
+
+            auto center = 0.5 * (prim.texcoords[0] + prim.texcoords[3]);
+            if(pointInsidePath(prim, cvs, center)) {
+                prim.type = vgerPathInside;
+            } else {
+                float2 big = {FLT_MAX, FLT_MAX};
+                prim.verts[0] = big;
+                prim.verts[1] = big;
+                prim.verts[2] = big;
+                prim.verts[3] = big;
+            }
         }
     }
 }

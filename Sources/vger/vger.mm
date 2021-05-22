@@ -512,6 +512,8 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
                 while(xScanner.next()) {
 
+                    prim.type = xScanner.activeCount > 0 ? vgerPathFill : vgerPathTest;
+
                     BBox bounds;
                     bounds.min.x = xScanner.interval.a;
                     bounds.max.x = xScanner.interval.b;
