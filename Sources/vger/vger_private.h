@@ -134,6 +134,9 @@ struct vger {
     /// For speeding up path rendering.
     vgerPathScanner yScanner;
 
+    /// For speeding up path rendering.
+    vgerPathScanner xScanner;
+
     /// For generating glyph paths.
     vgerGlyphPathCache glyphPathCache;
 
