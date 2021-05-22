@@ -481,50 +481,62 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
             int n = yScanner.activeCount;
 
-            vgerPrim prim = {
-                .type = vgerPathFill,
-                .paint = paint,
-                .xform = xform,
-                .start = cvCount,
-                .count = n
-            };
+            if(n > 0) {
+                xScanner.segments.clear();
 
-            if(primCount < maxPrims and cvCount+n*3 < maxCvs) {
+                vgerPrim prim = {
+                    .type = vgerPathFill,
+                    .paint = paint,
+                    .xform = xform,
+                    .start = cvCount,
+                    .count = n
+                };
 
-                Interval xInt{FLT_MAX, -FLT_MAX};
-
+                // Add cvs for active segments.
                 for(int a = yScanner.first; a != -1; a = yScanner.segments[a].next) {
 
                     assert(a < yScanner.segments.size());
+                    auto seg = yScanner.segments[a];
+                    seg.next = -1;
+                    seg.previous = -1;
+                    xScanner.segments.push_back(seg);
+
                     for(int i=0;i<3;++i) {
                         auto p = yScanner.segments[a].cvs[i];
                         addCV(p);
-                        xInt.a = std::min(xInt.a, p.x);
-                        xInt.b = std::max(xInt.b, p.x);
                     }
 
                 }
 
-                BBox bounds;
-                bounds.min.x = xInt.a;
-                bounds.max.x = xInt.b;
-                bounds.min.y = yScanner.interval.a;
-                bounds.max.y = yScanner.interval.b;
+                xScanner.init(vgerPathScanner::XAxis);
 
-                // Calculate the prim vertices at this stage,
-                // as we do for glyphs.
-                prim.texcoords[0] = bounds.min;
-                prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-                prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-                prim.texcoords[3] = bounds.max;
+                while(xScanner.next()) {
 
-                for(int i=0;i<4;++i) {
-                    prim.verts[i] = prim.texcoords[i];
+                    BBox bounds;
+                    bounds.min.x = xScanner.interval.a;
+                    bounds.max.x = xScanner.interval.b;
+                    bounds.min.y = yScanner.interval.a;
+                    bounds.max.y = yScanner.interval.b;
+
+                    // Calculate the prim vertices at this stage,
+                    // as we do for glyphs.
+                    prim.texcoords[0] = bounds.min;
+                    prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
+                    prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
+                    prim.texcoords[3] = bounds.max;
+
+                    for(int i=0;i<4;++i) {
+                        prim.verts[i] = prim.texcoords[i];
+                    }
+
+                    if(primCount < maxPrims) {
+                        *(primPtr++) = prim;
+                        primCount++;
+                    }
+
                 }
-
-                *(primPtr++) = prim;
-                primCount++;
             }
+
         }
 
         assert(yScanner.activeCount == 0);

@@ -10,15 +10,15 @@ bool operator<(const vgerPathScanner::Node& a, const vgerPathScanner::Node& b) {
     return std::tie(a.coord, a.seg, a.end) < std::tie(b.coord, b.seg, b.end);
 }
 
-void vgerPathScanner::_init() {
+void vgerPathScanner::init(Axis axis) {
 
     nodes.clear();
     index = 0;
 
     for(int i=0;i<segments.size();++i) {
-        auto yInterval = segments[i].yInterval();
-        nodes.push_back({yInterval.a, i, 0});
-        nodes.push_back({yInterval.b, i, 1});
+        auto interval = axis == YAxis ? segments[i].yInterval() : segments[i].xInterval();
+        nodes.push_back({interval.a, i, 0});
+        nodes.push_back({interval.b, i, 1});
     }
 
     std::sort(nodes.begin(), nodes.end());
@@ -40,7 +40,7 @@ void vgerPathScanner::begin(vector_float2 *cvs, int count) {
         segments.push_back({end, (start+end)/2, start});
     }
 
-    _init();
+    init();
 
 }
 
@@ -100,7 +100,7 @@ void vgerPathScanner::begin(CGPathRef path) {
 
     CGPathApply(path, this, pathElement);
 
-    _init();
+    init();
 
 }
 

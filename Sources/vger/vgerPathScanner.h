@@ -50,7 +50,11 @@ struct vgerPathScanner {
     vector_float2 start{0,0};
     vector_float2 p{0,0};
 
-    void _init();
+    enum Axis {
+        XAxis, YAxis
+    };
+
+    void init(Axis axis=YAxis);
     void begin(vector_float2* cvs, int count);
     void begin(CGPathRef path);
     bool next();
