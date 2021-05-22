@@ -44,7 +44,7 @@ struct vgerPathScanner {
     std::vector<Segment> segments;
     std::vector<Node> nodes;
     int index = 0; // current node index
-    Interval yInterval;
+    Interval interval;
     int first = -1; // first active segment
     int activeCount = 0;
     vector_float2 start{0,0};

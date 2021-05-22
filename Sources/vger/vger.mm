@@ -508,8 +508,8 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
                 BBox bounds;
                 bounds.min.x = xInt.a;
                 bounds.max.x = xInt.b;
-                bounds.min.y = scanner.yInterval.a;
-                bounds.max.y = scanner.yInterval.b;
+                bounds.min.y = scanner.interval.a;
+                bounds.max.y = scanner.interval.b;
 
                 // Calculate the prim vertices at this stage,
                 // as we do for glyphs.

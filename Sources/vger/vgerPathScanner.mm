@@ -107,7 +107,7 @@ void vgerPathScanner::begin(CGPathRef path) {
 bool vgerPathScanner::next() {
 
     float y = nodes[index].coord;
-    yInterval.a = y;
+    interval.a = y;
 
     // Activate and deactivate segments.
     for(;index < nodes.size() && nodes[index].coord == y; ++index) {
@@ -137,7 +137,7 @@ bool vgerPathScanner::next() {
     }
 
     if(index < nodes.size()) {
-        yInterval.b = nodes[index].coord;
+        interval.b = nodes[index].coord;
     }
 
     return index < nodes.size();

@@ -73,8 +73,8 @@ vgerGlyphPathCache::Info& vgerGlyphPathCache::getInfo(CGGlyph glyph) {
             BBox bounds;
             bounds.min.x = xInt.a;
             bounds.max.x = xInt.b;
-            bounds.min.y = scan.yInterval.a;
-            bounds.max.y = scan.yInterval.b;
+            bounds.min.y = scan.interval.a;
+            bounds.max.y = scan.interval.b;
             
             // Calculate the prim vertices at this stage,
             // as we do for glyphs.
