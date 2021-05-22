@@ -132,7 +132,7 @@ struct vger {
     float devicePxRatio = 1.0;
 
     /// For speeding up path rendering.
-    vgerPathScanner scanner;
+    vgerPathScanner yScanner;
 
     /// For generating glyph paths.
     vgerGlyphPathCache glyphPathCache;

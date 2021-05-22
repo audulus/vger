@@ -475,11 +475,11 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
     if(scan) {
 
-        scanner.begin(cvs, count);
+        yScanner.begin(cvs, count);
 
-        while(scanner.next()) {
+        while(yScanner.next()) {
 
-            int n = scanner.activeCount;
+            int n = yScanner.activeCount;
 
             vgerPrim prim = {
                 .type = vgerPathFill,
@@ -493,11 +493,11 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
                 Interval xInt{FLT_MAX, -FLT_MAX};
 
-                for(int a = scanner.first; a != -1; a = scanner.segments[a].next) {
+                for(int a = yScanner.first; a != -1; a = yScanner.segments[a].next) {
 
-                    assert(a < scanner.segments.size());
+                    assert(a < yScanner.segments.size());
                     for(int i=0;i<3;++i) {
-                        auto p = scanner.segments[a].cvs[i];
+                        auto p = yScanner.segments[a].cvs[i];
                         addCV(p);
                         xInt.a = std::min(xInt.a, p.x);
                         xInt.b = std::max(xInt.b, p.x);
@@ -508,8 +508,8 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
                 BBox bounds;
                 bounds.min.x = xInt.a;
                 bounds.max.x = xInt.b;
-                bounds.min.y = scanner.interval.a;
-                bounds.max.y = scanner.interval.b;
+                bounds.min.y = yScanner.interval.a;
+                bounds.max.y = yScanner.interval.b;
 
                 // Calculate the prim vertices at this stage,
                 // as we do for glyphs.
@@ -527,7 +527,7 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
             }
         }
 
-        assert(scanner.activeCount == 0);
+        assert(yScanner.activeCount == 0);
 
     } else {
 
