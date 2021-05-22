@@ -21,6 +21,7 @@ void vgerPathScanner::_init() {
         nodes.push_back({yInterval.b, i, 1});
     }
 
+    // Note: using qsort is significantly slower according to profiling.
     std::sort(nodes.begin(), nodes.end());
 
 }
