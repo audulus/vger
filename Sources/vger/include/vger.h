@@ -162,7 +162,7 @@ void vgerTextBoxBounds(vgerContext, const char* str, float breakRowWidth, vector
 /// Fill a path bounded by quadratic bezier segments.
 void vgerFillPath(vgerContext, vector_float2* cvs, int count, uint16_t paint, bool scan);
 
-/// Fill a path bounded by cubic bezier segments (crude approximation)).
+/// Fill a path bounded by cubic bezier segments (crude approximation).
 void vgerFillCubicPath(vgerContext vg, vector_float2* cvs, int count, uint16_t paint, bool scan);
 
 /// Translates current coordinate system.
