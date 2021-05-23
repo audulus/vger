@@ -28,13 +28,8 @@ kernel void vger_bounds(uint gid [[thread_position_in_grid]],
         if(p.type != vgerGlyph and p.type != vgerPathFill) {
 
             auto bounds = sdPrimBounds(p, cvs).inset(-1);
-            p.texBounds[0] = bounds.min;
-            p.texBounds[1] = bounds.max;
-
-            p.verts[0] = bounds.min;
-            p.verts[1] = float2{bounds.max.x, bounds.min.y};
-            p.verts[2] = float2{bounds.min.x, bounds.max.y};
-            p.verts[3] = bounds.max;
+            p.quadBounds[0] = p.texBounds[0] = bounds.min;
+            p.quadBounds[1] = p.texBounds[1] = bounds.max;
 
         }
     }
@@ -54,10 +49,8 @@ kernel void vger_prune(uint gid [[thread_position_in_grid]],
 
         if(sdPrim(prim, cvs, center) > max(tile_size.x, tile_size.y) * 0.5 * SQRT_2) {
             float2 big = {FLT_MAX, FLT_MAX};
-            prim.verts[0] = big;
-            prim.verts[1] = big;
-            prim.verts[2] = big;
-            prim.verts[3] = big;
+            prim.quadBounds[0] = big;
+            prim.quadBounds[1] = big;
         }
 
     }
@@ -101,7 +94,9 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
     VertexOut out;
     out.primIndex = iid;
 
-    auto q = xforms[prim.xform] * float3(prim.verts[vid], 1.0);
+    auto q = xforms[prim.xform] * float3(float2(prim.quadBounds[vid & 1].x,
+                                                prim.quadBounds[vid >> 1].y),
+                                         1.0);
 
     auto p = float2{q.x/q.z, q.y/q.z};
     out.t = float2(prim.texBounds[vid & 1].x, prim.texBounds[vid >> 1].y);

@@ -210,12 +210,7 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, uint16_t pai
                 vgerPrim prim = {
                     .type = vgerGlyph,
                     .paint = paint,
-                    .verts = {
-                        a,
-                        float2{b.x, a.y},
-                        float2{a.x, b.y},
-                        b,
-                    },
+                    .quadBounds = { a, b },
                     .texBounds = {
                         float2{GLYPH_MARGIN,   originY},
                         float2{GLYPH_MARGIN+w, originY-h}
@@ -515,13 +510,8 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
                 // Calculate the prim vertices at this stage,
                 // as we do for glyphs.
-                prim.texBounds[0] = bounds.min;
-                prim.texBounds[1] = bounds.max;
-
-                prim.verts[0] = bounds.min;
-                prim.verts[1] = float2{bounds.max.x, bounds.min.y};
-                prim.verts[2] = float2{bounds.min.x, bounds.max.y};
-                prim.verts[3] = bounds.max;
+                prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
+                prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
 
                 *(primPtr++) = prim;
                 primCount++;
@@ -560,13 +550,8 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
             }
 
             auto bounds = sdPrimBounds(prim, (float2*) scenes[curBuffer].cvs.contents).inset(-1);
-            prim.texBounds[0] = bounds.min;
-            prim.texBounds[1] = bounds.max;
-
-            prim.verts[0] = bounds.min;
-            prim.verts[1] = float2{bounds.max.x, bounds.min.y};
-            prim.verts[2] = float2{bounds.min.x, bounds.max.y};
-            prim.verts[3] = bounds.max;
+            prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
+            prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
 
             *(primPtr++) = prim;
             primCount++;

@@ -86,8 +86,8 @@ typedef struct {
     /// Glyph region index.
     short glyph;
     
-    /// Vertices of the quad we're rendering.
-    vector_float2 verts[4];
+    /// Min and max coordinates of the quad we're rendering.
+    vector_float2 quadBounds[2];
 
     /// Index of transform applied to drawing region.
     uint16_t xform;
