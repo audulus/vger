@@ -12,6 +12,9 @@ bool operator<(const vgerPathScanner::Node& a, const vgerPathScanner::Node& b) {
 
 void vgerPathScanner::init(Axis axis) {
 
+    assert(first == -1);
+    assert(activeCount == 0);
+
     nodes.clear();
     index = 0;
 
