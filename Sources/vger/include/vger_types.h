@@ -84,7 +84,7 @@ typedef struct {
     uint16_t paint;
 
     /// Glyph region index.
-    short glyph;
+    uint16_t glyph;
     
     /// Min and max coordinates of the quad we're rendering.
     vector_float2 quadBounds[2];
