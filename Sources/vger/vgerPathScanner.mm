@@ -15,13 +15,13 @@ void vgerPathScanner::init(Axis axis) {
     assert(first == -1);
     assert(activeCount == 0);
 
-    nodes.clear();
+    nodes.resize(segments.size() * 2);
     index = 0;
 
     for(int i=0;i<segments.size();++i) {
         auto interval = axis == YAxis ? segments[i].yInterval() : segments[i].xInterval();
-        nodes.push_back({interval.a, i, 0});
-        nodes.push_back({interval.b, i, 1});
+        nodes[2*i] = {interval.a, i, 0};
+        nodes[2*i+1] = {interval.b, i, 1};
     }
 
     std::sort(nodes.begin(), nodes.end());
