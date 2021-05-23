@@ -24,6 +24,7 @@ void vgerPathScanner::init(Axis axis) {
         nodes[2*i+1] = {interval.b, i, 1};
     }
 
+    // Note: using qsort is significantly slower according to profiling.
     std::sort(nodes.begin(), nodes.end());
 
 }
@@ -111,9 +112,10 @@ bool vgerPathScanner::next() {
 
     float y = nodes[index].coord;
     interval.a = y;
+    auto n = nodes.size();
 
     // Activate and deactivate segments.
-    for(;index < nodes.size() && nodes[index].coord == y; ++index) {
+    for(;index < n && nodes[index].coord == y; ++index) {
         auto& node = nodes[index];
         if(node.end) {
             --activeCount;
@@ -139,11 +141,11 @@ bool vgerPathScanner::next() {
         }
     }
 
-    if(index < nodes.size()) {
+    if(index < n) {
         interval.b = nodes[index].coord;
     }
 
-    return index < nodes.size();
+    return index < n;
 }
 
 bool vgerPathScanner::nextFast() {
