@@ -471,6 +471,10 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
         return;
     }
 
+    if(primCount == maxPrims) {
+        return;
+    }
+
     auto xform = addxform(txStack.back());
 
     if(scan) {
