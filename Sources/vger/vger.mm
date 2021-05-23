@@ -483,7 +483,7 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
                 .paint = paint,
                 .xform = xform,
                 .start = cvCount,
-                .count = n
+                .count = uint16_t(n)
             };
 
             if(primCount < maxPrims and cvCount+n*3 < maxCvs) {
@@ -529,7 +529,7 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
             .paint = paint,
             .xform = xform,
             .start = cvCount,
-            .count = (count-1)/2 + !closed,
+            .count = uint16_t((count-1)/2 + !closed),
             .width = 0
         };
 

@@ -78,19 +78,19 @@ typedef struct {
     int start;
     
     /// Number of control vertices (vgerCurve and vgerPathFill)
-    int count;
+    uint16_t count;
 
     /// Index of paint applied to drawing region.
     uint16_t paint;
 
     /// Glyph region index.
     uint16_t glyph;
-    
-    /// Min and max coordinates of the quad we're rendering.
-    vector_float2 quadBounds[2];
 
     /// Index of transform applied to drawing region.
     uint16_t xform;
+    
+    /// Min and max coordinates of the quad we're rendering.
+    vector_float2 quadBounds[2];
     
     /// Min and max coordinates in texture space.
     vector_float2 texBounds[2];

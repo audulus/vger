@@ -120,7 +120,7 @@ static void SplitBezier(float t,
 
 - (void) testSizes {
     XCTAssertEqual(sizeof(vgerPaint), 96);
-    XCTAssertEqual(sizeof(vgerPrim), 96);
+    XCTAssertEqual(sizeof(vgerPrim), 88);
 }
 
 - (void) testBasic {
