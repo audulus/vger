@@ -55,7 +55,7 @@ typedef struct {
     vector_float4 outerColor;
 
     /// Image if we're texturing.
-    int image;
+    int32_t image;
 
 } vgerPaint;
 
