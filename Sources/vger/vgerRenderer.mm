@@ -2,7 +2,6 @@
 
 #import "vgerRenderer.h"
 #import "vgerBundleHelper.h"
-#import "accel.h"
 #import "paint.h"
 
 static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
