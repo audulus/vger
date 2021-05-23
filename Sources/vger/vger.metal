@@ -28,14 +28,13 @@ kernel void vger_bounds(uint gid [[thread_position_in_grid]],
         if(p.type != vgerGlyph and p.type != vgerPathFill) {
 
             auto bounds = sdPrimBounds(p, cvs).inset(-1);
-            p.texcoords[0] = bounds.min;
-            p.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-            p.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-            p.texcoords[3] = bounds.max;
+            p.texBounds[0] = bounds.min;
+            p.texBounds[1] = bounds.max;
 
-            for(int i=0;i<4;++i) {
-                p.verts[i] = p.texcoords[i];
-            }
+            p.verts[0] = bounds.min;
+            p.verts[1] = float2{bounds.max.x, bounds.min.y};
+            p.verts[2] = float2{bounds.min.x, bounds.max.y};
+            p.verts[3] = bounds.max;
 
         }
     }
@@ -50,8 +49,8 @@ kernel void vger_prune(uint gid [[thread_position_in_grid]],
     if(gid < primCount) {
         device auto& prim = prims[gid];
 
-        auto center = 0.5 * (prim.texcoords[0] + prim.texcoords[3]);
-        auto tile_size = prim.texcoords[3] - prim.texcoords[0];
+        auto center = 0.5 * (prim.texBounds[0] + prim.texBounds[1]);
+        auto tile_size = prim.texBounds[1] - prim.texBounds[0];
 
         if(sdPrim(prim, cvs, center) > max(tile_size.x, tile_size.y) * 0.5 * SQRT_2) {
             float2 big = {FLT_MAX, FLT_MAX};
@@ -73,8 +72,8 @@ kernel void vger_accel(uint2 gid [[thread_position_in_threadgroup]],
 
     device auto& prim = prims[tgid.x];
 
-    float2 primMin = prim.texcoords[0];
-    float2 primMax = prim.texcoords[3];
+    float2 primMin = prim.texBounds[0];
+    float2 primMax = prim.texBounds[1];
     float2 sz = (primMax - primMin)/ACCEL_SIZE;
     float l = length_squared(sz);
 
@@ -91,7 +90,6 @@ kernel void vger_accel(uint2 gid [[thread_position_in_threadgroup]],
 
 }
 
-
 vertex VertexOut vger_vertex(uint vid [[vertex_id]],
                              uint iid [[instance_id]],
                              const device vgerPrim* prims,
@@ -106,7 +104,7 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
     auto q = xforms[prim.xform] * float3(prim.verts[vid], 1.0);
 
     auto p = float2{q.x/q.z, q.y/q.z};
-    out.t = prim.texcoords[vid];
+    out.t = float2(prim.texBounds[vid & 1].x, prim.texBounds[vid >> 1].y);
     out.position = float4(2.0 * p / viewSize - 1.0, 0, 1);
     
     return out;

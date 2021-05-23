@@ -216,11 +216,9 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, uint16_t pai
                         float2{a.x, b.y},
                         b,
                     },
-                    .texcoords = {
+                    .texBounds = {
                         float2{GLYPH_MARGIN,   originY},
-                        float2{GLYPH_MARGIN+w, originY},
-                        float2{GLYPH_MARGIN,   originY-h},
-                        float2{GLYPH_MARGIN+w, originY-h},
+                        float2{GLYPH_MARGIN+w, originY-h}
                     },
                     .xform = xform
                 };
@@ -517,14 +515,13 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
                 // Calculate the prim vertices at this stage,
                 // as we do for glyphs.
-                prim.texcoords[0] = bounds.min;
-                prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-                prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-                prim.texcoords[3] = bounds.max;
+                prim.texBounds[0] = bounds.min;
+                prim.texBounds[1] = bounds.max;
 
-                for(int i=0;i<4;++i) {
-                    prim.verts[i] = prim.texcoords[i];
-                }
+                prim.verts[0] = bounds.min;
+                prim.verts[1] = float2{bounds.max.x, bounds.min.y};
+                prim.verts[2] = float2{bounds.min.x, bounds.max.y};
+                prim.verts[3] = bounds.max;
 
                 *(primPtr++) = prim;
                 primCount++;
@@ -563,14 +560,13 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
             }
 
             auto bounds = sdPrimBounds(prim, (float2*) scenes[curBuffer].cvs.contents).inset(-1);
-            prim.texcoords[0] = bounds.min;
-            prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-            prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-            prim.texcoords[3] = bounds.max;
+            prim.texBounds[0] = bounds.min;
+            prim.texBounds[1] = bounds.max;
 
-            for(int i=0;i<4;++i) {
-                prim.verts[i] = prim.texcoords[i];
-            }
+            prim.verts[0] = bounds.min;
+            prim.verts[1] = float2{bounds.max.x, bounds.min.y};
+            prim.verts[2] = float2{bounds.min.x, bounds.max.y};
+            prim.verts[3] = bounds.max;
 
             *(primPtr++) = prim;
             primCount++;
@@ -624,8 +620,8 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
         auto& prim = primp[i];
         if(prim.type == vgerGlyph) {
             auto r = glyphRects[prim.glyph-1];
-            for(int i=0;i<4;++i) {
-                prim.texcoords[i] += float2{float(r.x), float(r.y)};
+            for(int i=0;i<2;++i) {
+                prim.texBounds[i] += float2{float(r.x), float(r.y)};
             }
         }
     }

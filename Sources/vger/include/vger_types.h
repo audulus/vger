@@ -92,8 +92,8 @@ typedef struct {
     /// Index of transform applied to drawing region.
     uint16_t xform;
     
-    /// Texture coordinates of quad.
-    vector_float2 texcoords[4];
+    /// Min and max coordinates in texture space.
+    vector_float2 texBounds[2];
 
 } vgerPrim;
 

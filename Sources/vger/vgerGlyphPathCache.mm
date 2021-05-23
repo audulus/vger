@@ -78,14 +78,13 @@ vgerGlyphPathCache::Info& vgerGlyphPathCache::getInfo(CGGlyph glyph) {
             
             // Calculate the prim vertices at this stage,
             // as we do for glyphs.
-            prim.texcoords[0] = bounds.min;
-            prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-            prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-            prim.texcoords[3] = bounds.max;
-            
-            for(int i=0;i<4;++i) {
-                prim.verts[i] = prim.texcoords[i];
-            }
+            prim.texBounds[0] = bounds.min;
+            prim.texBounds[1] = bounds.max;
+
+            prim.verts[0] = bounds.min;
+            prim.verts[1] = float2{bounds.max.x, bounds.min.y};
+            prim.verts[2] = float2{bounds.min.x, bounds.max.y};
+            prim.verts[3] = bounds.max;
             
             info.prims.push_back(prim);
         }
@@ -108,14 +107,13 @@ vgerGlyphPathCache::Info& vgerGlyphPathCache::getInfo(CGGlyph glyph) {
         
         // Calculate the prim vertices at this stage,
         // as we do for glyphs.
-        prim.texcoords[0] = bounds.min;
-        prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-        prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-        prim.texcoords[3] = bounds.max;
-        
-        for(int i=0;i<4;++i) {
-            prim.verts[i] = prim.texcoords[i];
-        }
+        prim.texBounds[0] = bounds.min;
+        prim.texBounds[1] = bounds.max;
+
+        prim.verts[0] = bounds.min;
+        prim.verts[1] = float2{bounds.max.x, bounds.min.y};
+        prim.verts[2] = float2{bounds.min.x, bounds.max.y};
+        prim.verts[3] = bounds.max;
         
         info.prims.push_back(prim);
     }
