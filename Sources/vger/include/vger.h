@@ -81,16 +81,16 @@ typedef struct {
     /// Index of paint applied to drawing region.
     uint16_t paint;
 
-    /// Glyph region index.
+    /// Glyph region index. (used internally)
     uint16_t glyph;
 
-    /// Index of transform applied to drawing region.
+    /// Index of transform applied to drawing region. (used internally)
     uint16_t xform;
 
-    /// Min and max coordinates of the quad we're rendering.
+    /// Min and max coordinates of the quad we're rendering. (used internally)
     vector_float2 quadBounds[2];
 
-    /// Min and max coordinates in texture space.
+    /// Min and max coordinates in texture space. (used internally)
     vector_float2 texBounds[2];
 
 } vgerPrim;
