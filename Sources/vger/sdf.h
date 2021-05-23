@@ -3,45 +3,7 @@
 #ifndef sdf_h
 #define sdf_h
 
-#ifdef __METAL_VERSION__
-#define DEVICE device
-#else
-#define DEVICE
-
-#include <simd/simd.h>
-using namespace simd;
-
-inline float min(float a, float b) {
-    return a > b ? b : a;
-}
-
-inline float max(float a, float b) {
-    return a > b ? a : b;
-}
-
-inline float2 max(float2 a, float b) {
-    return simd_max(a, float2{b,b});
-}
-
-inline float clamp(float x, float a, float b) {
-    if(x > b) x = b;
-    if(x < a) x = a;
-    return x;
-}
-
-inline float3 clamp(float3 x, float a, float b) {
-    return simd_clamp(x, a, b);
-}
-
-inline float mix(float a, float b, float t) {
-    return (1-t)*a + t*b;
-}
-
-inline float2 mix(float2 a, float2 b, float t) {
-    return (1-t)*a + t*b;
-}
-
-#endif
+#include "metal_compat.h"
 
 // Projection of b onto a.
 inline float2 proj(float2 a, float2 b) {
@@ -495,18 +457,6 @@ inline OBB sdPrimOBB(const DEVICE vgerPrim& prim) {
             break;
     }
     return {0,0};
-}
-
-inline float4 applyPaint(const DEVICE vgerPaint& paint, float2 p) {
-
-    float d = clamp((paint.xform * float3{p.x, p.y, 1.0}).x, 0.0, 1.0);
-
-#ifdef __METAL_VERSION__
-    return mix(paint.innerColor, paint.outerColor, d);
-#else
-    return simd_mix(paint.innerColor, paint.outerColor, d);
-#endif
-
 }
 
 /// Quadratic bezier curve.

@@ -9,6 +9,7 @@
 #include "vgerPathScanner.h"
 #include "vgerGlyphPathCache.h"
 #include "vgerScene.h"
+#include "paint.h"
 
 @class vgerRenderer;
 @class vgerTileRenderer;

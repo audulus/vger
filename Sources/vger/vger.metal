@@ -7,6 +7,7 @@ using namespace metal;
 #include "sdf.h"
 #include "commands.h"
 #include "accel.h"
+#include "paint.h"
 
 #define SQRT_2 1.414213562373095
 

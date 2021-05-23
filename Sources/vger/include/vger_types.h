@@ -42,23 +42,6 @@ typedef enum {
 
 } vgerPrimType;
 
-typedef struct {
-
-#ifdef __METAL_VERSION__
-    float3x3 xform;
-#else
-    matrix_float3x3 xform;
-#endif
-
-    vector_float4 innerColor;
-
-    vector_float4 outerColor;
-
-    /// Image if we're texturing.
-    int32_t image;
-
-} vgerPaint;
-
 /// Primitive rendered by the GPU.
 typedef struct {
     
