@@ -3,10 +3,10 @@
 #include <metal_stdlib>
 using namespace metal;
 
-#include "include/vger_types.h"
+#include "include/vger.h"
 #include "sdf.h"
 #include "commands.h"
-#include "accel.h"
+#include "paint.h"
 
 #define SQRT_2 1.414213562373095
 
@@ -28,28 +28,20 @@ kernel void vger_bounds(uint gid [[thread_position_in_grid]],
         if(prim.type != vgerGlyph and prim.type != vgerPathFill and prim.type != vgerPathTest) {
 
             auto bounds = sdPrimBounds(prim, cvs).inset(-1);
-            prim.texcoords[0] = bounds.min;
-            prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-            prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-            prim.texcoords[3] = bounds.max;
-
-            for(int i=0;i<4;++i) {
-                prim.verts[i] = prim.texcoords[i];
-            }
+            prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
+            prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
 
         }
 
         if(prim.type == vgerPathTest) {
 
-            auto center = 0.5 * (prim.texcoords[0] + prim.texcoords[3]);
+            auto center = 0.5 * (prim.texBounds[0] + prim.texBounds[1]);
             if(pointInsidePath(prim, cvs, center)) {
                 prim.type = vgerPathInside;
             } else {
                 float2 big = {FLT_MAX, FLT_MAX};
-                prim.verts[0] = big;
-                prim.verts[1] = big;
-                prim.verts[2] = big;
-                prim.verts[3] = big;
+                prim.quadBounds[0] = big;
+                prim.quadBounds[1] = big;
             }
         }
     }
@@ -64,47 +56,17 @@ kernel void vger_prune(uint gid [[thread_position_in_grid]],
     if(gid < primCount) {
         device auto& prim = prims[gid];
 
-        auto center = 0.5 * (prim.texcoords[0] + prim.texcoords[3]);
-        auto tile_size = prim.texcoords[3] - prim.texcoords[0];
+        auto center = 0.5 * (prim.texBounds[0] + prim.texBounds[1]);
+        auto tile_size = prim.texBounds[1] - prim.texBounds[0];
 
         if(sdPrim(prim, cvs, center) > max(tile_size.x, tile_size.y) * 0.5 * SQRT_2) {
             float2 big = {FLT_MAX, FLT_MAX};
-            prim.verts[0] = big;
-            prim.verts[1] = big;
-            prim.verts[2] = big;
-            prim.verts[3] = big;
+            prim.quadBounds[0] = big;
+            prim.quadBounds[1] = big;
         }
 
     }
 }
-
-/// Computes an 8x8 acceleration structure for a primitive.
-kernel void vger_accel(uint2 gid [[thread_position_in_threadgroup]],
-                       uint2 tgid [[threadgroup_position_in_grid]],
-                       const device vgerPrim* prims,
-                       const device float2* cvs,
-                       device Accel* accel) {
-
-    device auto& prim = prims[tgid.x];
-
-    float2 primMin = prim.texcoords[0];
-    float2 primMax = prim.texcoords[3];
-    float2 sz = (primMax - primMin)/ACCEL_SIZE;
-    float l = length_squared(sz);
-
-    float2 t = (float2(gid)+.5) * sz + primMin;
-
-    float d = sdPrim(prim, cvs, t, /*exact*/true);
-
-    char r = 0;
-    if(d*d > l) {
-        r = sign(d);
-    }
-
-    accel[tgid.x].s[gid.x][gid.y] = r;
-
-}
-
 
 vertex VertexOut vger_vertex(uint vid [[vertex_id]],
                              uint iid [[instance_id]],
@@ -117,10 +79,12 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
     VertexOut out;
     out.primIndex = iid;
 
-    auto q = xforms[prim.xform] * float3(prim.verts[vid], 1.0);
+    auto q = xforms[prim.xform] * float3(float2(prim.quadBounds[vid & 1].x,
+                                                prim.quadBounds[vid >> 1].y),
+                                         1.0);
 
     auto p = float2{q.x/q.z, q.y/q.z};
-    out.t = prim.texcoords[vid];
+    out.t = float2(prim.texBounds[vid & 1].x, prim.texBounds[vid >> 1].y);
     out.position = float4(2.0 * p / viewSize - 1.0, 0, 1);
     
     return out;

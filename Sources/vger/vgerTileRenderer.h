@@ -3,7 +3,7 @@
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 #include <simd/simd.h>
-#include "vger_types.h"
+#include "vger.h"
 #include "vgerScene.h"
 
 NS_ASSUME_NONNULL_BEGIN

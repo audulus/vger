@@ -3,7 +3,7 @@
 #ifndef commands_h
 #define commands_h
 
-#include "include/vger_types.h"
+#include "include/vger.h"
 
 #ifdef __METAL_VERSION__
 #define DEVICE device
