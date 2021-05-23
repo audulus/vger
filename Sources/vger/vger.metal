@@ -3,7 +3,7 @@
 #include <metal_stdlib>
 using namespace metal;
 
-#include "include/vger_types.h"
+#include "include/vger.h"
 #include "sdf.h"
 #include "commands.h"
 #include "accel.h"
