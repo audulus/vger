@@ -52,7 +52,7 @@ vgerGlyphPathCache::Info& vgerGlyphPathCache::getInfo(CGGlyph glyph) {
             
             vgerPrim prim = {
                 .type = vgerPathFill,
-                .start = (int) info.cvs.size(),
+                .start = (uint32_t) info.cvs.size(),
                 .count = uint16_t(n)
             };
             
@@ -88,7 +88,7 @@ vgerGlyphPathCache::Info& vgerGlyphPathCache::getInfo(CGGlyph glyph) {
         
         vgerPrim prim = {
             .type = vgerPathFill,
-            .start = (int) info.cvs.size(),
+            .start = (uint32_t) info.cvs.size(),
             .count = (uint16_t) scan.segments.size()
         };
         

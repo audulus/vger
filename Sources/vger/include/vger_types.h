@@ -75,7 +75,7 @@ typedef struct {
     vector_float2 cvs[3];
 
     /// Start of the control vertices, if they're in a separate buffer.
-    int start;
+    uint32_t start;
     
     /// Number of control vertices (vgerCurve and vgerPathFill)
     uint16_t count;

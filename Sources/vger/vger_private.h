@@ -87,10 +87,10 @@ struct vger {
     float2* cvPtr;
 
     /// Number of cvs we've saved in the current cv buffer.
-    int cvCount = 0;
+    uint32_t cvCount = 0;
 
     /// CV buffer capacity.
-    int maxCvs = 1024*1024;
+    uint32_t maxCvs = 1024*1024;
 
     /// How many xforms?
     uint16_t xformCount = 0;
