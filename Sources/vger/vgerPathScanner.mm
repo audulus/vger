@@ -145,3 +145,22 @@ bool vgerPathScanner::next() {
 
     return index < nodes.size();
 }
+
+bool vgerPathScanner::nextFast() {
+
+    float y = nodes[index].coord;
+    interval.a = y;
+
+    // Activate and deactivate segments.
+    for(;index < nodes.size() && nodes[index].coord == y; ++index) {
+        auto& node = nodes[index];
+        activeCount += node.end ? -1 : 1;
+    }
+
+    if(index < nodes.size()) {
+        interval.b = nodes[index].coord;
+    }
+
+    return index < nodes.size();
+
+}

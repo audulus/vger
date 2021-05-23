@@ -510,7 +510,7 @@ void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
                 xScanner.init(vgerPathScanner::XAxis);
 
-                while(xScanner.next()) {
+                while(xScanner.nextFast()) {
 
                     prim.type = xScanner.activeCount > 0 ? vgerPathFill : vgerPathTest;
 

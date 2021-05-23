@@ -58,6 +58,7 @@ struct vgerPathScanner {
     void begin(vector_float2* cvs, int count);
     void begin(CGPathRef path);
     bool next();
+    bool nextFast(); // doesn't maintain an active list.
 
 };
 
