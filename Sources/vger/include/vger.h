@@ -53,7 +53,13 @@ typedef enum {
     vgerGlyph,
 
     /// Path fills.
-    vgerPathFill
+    vgerPathFill,
+
+    /// Test for inside/outisde. (used internally)
+    vgerPathTest,
+
+    /// Fully inside. (used internally)
+    vgerPathInside
 
 } vgerPrimType;
 
