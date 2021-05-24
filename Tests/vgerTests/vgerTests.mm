@@ -835,8 +835,14 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
         auto paint = vgerColorPaint(vger, fcolor);
 
         for (NSVGpath *path = shape->paths; path; path = path->next) {
-            vgerFillCubicPath(vger, (float2*) path->pts, path->npts, paint, true);
+            float2* pts = (float2*) path->pts;
+            vgerMoveTo(vger, pts[0]);
+            for(int i=1; i<path->npts-2; i+=3) {
+                vgerCubicApproxTo(vger, pts[i], pts[i+1], pts[i+2]);
+            }
         }
+
+        vgerFill(vger, paint);
     }
     vgerRestore(vger);
     // Delete

@@ -165,6 +165,18 @@ void vgerFillPath(vgerContext, vector_float2* cvs, int count, uint16_t paint, bo
 /// Fill a path bounded by cubic bezier segments (crude approximation).
 void vgerFillCubicPath(vgerContext vg, vector_float2* cvs, int count, uint16_t paint, bool scan);
 
+/// Move the pen to a point.
+void vgerMoveTo(vgerContext, vector_float2 pt);
+
+/// Quadratic bezier.
+void vgerQuadTo(vgerContext, vector_float2 b, vector_float2 c);
+
+/// Crude approximation of cubic bezier with two quadratics.
+void vgerCubicApproxTo(vgerContext vg, vector_float2 b, vector_float2 c, vector_float2 d);
+
+/// Fills the current path (and clears the path).
+void vgerFill(vgerContext, uint16_t paint);
+
 /// Translates current coordinate system.
 void vgerTranslate(vgerContext, vector_float2 t);
 

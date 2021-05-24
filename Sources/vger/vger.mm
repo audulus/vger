@@ -458,6 +458,66 @@ void vgerFillPath(vgerContext vg, float2* cvs, int count, uint16_t paint, bool s
     vg->fillPath(cvs, count, paint, scan);
 }
 
+void vger::fill(uint16_t paint) {
+
+    if(primCount == maxPrims) {
+        return;
+    }
+
+    auto xform = addxform(txStack.back());
+
+    yScanner._init();
+
+    while(yScanner.next()) {
+
+        int n = yScanner.activeCount;
+
+        vgerPrim prim = {
+            .type = vgerPathFill,
+            .paint = paint,
+            .xform = xform,
+            .start = cvCount,
+            .count = uint16_t(n)
+        };
+
+        if(primCount < maxPrims and cvCount+n*3 < maxCvs) {
+
+            Interval xInt{FLT_MAX, -FLT_MAX};
+
+            for(int a = yScanner.first; a != -1; a = yScanner.segments[a].next) {
+
+                assert(a < yScanner.segments.size());
+                for(int i=0;i<3;++i) {
+                    auto p = yScanner.segments[a].cvs[i];
+                    addCV(p);
+                    xInt.a = std::min(xInt.a, p.x);
+                    xInt.b = std::max(xInt.b, p.x);
+                }
+
+            }
+
+            BBox bounds;
+            bounds.min.x = xInt.a;
+            bounds.max.x = xInt.b;
+            bounds.min.y = yScanner.interval.a;
+            bounds.max.y = yScanner.interval.b;
+
+            // Calculate the prim vertices at this stage,
+            // as we do for glyphs.
+            prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
+            prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
+
+            *(primPtr++) = prim;
+            primCount++;
+        }
+    }
+
+    assert(yScanner.activeCount == 0);
+
+    yScanner.segments.clear();
+
+}
+
 void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
     if(count < 3) {
@@ -579,6 +639,27 @@ void vger::fillCubicPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
     fillPath(points.data(), points.size(), paint, scan);
 
+}
+
+void vgerMoveTo(vgerContext vg, float2 pt) {
+    vg->pen = pt;
+}
+
+void vgerQuadTo(vgerContext vg, float2 b, float2 c) {
+    vg->yScanner.segments.push_back({vg->pen, b, c});
+    vg->pen = c;
+}
+
+void vgerCubicApproxTo(vgerContext vg, float2 b, float2 c, float2 d) {
+    float2 cubic[4] = {vg->pen, b, c, d};
+    float2 q[6];
+    approx_cubic(cubic, q);
+    vgerQuadTo(vg, q[1], q[2]);
+    vgerQuadTo(vg, q[4], q[5]);
+}
+
+void vgerFill(vgerContext vg, uint16_t paint) {
+    vg->fill(paint);
 }
 
 void vgerEncode(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {

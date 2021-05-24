@@ -138,6 +138,9 @@ struct vger {
     /// For generating glyph paths.
     vgerGlyphPathCache glyphPathCache;
 
+    /// The current location when creating paths.
+    float2 pen;
+
     vger();
 
     void addCV(float2 p) {
@@ -165,6 +168,8 @@ struct vger {
 
     CTLineRef createCTLine(const char* str);
     CTFrameRef createCTFrame(const char* str, float breakRowWidth);
+
+    void fill(uint16_t paint);
 
     void fillPath(float2* cvs, int count, uint16_t paint, bool scan);
 
