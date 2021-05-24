@@ -120,6 +120,8 @@ extern "C" {
 
 typedef struct vger *vgerContext;
 
+#pragma mark - Context
+
 /// Create a new state object.
 vgerContext vgerNew();
 
@@ -128,6 +130,8 @@ void vgerDelete(vgerContext);
 
 /// Begin rendering a frame.
 void vgerBegin(vgerContext, float windowWidth, float windowHeight, float devicePxRatio);
+
+#pragma mark - Textures
 
 /// Create a texture to sample from.
 int  vgerAddTexture(vgerContext, const uint8_t* data, int width, int height);
