@@ -3,45 +3,7 @@
 #ifndef sdf_h
 #define sdf_h
 
-#ifdef __METAL_VERSION__
-#define DEVICE device
-#else
-#define DEVICE
-
-#include <simd/simd.h>
-using namespace simd;
-
-inline float min(float a, float b) {
-    return a > b ? b : a;
-}
-
-inline float max(float a, float b) {
-    return a > b ? a : b;
-}
-
-inline float2 max(float2 a, float b) {
-    return simd_max(a, float2{b,b});
-}
-
-inline float clamp(float x, float a, float b) {
-    if(x > b) x = b;
-    if(x < a) x = a;
-    return x;
-}
-
-inline float3 clamp(float3 x, float a, float b) {
-    return simd_clamp(x, a, b);
-}
-
-inline float mix(float a, float b, float t) {
-    return (1-t)*a + t*b;
-}
-
-inline float2 mix(float2 a, float2 b, float t) {
-    return (1-t)*a + t*b;
-}
-
-#endif
+#include "metal_compat.h"
 
 // Projection of b onto a.
 inline float2 proj(float2 a, float2 b) {
@@ -282,6 +244,11 @@ struct BBox {
         return {min+d, max-d};
     }
 
+    void expand(float2 p) {
+        min = simd::min(min, p);
+        max = simd::max(max, p);
+    }
+
     float2 size() const { return max - min; }
 };
 
@@ -314,8 +281,7 @@ inline BBox sdPrimBounds(const DEVICE vgerPrim& prim, const DEVICE float2* cvs) 
         case vgerPathFill: {
             b = {FLT_MAX, -FLT_MAX};
             for(int i=0;i<prim.count*3;++i) {
-                b.min = min(b.min, cvs[prim.start+i]);
-                b.max = max(b.max, cvs[prim.start+i]);
+                b.expand(cvs[prim.start+i]);
             }
             break;
         }
@@ -349,7 +315,7 @@ inline bool pointInsidePath(const DEVICE vgerPrim& prim, const DEVICE float2* cv
 
 }
 
-inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p, bool exact=false) {
+inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p, bool exact=false, float filterWidth = 0) {
     float d = FLT_MAX;
     float s = 1;
     switch(prim.type) {
@@ -394,10 +360,26 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
                 auto b = cvs[j+1];
                 auto c = cvs[j+2];
 
+                bool skip = false;
+
                 if(exact) {
                     d = min(d, sdBezier(p, a, b, c));
                 } else {
-                    d = min(d, sdBezierApprox2(p, a, b, c));
+                    auto xmax = p.x + filterWidth;
+                    auto xmin = p.x - filterWidth;
+
+                    // If the hull is far enough away, don't bother with
+                    // a sdf.
+                    if(a.x > xmax and b.x > xmax and c.x > xmax) {
+                        skip = true;
+                    } else if(a.x < xmin and b.x < xmin and c.x < xmin) {
+                        skip = true;
+                    }
+
+                    if(!skip) {
+                        d = min(d, sdBezierApprox2(p, a, b, c));
+                    }
+
                 }
 
                 if(lineTest(p, a, c)) {
@@ -405,9 +387,12 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
                 }
 
                 // Flip if inside area between curve and line.
-                if(bezierTest(p, a, b, c)) {
-                    s = -s;
+                if(!skip) {
+                    if(bezierTest(p, a, b, c)) {
+                        s = -s;
+                    }
                 }
+
             }
             d *= s;
             break;
@@ -472,18 +457,6 @@ inline OBB sdPrimOBB(const DEVICE vgerPrim& prim) {
             break;
     }
     return {0,0};
-}
-
-inline float4 applyPaint(const DEVICE vgerPaint& paint, float2 p) {
-
-    float d = clamp((paint.xform * float3{p.x, p.y, 1.0}).x, 0.0, 1.0);
-
-#ifdef __METAL_VERSION__
-    return mix(paint.innerColor, paint.outerColor, d);
-#else
-    return simd_mix(paint.innerColor, paint.outerColor, d);
-#endif
-
 }
 
 /// Quadratic bezier curve.

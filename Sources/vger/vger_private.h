@@ -8,6 +8,8 @@
 #include <unordered_map>
 #include "vgerPathScanner.h"
 #include "vgerGlyphPathCache.h"
+#include "vgerScene.h"
+#include "paint.h"
 
 @class vgerRenderer;
 @class vgerTileRenderer;
@@ -65,16 +67,16 @@ struct vger {
     vgerTileRenderer* tileRenderer;
 
     /// Transform matrix stack.
-    std::vector<matrix_float3x3> txStack;
+    std::vector<float3x3> txStack;
 
-    /// We cycle through three prim buffers for streaming.
-    id<MTLBuffer> primBuffers[3];
+    /// We cycle through three scenes for streaming.
+    vgerScene scenes[3];
 
     /// The prim buffer we're currently using.
     int curBuffer = 0;
 
     /// Pointer to the next prim to be saved in the buffer.
-    vgerPrim* p;
+    vgerPrim* primPtr;
 
     /// Number of prims we've saved in the buffer.
     int primCount = 0;
@@ -82,17 +84,26 @@ struct vger {
     /// Prim buffer capacity.
     int maxPrims = 65536;
 
-    /// Cycle through 3 cv buffers for streaming.
-    id<MTLBuffer> cvBuffers[3];
-
     /// Pointer to the next cv to be saved in the buffer.
-    float2* cv;
+    float2* cvPtr;
 
     /// Number of cvs we've saved in the current cv buffer.
-    int cvCount = 0;
+    uint32_t cvCount = 0;
 
     /// CV buffer capacity.
-    int maxCvs = 1024*1024;
+    uint32_t maxCvs = 1024*1024;
+
+    /// How many xforms?
+    uint16_t xformCount = 0;
+
+    /// Pointer to the next transform.
+    float3x3* xformPtr;
+
+    /// How many paints?
+    uint16_t paintCount = 0;
+
+    /// Pointer to the next paint.
+    vgerPaint* paintPtr;
 
     /// Atlas for finding glyph images.
     vgerGlyphCache* glyphCache;
@@ -122,40 +133,85 @@ struct vger {
     float devicePxRatio = 1.0;
 
     /// For speeding up path rendering.
-    vgerPathScanner scanner;
+    vgerPathScanner yScanner;
 
     /// For generating glyph paths.
     vgerGlyphPathCache glyphPathCache;
+
+    /// The current location when creating paths.
+    float2 pen;
 
     vger();
 
     void addCV(float2 p) {
         if(cvCount < maxCvs) {
-            *(cv++) = p;
+            *(cvPtr++) = p;
             cvCount++;
         }
+    }
+
+    uint16_t addxform(const matrix_float3x3& M) {
+        if(xformCount < maxPrims) {
+            *(xformPtr++) = M;
+            return xformCount++;
+        }
+        return 0;
+    }
+
+    uint16_t addPaint(const vgerPaint& paint) {
+        if(paintCount < maxPrims) {
+            *(paintPtr++) = paint;
+            return paintCount++;
+        }
+        return 0;
     }
 
     CTLineRef createCTLine(const char* str);
     CTFrameRef createCTFrame(const char* str, float breakRowWidth);
 
-    void fillPath(float2* cvs, int count, vgerPaint paint, bool scan);
+    void fill(uint16_t paint);
 
-    void fillCubicPath(float2* cvs, int count, vgerPaint paint, bool scan);
+    void fillPath(float2* cvs, int count, uint16_t paint, bool scan);
+
+    void fillCubicPath(float2* cvs, int count, uint16_t paint, bool scan);
 
     void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 
     void encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture);
 
-    bool renderCachedText(const TextLayoutKey& key, const vgerPaint& paint);
+    bool renderCachedText(const TextLayoutKey& key, uint16_t paint, uint16_t xform);
 
-    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, float2 offset, float scale);
+    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, uint16_t paint, float2 offset, float scale, uint16_t xform);
 
     void renderText(const char* str, float4 color, int align);
 
     void renderTextBox(const char* str, float breakRowWidth, float4 color, int align);
 
-    void renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 position);
+    void renderGlyphPath(CGGlyph glyph, uint16_t paint, float2 position, uint16_t xform);
 };
+
+inline vgerPaint makeLinearGradient(float2 start, float2 end,
+                                    float4 innerColor, float4 outerColor) {
+    
+    vgerPaint p;
+
+    // Calculate transform aligned to the line
+    float2 d = end - start;
+    if(length(d) < 0.0001f) {
+        d = float2{0,1};
+    }
+
+    p.xform = inverse(float3x3{
+        float3{d.x, d.y, 0},
+        float3{-d.y, d.x, 0},
+        float3{start.x, start.y, 1}
+    });
+
+    p.innerColor = innerColor;
+    p.outerColor = outerColor;
+    p.image = -1;
+
+    return p;
+}
 
 #endif /* vger_private_h */

@@ -118,19 +118,23 @@ static void SplitBezier(float t,
 
 }
 
-auto white = vgerColorPaint(float4{1,1,1,1});
-auto cyan = vgerColorPaint(float4{0,1,1,1});
-auto magenta = vgerColorPaint(float4{1,0,1,1});
-
 - (void) testSizes {
     XCTAssertEqual(sizeof(vgerPaint), 96);
-    XCTAssertEqual(sizeof(vgerPrim), 256);
+    XCTAssertEqual(sizeof(vgerPrim), 88);
 }
 
 - (void) testBasic {
 
     float theta = 0;
     float ap = .5 * M_PI;
+
+    auto vg = vgerNew();
+
+    vgerBegin(vg, 512, 512, 1.0);
+
+    auto white = vgerColorPaint(vg, float4{1,1,1,1});
+    auto cyan = vgerColorPaint(vg, float4{0,1,1,1});
+    auto magenta = vgerColorPaint(vg, float4{1,0,1,1});
 
     vgerPrim primArray[] = {
         // { .type = vgerBezier, .cvs = {0, {0,0.5}, {0.5,0.5}}, .colors = {{1,1,1,.5}, 0, 0}},
@@ -158,7 +162,7 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
             .width = 0.01,
             .cvs = {{400,100}, {450,150}},
             .radius= 10,
-            .paint = vgerLinearGradient(float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1})
+            .paint = vgerLinearGradient(vg, float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1})
         },
         {
             .type = vgerRectStroke,
@@ -181,10 +185,6 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
             .paint = white
         }
     };
-
-    auto vg = vgerNew();
-
-    vgerBegin(vg, 512, 512, 1.0);
 
     for(int i=0;i< (sizeof(primArray)/sizeof(vgerPrim)); ++i) {
         vgerRender(vg, primArray+i);
@@ -213,10 +213,10 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
         .width = 0.00,
         .radius = 10,
         .cvs = { {20, 20}},
-        .paint = cyan
+        .paint = vgerColorPaint(vger, float4{0,1,1,1})
     };
 
-    XCTAssertTrue(simd_equal(vgerTransform(vger, float2{0,0}), float2{0, 0}));
+    XCTAssertTrue(equal(vgerTransform(vger, float2{0,0}), float2{0, 0}));
 
     vgerRender(vger, &p);
 
@@ -247,7 +247,7 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
         .width = 0.01,
         .cvs = { {20,20}, {40,40}},
         .radius=0.3,
-        .paint = white
+        .paint = vgerColorPaint(vger, float4(1))
     };
 
     for(int i=0;i<10;++i) {
@@ -288,14 +288,14 @@ auto magenta = vgerColorPaint(float4{1,0,1,1});
     auto idx = vgerAddMTLTexture(vger, tex);
 
     auto sz = vgerTextureSize(vger, idx);
-    XCTAssert(simd_equal(sz, simd_int2(256)));
+    XCTAssert(equal(sz, simd_int2(256)));
 
     vgerPrim p = {
         .type = vgerRect,
         .width = 0.01,
         .cvs = { {0,0}, {256,256}},
         .radius=0.3,
-        .paint = vgerImagePattern(float2{0,0}, float2{256,256}, 0, idx, 1),
+        .paint = vgerImagePattern(vger, float2{0,0}, float2{256,256}, 0, idx, 1),
     };
 
     vgerRender(vger, &p);
@@ -395,7 +395,7 @@ vector_float4 rand_color() {
 
 - (void) testBezierPerf {
 
-    std::vector<vgerPrim> primArray;
+    __block std::vector<vgerPrim> primArray;
 
     int N = 10000;
 
@@ -404,7 +404,6 @@ vector_float4 rand_color() {
             .type = vgerBezier,
             .width = 1,
             .cvs ={ 512*rand2(), 512*rand2(), 512*rand2() },
-            .paint = vgerColorPaint(rand_color()),
         };
         primArray.push_back(p);
     }
@@ -415,8 +414,9 @@ vector_float4 rand_color() {
 
         vgerBegin(vger, 512, 512, 1.0);
 
-        for(int i=0;i<primArray.size();++i) {
-           vgerRender(vger, &primArray[i]);
+        for(auto& prim : primArray) {
+            prim.paint = vgerColorPaint(vger, rand_color());
+            vgerRender(vger, &prim);
         }
 
         auto commandBuffer = [queue commandBuffer];
@@ -440,38 +440,33 @@ vector_float4 rand_color() {
 
 - (void) testBezierPerfSplit {
 
-    std::vector<vgerPrim> primArray;
-
-    int N = 10000;
-
-    for(int i=0;i<N;++i) {
-        simd_float2 cvs[3] = { 512*rand2(), 512*rand2(), 512*rand2() };
-        auto c = vgerColorPaint(rand_color());
-        vgerPrim p[2] = {
-            {
-                .type = vgerBezier,
-                .width = 0.01,
-                .paint = c
-            },
-            {
-                .type = vgerBezier,
-                .width = 0.01,
-                .paint = c
-            }
-        };
-        SplitBezier(.5, cvs, p[0].cvs, p[1].cvs);
-        primArray.push_back(p[0]);
-        primArray.push_back(p[1]);
-    }
-
     auto vger = vgerNew();
 
     [self measureBlock:^{
 
         vgerBegin(vger, 512, 512, 1.0);
 
-        for(int i=0;i<2*N;++i) {
-            vgerRender(vger, &primArray[i]);
+        int N = 10000;
+
+        for(int i=0;i<N;++i) {
+            simd_float2 cvs[3] = { 512*rand2(), 512*rand2(), 512*rand2() };
+            auto c = vgerColorPaint(vger, rand_color());
+            vgerPrim p[2] = {
+                {
+                    .type = vgerBezier,
+                    .width = 0.01,
+                    .paint = c
+                },
+                {
+                    .type = vgerBezier,
+                    .width = 0.01,
+                    .paint = c
+                }
+            };
+            SplitBezier(.5, cvs, p[0].cvs, p[1].cvs);
+
+            vgerRender(vger, &p[0]);
+            vgerRender(vger, &p[1]);
         }
 
         auto commandBuffer = [queue commandBuffer];
@@ -491,6 +486,7 @@ vector_float4 rand_color() {
     showTexture(texture, @"vger_bezier_split_perf.png");
 }
 
+/*
 void renderPaths(NVGcontext* vg, const std::vector<vgerPrim>& primArray) {
 
     for(auto& prim : primArray) {
@@ -569,6 +565,7 @@ void renderPaths(NVGcontext* vg, const std::vector<vgerPrim>& primArray) {
     system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
 #endif
 }
+*/
 
 static void textAt(vgerContext vger, float x, float y, const char* str) {
     vgerSave(vger);
@@ -593,7 +590,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
         .type = vgerBezier,
         .width = 1.0,
         .cvs = {{50, 450}, {100,450}, {100,500}},
-        .paint = vgerLinearGradient(float2{50,450}, float2{100,450}, cyan, magenta)
+        .paint = vgerLinearGradient(vger, float2{50,450}, float2{100,450}, cyan, magenta)
     };
 
     vgerRender(vger, &bez);
@@ -604,7 +601,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
         .width = 0.0,
         .radius = 10,
         .cvs = {{50, 350}, {100,400}},
-        .paint = vgerLinearGradient(float2{50,350}, float2{100,400}, cyan, magenta)
+        .paint = vgerLinearGradient(vger, float2{50,350}, float2{100,400}, cyan, magenta)
     };
     vgerRender(vger, &rect);
     textAt(vger, 150, 350, "Rounded rectangle");
@@ -614,7 +611,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
         .width = 0.0,
         .radius = 25,
         .cvs = {{75, 275}},
-        .paint = vgerLinearGradient(float2{50,250}, float2{100,300}, cyan, magenta)
+        .paint = vgerLinearGradient(vger, float2{50,250}, float2{100,300}, cyan, magenta)
     };
     vgerRender(vger, &circle);
     textAt(vger, 150, 250, "Circle");
@@ -623,7 +620,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
         .type = vgerSegment,
         .width = 2.0,
         .cvs = {{50, 150}, {100,200}},
-        .paint = vgerLinearGradient(float2{50,150}, float2{100,200}, cyan, magenta)
+        .paint = vgerLinearGradient(vger, float2{50,150}, float2{100,200}, cyan, magenta)
     };
     vgerRender(vger, &line);
     textAt(vger, 150, 150, "Line segment");
@@ -635,7 +632,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
         .width = 1.0,
         .cvs = {{75, 75}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
         .radius=25,
-        .paint = vgerLinearGradient(float2{50,50}, float2{100,100}, cyan, magenta)
+        .paint = vgerLinearGradient(vger, float2{50,50}, float2{100,100}, cyan, magenta)
     };
     vgerRender(vger, &arc);
     textAt(vger, 150, 050, "Arc");
@@ -650,40 +647,35 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
 - (void) testPaint {
 
-    auto p = vgerColorPaint(float4{.1,.2,.3,.4});
+    auto p = makeLinearGradient(float2{0,0}, float2{1,0}, float4(0), float4(1));
 
-    auto c = applyPaint(p, float2{5,7});
+    XCTAssertTrue(equal(applyPaint(p, float2{0,0}), float4(0)));
+    XCTAssertTrue(equal(applyPaint(p, float2{.5,0}), float4(.5)));
+    XCTAssertTrue(equal(applyPaint(p, float2{1,0}), float4(1)));
 
-    XCTAssertTrue(simd_equal(c, float4{.1,.2,.3,.4}));
+    p = makeLinearGradient(float2{0,0}, float2{0,1}, float4(0), float4(1));
 
-    p = vgerLinearGradient(float2{0,0}, float2{1,0}, float4(0), float4(1));
+    XCTAssertTrue(equal(applyPaint(p, float2{0,0}), float4(0)));
+    XCTAssertTrue(equal(applyPaint(p, float2{0,1}), float4(1)));
 
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{0,0}), float4(0)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{.5,0}), float4(.5)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{1,0}), float4(1)));
+    p = makeLinearGradient(float2{1,0}, float2{2,0}, float4(0), float4(1));
+    XCTAssertTrue(equal(applyPaint(p, float2{0,0}), float4(0)));
+    XCTAssertTrue(equal(applyPaint(p, float2{1,0}), float4(0)));
+    XCTAssertTrue(equal(applyPaint(p, float2{1.5,0}), float4(.5)));
+    XCTAssertTrue(equal(applyPaint(p, float2{2,0}), float4(1)));
+    XCTAssertTrue(equal(applyPaint(p, float2{3,0}), float4(1)));
 
-    p = vgerLinearGradient(float2{0,0}, float2{0,1}, float4(0), float4(1));
+    p = makeLinearGradient(float2{1,2}, float2{2,3}, float4(0), float4(1));
+    XCTAssertTrue(equal(applyPaint(p, float2{1,2}), float4(0)));
+    XCTAssertTrue(equal(applyPaint(p, float2{2,3}), float4(1)));
 
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{0,0}), float4(0)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{0,1}), float4(1)));
-
-    p = vgerLinearGradient(float2{1,0}, float2{2,0}, float4(0), float4(1));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{0,0}), float4(0)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{1,0}), float4(0)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{1.5,0}), float4(.5)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{2,0}), float4(1)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{3,0}), float4(1)));
-
-    p = vgerLinearGradient(float2{1,2}, float2{2,3}, float4(0), float4(1));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{1,2}), float4(0)));
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{2,3}), float4(1)));
-
-    p = vgerLinearGradient(float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1});
+    p = makeLinearGradient(float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1});
     XCTAssertTrue(simd_length(applyPaint(p, float2{400,100}) - float4{0,1,1,1}) < 0.001f);
 
-    c = applyPaint(p, float2{425,125});
+    auto c = applyPaint(p, float2{425,125});
     XCTAssertTrue(simd_length(c - float4{.5,.5,1,1}) < 0.001f);
-    XCTAssertTrue(simd_equal(applyPaint(p, float2{450,150}), float4{1,0,1,1}));
+    XCTAssertTrue(equal(applyPaint(p, float2{450,150}), float4{1,0,1,1}));
+
 }
 
 - (void) testTextAlgin {
@@ -707,10 +699,11 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
         .width = 0.0,
         .radius = 0,
         .cvs = {cvs[0], cvs[1]},
-        .paint = vgerColorPaint(float4{.2,.2,.2,1.0})
+        .paint = vgerColorPaint(vger, float4{.2,.2,.2,1.0})
     };
     vgerRender(vger, &rect);
 
+    auto magenta = vgerColorPaint(vger, float4{1,0,1,1.0});
     vgerPrim dot = {
         .type = vgerCircle,
         .radius = 1,
@@ -744,7 +737,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     vgerBegin(vger, w, h, 1.0);
 
-    auto paint = vgerLinearGradient(0, sz, float4{0,1,1,1}, float4{1,0,1,1});
+    auto paint = vgerLinearGradient(vger, 0, sz, float4{0,1,1,1}, float4{1,0,1,1});
     vgerFillPath(vger, cvs, n, paint, true);
 
     [self render:vger name:@"path_fill.png"];
@@ -769,7 +762,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     vgerBegin(vger, w, h, 1.0);
 
-    auto paint = vgerLinearGradient(0, sz, float4{0,1,1,1}, float4{1,0,1,1});
+    auto paint = vgerLinearGradient(vger, 0, sz, float4{0,1,1,1}, float4{1,0,1,1});
     vgerFillPath(vger, cvs, n, paint, true);
 
     [self render:vger name:@"path_fill_circle.png"];
@@ -800,7 +793,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
         .width = 0.0,
         .radius = 0,
         .cvs = {cvs[0], cvs[1]},
-        .paint = vgerColorPaint(float4{.2,.2,.2,1.0})
+        .paint = vgerColorPaint(vger, float4{.2,.2,.2,1.0})
     };
     vgerRender(vger, &rect);
 
@@ -839,11 +832,17 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
             float((c >> 24) & 0xff)
         } * 1.0/255.0;
 
-        auto paint = vgerColorPaint(fcolor);
+        auto paint = vgerColorPaint(vger, fcolor);
 
         for (NSVGpath *path = shape->paths; path; path = path->next) {
-            vgerFillCubicPath(vger, (float2*) path->pts, path->npts, paint, true);
+            float2* pts = (float2*) path->pts;
+            vgerMoveTo(vger, pts[0]);
+            for(int i=1; i<path->npts-2; i+=3) {
+                vgerCubicApproxTo(vger, pts[i], pts[i+1], pts[i+2]);
+            }
         }
+
+        vgerFill(vger, paint);
     }
     vgerRestore(vger);
     // Delete
@@ -882,7 +881,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
                 float((c >> 24) & 0xff)
             } * 1.0/255.0;
 
-            auto paint = vgerColorPaint(fcolor);
+            auto paint = vgerColorPaint(vger, fcolor);
 
             for (NSVGpath *path = shape->paths; path; path = path->next) {
                 vgerFillCubicPath(vger, (float2*) path->pts, path->npts, paint, true);
@@ -950,7 +949,7 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
         .type = vgerSegment,
         .cvs = { {0, 0}, {512, 512} },
         .width = 5,
-        .paint = vgerColorPaint(float4{1,0,1,1})
+        .paint = vgerColorPaint(vger, float4{1,0,1,1})
     };
 
     vgerRender(vger, &segment);
@@ -990,7 +989,7 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
         .type = vgerSegment,
         .cvs = { {128, 128}, {384, 384} },
         .width = 5,
-        .paint = vgerColorPaint(float4{0,1,1,1})
+        .paint = vgerColorPaint(vger, float4{0,1,1,1})
     };
 
     vgerRender(vger, &segment);
@@ -999,7 +998,7 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
         .type = vgerSegment,
         .cvs = { {128, 384}, {384, 128} },
         .width = 5,
-        .paint = vgerColorPaint(float4{1,1,0,1})
+        .paint = vgerColorPaint(vger, float4{1,1,0,1})
     };
 
     vgerRender(vger, &segment2);
@@ -1039,7 +1038,7 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
         .cvs = { {128, 128}, {384, 384} },
         .width = 5,
         .radius = 32,
-        .paint = vgerColorPaint(float4{1,0,1,1})
+        .paint = vgerColorPaint(vger, float4{1,0,1,1})
     };
 
     vgerRender(vger, &rect);
@@ -1088,7 +1087,7 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
 
     vgerBegin(vger, w, h, 1.0);
 
-    auto paint = vgerLinearGradient(0, sz, float4{0,1,1,1}, float4{1,0,1,1});
+    auto paint = vgerLinearGradient(vger, 0, sz, float4{0,1,1,1}, float4{1,0,1,1});
     vgerFillPath(vger, cvs, n, paint, false);
 
     auto commandBuffer = [queue commandBuffer];

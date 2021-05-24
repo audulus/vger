@@ -52,8 +52,8 @@ vgerGlyphPathCache::Info& vgerGlyphPathCache::getInfo(CGGlyph glyph) {
             
             vgerPrim prim = {
                 .type = vgerPathFill,
-                .start = (int) info.cvs.size(),
-                .count = n
+                .start = (uint32_t) info.cvs.size(),
+                .count = uint16_t(n)
             };
             
             Interval xInt{FLT_MAX, -FLT_MAX};
@@ -73,19 +73,13 @@ vgerGlyphPathCache::Info& vgerGlyphPathCache::getInfo(CGGlyph glyph) {
             BBox bounds;
             bounds.min.x = xInt.a;
             bounds.max.x = xInt.b;
-            bounds.min.y = scan.yInterval.a;
-            bounds.max.y = scan.yInterval.b;
+            bounds.min.y = scan.interval.a;
+            bounds.max.y = scan.interval.b;
             
             // Calculate the prim vertices at this stage,
             // as we do for glyphs.
-            prim.texcoords[0] = bounds.min;
-            prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-            prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-            prim.texcoords[3] = bounds.max;
-            
-            for(int i=0;i<4;++i) {
-                prim.verts[i] = prim.texcoords[i];
-            }
+            prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
+            prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
             
             info.prims.push_back(prim);
         }
@@ -94,8 +88,8 @@ vgerGlyphPathCache::Info& vgerGlyphPathCache::getInfo(CGGlyph glyph) {
         
         vgerPrim prim = {
             .type = vgerPathFill,
-            .start = (int) info.cvs.size(),
-            .count = (int) scan.segments.size()
+            .start = (uint32_t) info.cvs.size(),
+            .count = (uint16_t) scan.segments.size()
         };
         
         for(auto& seg : scan.segments) {
@@ -108,14 +102,8 @@ vgerGlyphPathCache::Info& vgerGlyphPathCache::getInfo(CGGlyph glyph) {
         
         // Calculate the prim vertices at this stage,
         // as we do for glyphs.
-        prim.texcoords[0] = bounds.min;
-        prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-        prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-        prim.texcoords[3] = bounds.max;
-        
-        for(int i=0;i<4;++i) {
-            prim.verts[i] = prim.texcoords[i];
-        }
+        prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
+        prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
         
         info.prims.push_back(prim);
     }

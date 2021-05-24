@@ -2,6 +2,7 @@
 
 #import "vgerRenderer.h"
 #import "vgerBundleHelper.h"
+#import "paint.h"
 
 static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
@@ -65,8 +66,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
 - (void) encodeTo:(id<MTLCommandBuffer>) buffer
              pass:(MTLRenderPassDescriptor*) pass
-            prims:(id<MTLBuffer>) primBuffer
-              cvs:(id<MTLBuffer>) cvBuffer
+            scene:(vgerScene) scene
             count:(int)n
          textures:(NSArray<id<MTLTexture>>*)textures
      glyphTexture:(id<MTLTexture>)glyphTexture
@@ -79,8 +79,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     auto bounds = [buffer computeCommandEncoder];
     bounds.label = @"bounds encoder";
     [bounds setComputePipelineState:boundsPipeline];
-    [bounds setBuffer:primBuffer offset:0 atIndex:0];
-    [bounds setBuffer:cvBuffer offset:0 atIndex:1];
+    [bounds setBuffer:scene.prims offset:0 atIndex:0];
+    [bounds setBuffer:scene.cvs offset:0 atIndex:1];
     [bounds setBytes:&n length:sizeof(uint) atIndex:2];
     [bounds dispatchThreadgroups:MTLSizeMake(n/128+1, 1, 1)
           threadsPerThreadgroup:MTLSizeMake(128, 1, 1)];
@@ -90,22 +90,25 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     enc.label = @"render encoder";
     
     [enc setRenderPipelineState:pipeline];
-    [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:1];
     [enc setFragmentTexture:glyphTexture atIndex:1];
-    [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
-    [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
-    [enc setFragmentBuffer:cvBuffer offset:0 atIndex:1];
+    [enc setVertexBuffer:scene.prims offset:0 atIndex:0];
+    [enc setVertexBuffer:scene.xforms offset:0 atIndex:1];
+    [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:2];
+    [enc setFragmentBuffer:scene.prims offset:0 atIndex:0];
+    [enc setFragmentBuffer:scene.cvs offset:0 atIndex:1];
+    [enc setFragmentBuffer:scene.paints offset:0 atIndex:2];
 
-    vgerPrim* p = (vgerPrim*) primBuffer.contents;
+    vgerPrim* p = (vgerPrim*) scene.prims.contents;
+    vgerPaint* paints = (vgerPaint*) scene.paints.contents;
     int currentTexture = -1;
     int m = 0;
     int offset = 0;
     for(int i=0;i<n;++i) {
 
-        int imageID = p->paint.image;
+        int imageID = paints[p->paint].image;
 
         // Texture ID changed, render.
-        if(p->type != vgerGlyph and imageID != -1 and imageID != currentTexture) {
+        if(imageID != -1 and imageID != currentTexture) {
 
             if(m) {
                 [enc setVertexBufferOffset:offset atIndex:0];

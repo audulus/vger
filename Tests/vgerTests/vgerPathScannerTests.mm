@@ -28,7 +28,7 @@
     XCTAssertEqual(scan.segments.size(), 4);
 
     while(scan.next()) {
-        printf("interval %f %f, active: ", scan.yInterval.a, scan.yInterval.b);
+        printf("interval %f %f, active: ", scan.interval.a, scan.interval.b);
         for(int a = scan.first; a != -1; a = scan.segments[a].next) {
             printf("%d ", a);
         }
@@ -55,7 +55,7 @@
     scan.begin(path);
     
     while(scan.next()) {
-        printf("interval %f %f, active: ", scan.yInterval.a, scan.yInterval.b);
+        printf("interval %f %f, active: ", scan.interval.a, scan.interval.b);
         for(int a = scan.first; a != -1; a = scan.segments[a].next) {
             printf("%d ", a);
         }

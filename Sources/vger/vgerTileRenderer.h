@@ -3,7 +3,8 @@
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 #include <simd/simd.h>
-#include "vger_types.h"
+#include "vger.h"
+#include "vgerScene.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -12,8 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithDevice:(id<MTLDevice>) device;
 
 - (void) encodeTo:(id<MTLCommandBuffer>) buffer
-            prims:(id<MTLBuffer>) primBuffer
-              cvs:(id<MTLBuffer>) cvBuffer
+            scene:(vgerScene) scene
             count:(int)n
          textures:(NSArray<id<MTLTexture>>*)textures
      glyphTexture:(id<MTLTexture>)glyphTexture

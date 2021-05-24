@@ -2,7 +2,7 @@
 
 #import <XCTest/XCTest.h>
 #import <simd/simd.h>
-#include "vger_types.h"
+#include "vger.h"
 
 #import "../../Sources/vger/sdf.h"
 

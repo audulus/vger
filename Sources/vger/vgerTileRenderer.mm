@@ -118,8 +118,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 }
 
 - (void) encodeTo:(id<MTLCommandBuffer>) buffer
-            prims:(id<MTLBuffer>) primBuffer
-              cvs:(id<MTLBuffer>) cvBuffer
+            scene:(vgerScene) scene
             count:(int)n
          textures:(NSArray<id<MTLTexture>>*)textures
      glyphTexture:(id<MTLTexture>)glyphTexture
@@ -141,8 +140,8 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     auto bounds = [buffer computeCommandEncoder];
     bounds.label = @"bounds encoder";
     [bounds setComputePipelineState:boundsPipeline];
-    [bounds setBuffer:primBuffer offset:0 atIndex:0];
-    [bounds setBuffer:cvBuffer offset:0 atIndex:1];
+    [bounds setBuffer:scene.prims offset:0 atIndex:0];
+    [bounds setBuffer:scene.cvs offset:0 atIndex:1];
     [bounds setBytes:&n length:sizeof(uint) atIndex:2];
     [bounds dispatchThreadgroups:MTLSizeMake(n/128+1, 1, 1)
           threadsPerThreadgroup:MTLSizeMake(128, 1, 1)];
@@ -152,13 +151,15 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     enc.label = @"render encoder";
 
     [enc setRenderPipelineState:coarsePipeline];
-    [enc setVertexBuffer:primBuffer offset:0 atIndex:0];
+    [enc setVertexBuffer:scene.prims offset:0 atIndex:0];
+    [enc setVertexBuffer:scene.xforms offset:0 atIndex:1];
     float2 maxWindowSize{MAX_TILES_WIDTH * TILE_SIZE_PIXELS, MAX_TILES_WIDTH * TILE_SIZE_PIXELS};
-    [enc setVertexBytes:&maxWindowSize length:sizeof(maxWindowSize) atIndex:1];
-    [enc setFragmentBuffer:primBuffer offset:0 atIndex:0];
-    [enc setFragmentBuffer:cvBuffer offset:0 atIndex:1];
-    [enc setFragmentBuffer:tileBuffer offset:0 atIndex:2];
-    [enc setFragmentBuffer:lengthBuffer offset:0 atIndex:3];
+    [enc setVertexBytes:&maxWindowSize length:sizeof(maxWindowSize) atIndex:2];
+    [enc setFragmentBuffer:scene.prims offset:0 atIndex:0];
+    [enc setFragmentBuffer:scene.cvs offset:0 atIndex:1];
+    [enc setFragmentBuffer:scene.paints offset:0 atIndex:2];
+    [enc setFragmentBuffer:tileBuffer offset:0 atIndex:3];
+    [enc setFragmentBuffer:lengthBuffer offset:0 atIndex:4];
 
     // XXX: how do we deal with rendering from textures?
     [enc drawPrimitives:MTLPrimitiveTypeTriangleStrip

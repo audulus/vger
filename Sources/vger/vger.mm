@@ -25,13 +25,23 @@ vger::vger() {
     renderer = [[vgerRenderer alloc] initWithDevice:device];
     glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
     printf("prim buffer size: %d MB\n", (int)(maxPrims * sizeof(vgerPrim))/(1024*1024));
+    printf("cv buffer size: %d MB\n", (int)(maxCvs * sizeof(float2))/(1024*1024));
+    printf("xform buffer size: %d MB\n", (int)(maxPrims * sizeof(simd_float3x3))/(1024*1024));
+    printf("paints buffer size: %d MB\n", (int)(maxPrims * sizeof(vgerPaint))/(1024*1024));
     for(int i=0;i<3;++i) {
-        primBuffers[i] = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
+        auto prims = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
                                        options:MTLResourceStorageModeShared];
-        primBuffers[i].label = @"prim buffer";
-        cvBuffers[i] = [device newBufferWithLength:maxCvs * sizeof(float2)
+        prims.label = @"prim buffer";
+        auto cvs = [device newBufferWithLength:maxCvs * sizeof(float2)
                                        options:MTLResourceStorageModeShared];
-        cvBuffers[i].label = @"cv buffer";
+        cvs.label = @"cv buffer";
+        auto xforms = [device newBufferWithLength:maxPrims * sizeof(simd_float3x3) options:MTLResourceStorageModeShared];
+        xforms.label = @"xform buffer";
+
+        auto paints = [device newBufferWithLength:maxPrims * sizeof(vgerPaint) options:MTLResourceStorageModeShared];
+        paints.label = @"paints buffer";
+
+        scenes[i] = {prims, cvs, xforms, paints};
     }
     txStack.push_back(matrix_identity_float3x3);
 
@@ -51,10 +61,15 @@ void vgerDelete(vgerContext vg) {
 
 void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devicePxRatio) {
     vg->curBuffer = (vg->curBuffer+1)%3;
-    vg->p = (vgerPrim*) vg->primBuffers[vg->curBuffer].contents;
+    auto& scene = vg->scenes[vg->curBuffer];
+    vg->primPtr = (vgerPrim*) scene.prims.contents;
     vg->primCount = 0;
-    vg->cv = (float2*) vg->cvBuffers[vg->curBuffer].contents;
+    vg->cvPtr = (float2*) scene.cvs.contents;
     vg->cvCount = 0;
+    vg->xformPtr = (float3x3*) scene.xforms.contents;
+    vg->xformCount = 0;
+    vg->paintPtr = (vgerPaint*) scene.paints.contents;
+    vg->paintCount = 0;
     vg->windowSize = {windowWidth, windowHeight};
     vg->devicePxRatio = devicePxRatio;
 }
@@ -98,11 +113,62 @@ vector_int2 vgerTextureSize(vgerContext vg, int texID) {
 void vgerRender(vgerContext vg, const vgerPrim* prim) {
 
     if(vg->primCount < vg->maxPrims) {
-        *vg->p = *prim;
-        vg->p->xform = vg->txStack.back();
-        vg->p++;
+        *vg->primPtr = *prim;
+        vg->primPtr->xform = vg->addxform(vg->txStack.back());
+        vg->primPtr++;
         vg->primCount++;
     }
+
+}
+
+void vgerFillCircle(vgerContext vg, vector_float2 center, float radius, uint16_t paint) {
+
+    vgerPrim prim {
+        .type = vgerCircle,
+        .cvs = { center },
+        .radius = radius,
+        .paint = paint
+    };
+
+    vgerRender(vg, &prim);
+}
+
+void vgerStrokeArc(vgerContext vg, vector_float2 center, float radius, float width, float rotation, float aperture, uint16_t paint) {
+
+    vgerPrim prim {
+        .type = vgerArc,
+        .radius = radius,
+        .cvs = { center, {sin(rotation), cos(rotation)}, {sin(aperture), cos(aperture)} },
+        .width = width,
+        .paint = paint
+    };
+
+    vgerRender(vg, &prim);
+}
+
+void vgerFillRect(vgerContext vg, vector_float2 min, vector_float2 max, float radius, uint16_t paint) {
+
+    vgerPrim prim {
+        .type = vgerRect,
+        .radius = radius,
+        .cvs = { min, max },
+        .paint = paint
+    };
+
+    vgerRender(vg, &prim);
+}
+
+void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float radius, float width, uint16_t paint) {
+
+    vgerPrim prim {
+        .type = vgerRectStroke,
+        .radius = radius,
+        .width = width,
+        .cvs = { min, max },
+        .paint = paint
+    };
+
+    vgerRender(vg, &prim);
 
 }
 
@@ -139,7 +205,7 @@ void vgerText(vgerContext vg, const char* str, float4 color, int align) {
     vg->renderText(str, color, align);
 }
 
-bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint) {
+bool vger::renderCachedText(const TextLayoutKey& key, uint16_t paint, uint16_t xform) {
 
     // Do we already have text in the cache?
     auto iter = textCache.find(key);
@@ -149,12 +215,12 @@ bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint) {
         info.lastFrame = currentFrame;
         for(auto& prim : info.prims) {
             if(primCount < maxPrims) {
-                *p = prim;
-                p->paint = paint;
+                *primPtr = prim;
+                primPtr->paint = paint;
                 // Keep the old image index.
-                p->paint.image = prim.paint.image;
-                p->xform = txStack.back();
-                p++;
+                // primPtr->paint.image = prim.paint.image;
+                primPtr->xform = xform;
+                primPtr++;
                 primCount++;
             }
         }
@@ -164,7 +230,7 @@ bool vger::renderCachedText(const TextLayoutKey& key, const vgerPaint& paint) {
     return false;
 }
 
-void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPaint& paint, float2 offset, float scale) {
+void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, uint16_t paint, float2 offset, float scale, uint16_t xform) {
 
     CFRange entire = CFRangeMake(0, 0);
 
@@ -195,28 +261,21 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPa
                 vgerPrim prim = {
                     .type = vgerGlyph,
                     .paint = paint,
-                    .verts = {
-                        a,
-                        float2{b.x, a.y},
-                        float2{a.x, b.y},
-                        b,
-                    },
-                    .texcoords = {
+                    .quadBounds = { a, b },
+                    .texBounds = {
                         float2{GLYPH_MARGIN,   originY},
-                        float2{GLYPH_MARGIN+w, originY},
-                        float2{GLYPH_MARGIN,   originY-h},
-                        float2{GLYPH_MARGIN+w, originY-h},
+                        float2{GLYPH_MARGIN+w, originY-h}
                     },
-                    .xform = txStack.back()
+                    .xform = xform
                 };
 
-                prim.paint.image = info.regionIndex;
+                prim.glyph = info.regionIndex;
 
                 textInfo.prims.push_back(prim);
 
                 if(primCount < maxPrims) {
-                    *this->p = prim;
-                    this->p++;
+                    *this->primPtr = prim;
+                    this->primPtr++;
                     primCount++;
                 }
             }
@@ -225,7 +284,7 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, const vgerPa
 
 }
 
-void vger::renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 position) {
+void vger::renderGlyphPath(CGGlyph glyph, uint16_t paint, float2 position, uint16_t xform) {
 
     auto& info = glyphPathCache.getInfo(glyph);
     auto n = cvCount;
@@ -235,11 +294,11 @@ void vger::renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 positio
     
     for(auto& prim : info.prims) {
         if(primCount < maxPrims) {
-            *p = prim;
-            p->xform = txStack.back();
-            p->paint = paint;
-            p->start += n;
-            p++;
+            *primPtr = prim;
+            primPtr->xform = xform;
+            primPtr->paint = paint;
+            primPtr->start += n;
+            primPtr++;
             primCount++;
         }
     }
@@ -252,6 +311,8 @@ void vger::renderGlyphPath(CGGlyph glyph, const vgerPaint& paint, float2 positio
 }
 
 CTLineRef vger::createCTLine(const char* str) {
+
+    assert(str);
 
     auto attributes = @{ NSFontAttributeName : (__bridge id)glyphPathCache.ctFont };
     auto string = [NSString stringWithUTF8String:str];
@@ -267,8 +328,15 @@ CTLineRef vger::createCTLine(const char* str) {
 bool glyphPaths = false;
 
 void vger::renderText(const char* str, float4 color, int align) {
+
+    assert(str);
+
+    if(str[0] == 0) {
+        return;
+    }
     
-    auto paint = vgerColorPaint(color);
+    auto paint = vgerColorPaint(this, color);
+    auto xform = addxform(txStack.back());
     
     if(glyphPaths) {
 
@@ -289,7 +357,7 @@ void vger::renderText(const char* str, float4 color, int align) {
                 CGRect r = CTRunGetImageBounds(run, nil, CFRangeMake(i, 1));
                 float2 p = float2{float(r.origin.x), float(r.origin.y)} + offset;
 
-                renderGlyphPath(glyphs[i], paint, p);
+                renderGlyphPath(glyphs[i], paint, p, xform);
             }
         }
 
@@ -300,7 +368,7 @@ void vger::renderText(const char* str, float4 color, int align) {
         auto scale = averageScale(txStack.back()) * devicePxRatio;
         auto key = TextLayoutKey{std::string(str), scale, align};
         
-        if(renderCachedText(key, paint)) {
+        if(renderCachedText(key, paint, xform)) {
             return;
         }
 
@@ -310,7 +378,7 @@ void vger::renderText(const char* str, float4 color, int align) {
         auto& textInfo = textCache[key];
         textInfo.lastFrame = currentFrame;
 
-        renderTextLine(line, textInfo, paint, alignOffset(line, align), scale);
+        renderTextLine(line, textInfo, paint, alignOffset(line, align), scale, xform);
 
         CFRelease(line);
         
@@ -319,6 +387,15 @@ void vger::renderText(const char* str, float4 color, int align) {
 }
 
 void vgerTextBounds(vgerContext vg, const char* str, float2* min, float2* max, int align) {
+
+    assert(str);
+    assert(min);
+    assert(max);
+
+    if(str[0] == 0) {
+        *min = *max = float2{0,0};
+        return;
+    }
 
     auto line = vg->createCTLine(str);
 
@@ -344,6 +421,8 @@ static constexpr float big = 10000;
 
 CTFrameRef vger::createCTFrame(const char* str, float breakRowWidth) {
 
+    assert(str);
+
     auto attributes = @{ NSFontAttributeName : (__bridge id)[glyphCache getFont] };
     auto string = [NSString stringWithUTF8String:str];
     auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
@@ -362,11 +441,18 @@ CTFrameRef vger::createCTFrame(const char* str, float breakRowWidth) {
 
 void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int align) {
 
-    auto paint = vgerColorPaint(color);
+    assert(str);
+
+    if(str[0] == 0) {
+        return;
+    }
+
+    auto paint = vgerColorPaint(this, color);
     auto scale = averageScale(txStack.back()) * devicePxRatio;
     auto key = TextLayoutKey{std::string(str), scale, align, breakRowWidth};
+    auto xform = addxform(txStack.back());
 
-    if(renderCachedText(key, paint)) {
+    if(renderCachedText(key, paint, xform)) {
         return;
     }
 
@@ -384,7 +470,7 @@ void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int
     for(id obj in lines) {
         CTLineRef line = (__bridge CTLineRef)obj;
         auto o = lineOrigins[lineIndex++];
-        renderTextLine(line, textInfo, paint, float2{float(o.x),float(o.y)-big}, scale);
+        renderTextLine(line, textInfo, paint, float2{float(o.x),float(o.y)-big}, scale, xform);
     }
 
     CFRelease(frame);
@@ -392,11 +478,21 @@ void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int
 
 void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, float2* min, float2* max, int align) {
 
+    assert(str);
+    assert(min);
+    assert(max);
+
+    if(str[0] == 0) {
+        *min = *max = float2{0,0};
+        return;
+    }
+
     CFRange entire = CFRangeMake(0, 0);
 
     auto frame = vg->createCTFrame(str, breakRowWidth);
 
     NSArray *lines = (__bridge id)CTFrameGetLines(frame);
+    assert(lines);
 
     CGPoint lastOrigin;
     CTFrameGetLineOrigins(frame, CFRangeMake(lines.count-1, 1), &lastOrigin);
@@ -409,41 +505,107 @@ void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, flo
 
 }
 
-void vgerFillPath(vgerContext vg, float2* cvs, int count, vgerPaint paint, bool scan) {
+void vgerFillPath(vgerContext vg, float2* cvs, int count, uint16_t paint, bool scan) {
     vg->fillPath(cvs, count, paint, scan);
 }
 
-void vger::fillPath(float2* cvs, int count, vgerPaint paint, bool scan) {
+void vger::fill(uint16_t paint) {
+
+    if(primCount == maxPrims) {
+        return;
+    }
+
+    auto xform = addxform(txStack.back());
+
+    yScanner._init();
+
+    while(yScanner.next()) {
+
+        int n = yScanner.activeCount;
+
+        vgerPrim prim = {
+            .type = vgerPathFill,
+            .paint = paint,
+            .xform = xform,
+            .start = cvCount,
+            .count = uint16_t(n)
+        };
+
+        if(primCount < maxPrims and cvCount+n*3 < maxCvs) {
+
+            Interval xInt{FLT_MAX, -FLT_MAX};
+
+            for(int a = yScanner.first; a != -1; a = yScanner.segments[a].next) {
+
+                assert(a < yScanner.segments.size());
+                for(int i=0;i<3;++i) {
+                    auto p = yScanner.segments[a].cvs[i];
+                    addCV(p);
+                    xInt.a = std::min(xInt.a, p.x);
+                    xInt.b = std::max(xInt.b, p.x);
+                }
+
+            }
+
+            BBox bounds;
+            bounds.min.x = xInt.a;
+            bounds.max.x = xInt.b;
+            bounds.min.y = yScanner.interval.a;
+            bounds.max.y = yScanner.interval.b;
+
+            // Calculate the prim vertices at this stage,
+            // as we do for glyphs.
+            prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
+            prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
+
+            *(primPtr++) = prim;
+            primCount++;
+        }
+    }
+
+    assert(yScanner.activeCount == 0);
+
+    yScanner.segments.clear();
+
+}
+
+void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
     if(count < 3) {
         return;
     }
 
+    if(primCount == maxPrims) {
+        return;
+    }
+
+    auto xform = addxform(txStack.back());
+
     if(scan) {
 
-        scanner.begin(cvs, count);
+        yScanner.begin(cvs, count);
 
-        while(scanner.next()) {
+        while(yScanner.next()) {
 
-            int n = scanner.activeCount;
+            int n = yScanner.activeCount;
 
             vgerPrim prim = {
                 .type = vgerPathFill,
                 .paint = paint,
-                .xform = txStack.back(),
+                .xform = xform,
                 .start = cvCount,
-                .count = n
+                .count = uint16_t(n)
             };
 
             if(primCount < maxPrims and cvCount+n*3 < maxCvs) {
 
                 Interval xInt{FLT_MAX, -FLT_MAX};
 
-                for(int a = scanner.first; a != -1; a = scanner.segments[a].next) {
+                for(int a = yScanner.first; a != -1; a = yScanner.segments[a].next) {
 
-                    assert(a < scanner.segments.size());
+                    assert(a < yScanner.segments.size());
                     for(int i=0;i<3;++i) {
-                        auto p = scanner.segments[a].cvs[i];
+                        auto p = yScanner.segments[a].cvs[i];
                         addCV(p);
                         xInt.a = std::min(xInt.a, p.x);
                         xInt.b = std::max(xInt.b, p.x);
@@ -454,37 +616,31 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint, bool scan) {
                 BBox bounds;
                 bounds.min.x = xInt.a;
                 bounds.max.x = xInt.b;
-                bounds.min.y = scanner.yInterval.a;
-                bounds.max.y = scanner.yInterval.b;
+                bounds.min.y = yScanner.interval.a;
+                bounds.max.y = yScanner.interval.b;
 
                 // Calculate the prim vertices at this stage,
                 // as we do for glyphs.
-                prim.texcoords[0] = bounds.min;
-                prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-                prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-                prim.texcoords[3] = bounds.max;
+                prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
+                prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
 
-                for(int i=0;i<4;++i) {
-                    prim.verts[i] = prim.texcoords[i];
-                }
-
-                *(p++) = prim;
+                *(primPtr++) = prim;
                 primCount++;
             }
         }
 
-        assert(scanner.activeCount == 0);
+        assert(yScanner.activeCount == 0);
 
     } else {
 
-        bool closed = simd_equal(cvs[0], cvs[count-1]);
+        bool closed = equal(cvs[0], cvs[count-1]);
 
         vgerPrim prim = {
             .type = vgerPathFill,
             .paint = paint,
-            .xform = txStack.back(),
+            .xform = xform,
             .start = cvCount,
-            .count = (count-1)/2 + !closed,
+            .count = uint16_t((count-1)/2 + !closed),
             .width = 0
         };
 
@@ -504,27 +660,21 @@ void vger::fillPath(float2* cvs, int count, vgerPaint paint, bool scan) {
                 addCV(start);
             }
 
-            auto bounds = sdPrimBounds(prim, (float2*) cvBuffers[curBuffer].contents).inset(-10);
-            prim.texcoords[0] = bounds.min;
-            prim.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-            prim.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-            prim.texcoords[3] = bounds.max;
+            auto bounds = sdPrimBounds(prim, (float2*) scenes[curBuffer].cvs.contents).inset(-10);
+            prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
+            prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
 
-            for(int i=0;i<4;++i) {
-                prim.verts[i] = prim.texcoords[i];
-            }
-
-            *(p++) = prim;
+            *(primPtr++) = prim;
             primCount++;
         }
     }
 }
 
-void vgerFillCubicPath(vgerContext vg, float2* cvs, int count, vgerPaint paint, bool scan) {
+void vgerFillCubicPath(vgerContext vg, float2* cvs, int count, uint16_t paint, bool scan) {
     vg->fillCubicPath(cvs, count, paint, scan);
 }
 
-void vger::fillCubicPath(float2* cvs, int count, vgerPaint paint, bool scan) {
+void vger::fillCubicPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
     points.resize(0);
 
@@ -540,6 +690,27 @@ void vger::fillCubicPath(float2* cvs, int count, vgerPaint paint, bool scan) {
 
     fillPath(points.data(), points.size(), paint, scan);
 
+}
+
+void vgerMoveTo(vgerContext vg, float2 pt) {
+    vg->pen = pt;
+}
+
+void vgerQuadTo(vgerContext vg, float2 b, float2 c) {
+    vg->yScanner.segments.push_back({vg->pen, b, c});
+    vg->pen = c;
+}
+
+void vgerCubicApproxTo(vgerContext vg, float2 b, float2 c, float2 d) {
+    float2 cubic[4] = {vg->pen, b, c, d};
+    float2 q[6];
+    approx_cubic(cubic, q);
+    vgerQuadTo(vg, q[1], q[2]);
+    vgerQuadTo(vg, q[4], q[5]);
+}
+
+void vgerFill(vgerContext vg, uint16_t paint) {
+    vg->fill(paint);
 }
 
 void vgerEncode(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
@@ -560,21 +731,21 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
     [glyphCache update:buf];
 
     auto glyphRects = [glyphCache getRects];
-    auto primp = (vgerPrim*) primBuffers[curBuffer].contents;
+    auto& scene = scenes[curBuffer];
+    auto primp = (vgerPrim*) scene.prims.contents;
     for(int i=0;i<primCount;++i) {
         auto& prim = primp[i];
         if(prim.type == vgerGlyph) {
-            auto r = glyphRects[prim.paint.image-1];
-            for(int i=0;i<4;++i) {
-                prim.texcoords[i] += float2{float(r.x), float(r.y)};
+            auto r = glyphRects[prim.glyph-1];
+            for(int i=0;i<2;++i) {
+                prim.texBounds[i] += float2{float(r.x), float(r.y)};
             }
         }
     }
 
     [renderer encodeTo:buf
                   pass:pass
-                 prims:primBuffers[curBuffer]
-                   cvs:cvBuffers[curBuffer]
+                 scene:scene
                  count:primCount
               textures:textures
           glyphTexture:[glyphCache getAltas]
@@ -601,8 +772,7 @@ void vger::encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTextu
     }
 
     [tileRenderer encodeTo:buf
-                     prims:primBuffers[curBuffer]
-                       cvs:cvBuffers[curBuffer]
+                     scene:scenes[curBuffer]
                      count:primCount
                   textures:textures
               glyphTexture:[glyphCache getAltas]
@@ -611,7 +781,7 @@ void vger::encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTextu
 
 }
 
-void vgerTranslate(vgerContext vg, vector_float2 t) {
+void vgerTranslate(vgerContext vg, float2 t) {
     auto M = matrix_identity_float3x3;
     M.columns[2] = vector3(t, 1);
 
@@ -620,7 +790,7 @@ void vgerTranslate(vgerContext vg, vector_float2 t) {
 }
 
 /// Scales current coordinate system.
-void vgerScale(vgerContext vg, vector_float2 s) {
+void vgerScale(vgerContext vg, float2 s) {
     auto M = matrix_identity_float3x3;
     M.columns[0].x = s.x;
     M.columns[1].y = s.y;
@@ -630,7 +800,7 @@ void vgerScale(vgerContext vg, vector_float2 s) {
 }
 
 /// Transforms a point according to the current transformation.
-vector_float2 vgerTransform(vgerContext vg, vector_float2 p) {
+float2 vgerTransform(vgerContext vg, float2 p) {
     auto& M = vg->txStack.back();
     auto q = matrix_multiply(M, float3{p.x,p.y,1.0});
     return {q.x/q.z, q.y/q.z};
@@ -660,7 +830,7 @@ id<MTLTexture> vgerGetCoarseDebugTexture(vgerContext vg) {
     return [vg->tileRenderer getDebugTexture];
 }
 
-vgerPaint vgerColorPaint(vector_float4 color) {
+uint16_t vgerColorPaint(vgerContext vg, float4 color) {
 
     vgerPaint p;
     p.xform = matrix_identity_float3x3;
@@ -668,47 +838,29 @@ vgerPaint vgerColorPaint(vector_float4 color) {
     p.outerColor = color;
     p.image = -1;
 
-    return p;
+    return vg->addPaint(p);
 }
 
-vgerPaint vgerLinearGradient(vector_float2 start, vector_float2 end,
-                             vector_float4 innerColor, vector_float4 outerColor) {
+uint16_t vgerLinearGradient(vgerContext vg, float2 start, float2 end,
+                             float4 innerColor, float4 outerColor) {
 
-    vgerPaint p;
-
-    // Calculate transform aligned to the line
-    vector_float2 d = end - start;
-    if(simd_length(d) < 0.0001f) {
-        d = float2{0,1};
-    }
-
-    p.xform = simd_inverse(matrix_float3x3{
-        float3{d.x, d.y, 0},
-        float3{-d.y, d.x, 0},
-        float3{start.x, start.y, 1}
-    });
-
-    p.innerColor = innerColor;
-    p.outerColor = outerColor;
-    p.image = -1;
-
-    return p;
+    return vg->addPaint(makeLinearGradient(start, end, innerColor, outerColor));
 
 }
 
-vgerPaint vgerImagePattern(vector_float2 origin, vector_float2 size, float angle,
+uint16_t vgerImagePattern(vgerContext vg, float2 origin, float2 size, float angle,
                            int image, float alpha) {
 
     vgerPaint p;
     p.image = image;
 
-    matrix_float3x3 R = {
+    float3x3 R = {
         float3{ cosf(angle), sinf(angle), 0 },
         float3{ -sinf(angle), cosf(angle), 0 },
         float3{ -origin.x, -origin.y, 1}
     };
 
-    matrix_float3x3 S = {
+    float3x3 S = {
         float3{ 1/size.x, 0, 0 },
         float3{ 0, 1/size.y, 0},
         float3{ 0, 0, 1}
@@ -718,5 +870,5 @@ vgerPaint vgerImagePattern(vector_float2 origin, vector_float2 size, float angle
 
     p.innerColor = p.outerColor = float4{1,1,1,alpha};
 
-    return p;
+    return vg->addPaint(p);
 }

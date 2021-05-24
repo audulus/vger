@@ -6,17 +6,8 @@
 
 using namespace simd;
 
-Interval vgerPathScanner::Segment::yInterval() const {
-    // Fatten the interval slightly to prevent artifacts by
-    // slightly missing a curve in a band.
-    return {
-        std::min(cvs[0].y, std::min(cvs[1].y, cvs[2].y)) - 1,
-        std::max(cvs[0].y, std::max(cvs[1].y, cvs[2].y)) + 1
-    };
-}
-
 bool operator<(const vgerPathScanner::Node& a, const vgerPathScanner::Node& b) {
-    return std::tie(a.y, a.seg, a.end) < std::tie(b.y, b.seg, b.end);
+    return std::tie(a.coord, a.seg, a.end) < std::tie(b.coord, b.seg, b.end);
 }
 
 void vgerPathScanner::_init() {
@@ -30,6 +21,7 @@ void vgerPathScanner::_init() {
         nodes.push_back({yInterval.b, i, 1});
     }
 
+    // Note: using qsort is significantly slower according to profiling.
     std::sort(nodes.begin(), nodes.end());
 
 }
@@ -45,7 +37,7 @@ void vgerPathScanner::begin(vector_float2 *cvs, int count) {
     // Close the path if necessary.
     auto start = segments.front().cvs[0];
     auto end = segments.back().cvs[2];
-    if(!simd_equal(start, end)) {
+    if(!equal(start, end)) {
         segments.push_back({end, (start+end)/2, start});
     }
 
@@ -89,7 +81,7 @@ static void pathElement(void *info, const CGPathElement *element) {
             break;
 
         case kCGPathElementCloseSubpath:
-            if(!simd_equal(p, start)) {
+            if(!equal(p, start)) {
                 scan->segments.push_back({p, (p+start)/2, start});
             }
             p = start;
@@ -115,11 +107,12 @@ void vgerPathScanner::begin(CGPathRef path) {
 
 bool vgerPathScanner::next() {
 
-    float y = nodes[index].y;
-    yInterval.a = y;
+    float y = nodes[index].coord;
+    interval.a = y;
+    auto n = nodes.size();
 
     // Activate and deactivate segments.
-    for(;index < nodes.size() && nodes[index].y == y; ++index) {
+    for(;index < n && nodes[index].coord == y; ++index) {
         auto& node = nodes[index];
         if(node.end) {
             --activeCount;
@@ -145,9 +138,9 @@ bool vgerPathScanner::next() {
         }
     }
 
-    if(index < nodes.size()) {
-        yInterval.b = nodes[index].y;
+    if(index < n) {
+        interval.b = nodes[index].coord;
     }
 
-    return index < nodes.size();
+    return index < n;
 }

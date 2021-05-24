@@ -3,9 +3,10 @@
 #include <metal_stdlib>
 using namespace metal;
 
-#include "include/vger_types.h"
+#include "include/vger.h"
 #include "sdf.h"
 #include "commands.h"
+#include "paint.h"
 
 #define SQRT_2 1.414213562373095
 
@@ -27,14 +28,8 @@ kernel void vger_bounds(uint gid [[thread_position_in_grid]],
         if(p.type != vgerGlyph and p.type != vgerPathFill) {
 
             auto bounds = sdPrimBounds(p, cvs).inset(-1);
-            p.texcoords[0] = bounds.min;
-            p.texcoords[1] = float2{bounds.max.x, bounds.min.y};
-            p.texcoords[2] = float2{bounds.min.x, bounds.max.y};
-            p.texcoords[3] = bounds.max;
-
-            for(int i=0;i<4;++i) {
-                p.verts[i] = p.texcoords[i];
-            }
+            p.quadBounds[0] = p.texBounds[0] = bounds.min;
+            p.quadBounds[1] = p.texBounds[1] = bounds.max;
 
         }
     }
@@ -49,15 +44,13 @@ kernel void vger_prune(uint gid [[thread_position_in_grid]],
     if(gid < primCount) {
         device auto& prim = prims[gid];
 
-        auto center = 0.5 * (prim.texcoords[0] + prim.texcoords[3]);
-        auto tile_size = prim.texcoords[3] - prim.texcoords[0];
+        auto center = 0.5 * (prim.texBounds[0] + prim.texBounds[1]);
+        auto tile_size = prim.texBounds[1] - prim.texBounds[0];
 
         if(sdPrim(prim, cvs, center) > max(tile_size.x, tile_size.y) * 0.5 * SQRT_2) {
             float2 big = {FLT_MAX, FLT_MAX};
-            prim.verts[0] = big;
-            prim.verts[1] = big;
-            prim.verts[2] = big;
-            prim.verts[3] = big;
+            prim.quadBounds[0] = big;
+            prim.quadBounds[1] = big;
         }
 
     }
@@ -66,6 +59,7 @@ kernel void vger_prune(uint gid [[thread_position_in_grid]],
 vertex VertexOut vger_vertex(uint vid [[vertex_id]],
                              uint iid [[instance_id]],
                              const device vgerPrim* prims,
+                             const device float3x3* xforms,
                              constant float2& viewSize) {
     
     device auto& prim = prims[iid];
@@ -73,10 +67,12 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
     VertexOut out;
     out.primIndex = iid;
 
-    auto q = prim.xform * float3(prim.verts[vid], 1.0);
+    auto q = xforms[prim.xform] * float3(float2(prim.quadBounds[vid & 1].x,
+                                                prim.quadBounds[vid >> 1].y),
+                                         1.0);
 
     auto p = float2{q.x/q.z, q.y/q.z};
-    out.t = prim.texcoords[vid];
+    out.t = float2(prim.texBounds[vid & 1].x, prim.texBounds[vid >> 1].y);
     out.position = float4(2.0 * p / viewSize - 1.0, 0, 1);
     
     return out;
@@ -85,12 +81,12 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
 fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
                               const device float2* cvs,
+                              const device vgerPaint* paints,
                               texture2d<float, access::sample> tex,
                               texture2d<float, access::sample> glyphs) {
 
     device auto& prim = prims[in.primIndex];
-
-
+    device auto& paint = paints[prim.paint];
 
     if(prim.type == vgerGlyph) {
 
@@ -98,11 +94,12 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                                           min_filter::linear,
                                           coord::pixel);
 
-        auto c = prim.paint.innerColor;
+        auto c = paint.innerColor;
         return float4(c.rgb, c.a * glyphs.sample(glyphSampler, in.t).a);
     }
-    
-    float d = sdPrim(prim, cvs, in.t);
+
+    float fw = length(fwidth(in.t));
+    float d = sdPrim(prim, cvs, in.t, /*exact*/false, fw);
 
     //if(d > 2*sw) {
     //    discard_fragment();
@@ -110,19 +107,18 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 
     float4 color;
 
-    if(prim.paint.image == -1) {
-        color = applyPaint(prim.paint, in.t);
+    if(paint.image == -1) {
+        color = applyPaint(paint, in.t);
     } else {
 
         constexpr sampler textureSampler (mag_filter::linear,
                                           min_filter::linear);
 
-        auto t = (prim.paint.xform * float3(in.t,1)).xy;
+        auto t = (paint.xform * float3(in.t,1)).xy;
         t.y = 1.0 - t.y;
         color = tex.sample(textureSampler, t);
     }
 
-    float fw = length(fwidth(in.t));
     return mix(float4(color.rgb,0.0), color, 1.0-smoothstep(-fw/2,fw/2,d) );
 
 }
@@ -136,8 +132,9 @@ kernel void vger_tile_clear(device uint *tileLengths [[buffer(0)]],
 fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
                               const device float2* cvs,
+                              const device vgerPaint* paints,
                               device Tile *tiles,
-                              device uint *tileLengths [[ raster_order_group(0) ]]) {
+                              device uint *tileLengths [[ /*raster_order_group(0)*/ ]]) {
 
     device auto& prim = prims[in.primIndex];
     uint x = (uint) in.position.x;
@@ -190,7 +187,7 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
     }
 
     tile.append(vgerCmdSolid{vgerOpSolid,
-        pack_float_to_srgb_unorm4x8(prim.paint.innerColor)},
+        pack_float_to_srgb_unorm4x8(paints[prim.paint].innerColor)},
                 length);
 
     tileLengths[tileIx] = length;
