@@ -146,6 +146,32 @@ void vgerStrokeArc(vgerContext vg, vector_float2 center, float radius, float wid
     vgerRender(vg, &prim);
 }
 
+void vgerFillRect(vgerContext vg, vector_float2 min, vector_float2 max, float radius, uint16_t paint) {
+
+    vgerPrim prim {
+        .type = vgerRect,
+        .radius = radius,
+        .cvs = { min, max },
+        .paint = paint
+    };
+
+    vgerRender(vg, &prim);
+}
+
+void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float radius, float width, uint16_t paint) {
+
+    vgerPrim prim {
+        .type = vgerRectStroke,
+        .radius = radius,
+        .width = width,
+        .cvs = { min, max },
+        .paint = paint
+    };
+
+    vgerRender(vg, &prim);
+
+}
+
 static float averageScale(const float3x3& M)
 {
     return 0.5f * (length(M.columns[0].xy) + length(M.columns[1].xy));

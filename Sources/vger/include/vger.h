@@ -158,7 +158,7 @@ void vgerStrokeArc(vgerContext, vector_float2 center, float radius, float width,
 
 void vgerFillRect(vgerContext, vector_float2 min, vector_float2 max, float radius, uint16_t paint);
 
-void vgerStrokeRect(vgerContext, vector_float2 min, vector_float2 max, float radius, uint16_t paint);
+void vgerStrokeRect(vgerContext, vector_float2 min, vector_float2 max, float radius, float width, uint16_t paint);
 
 #pragma mark - Text
 
