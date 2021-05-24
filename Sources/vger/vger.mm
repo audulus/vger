@@ -121,6 +121,18 @@ void vgerRender(vgerContext vg, const vgerPrim* prim) {
 
 }
 
+void vgerFillCircle(vgerContext vg, vector_float2 center, float radius, uint16_t paint) {
+
+    vgerPrim prim {
+        .type = vgerCircle,
+        .cvs = { center },
+        .radius = radius,
+        .paint = paint
+    };
+
+    vgerRender(vg, &prim);
+}
+
 static float averageScale(const float3x3& M)
 {
     return 0.5f * (length(M.columns[0].xy) + length(M.columns[1].xy));

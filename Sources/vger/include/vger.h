@@ -151,6 +151,10 @@ vector_int2 vgerTextureSize(vgerContext, int texID);
 /// Render a prim.
 void vgerRender(vgerContext, const vgerPrim* prim);
 
+#pragma mark - Primitives
+
+void vgerFillCircle(vgerContext, vector_float2 center, float radius, uint16_t paint);
+
 #pragma mark - Text
 
 /// Render text.
