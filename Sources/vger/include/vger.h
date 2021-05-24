@@ -148,14 +148,18 @@ void vgerDeleteTexture(vgerContext, int texID);
 /// Get the size of a texture.
 vector_int2 vgerTextureSize(vgerContext, int texID);
 
+#pragma mark - Primitives
+
 /// Render a prim.
 void vgerRender(vgerContext, const vgerPrim* prim);
-
-#pragma mark - Primitives
 
 void vgerFillCircle(vgerContext, vector_float2 center, float radius, uint16_t paint);
 
 void vgerStrokeArc(vgerContext, vector_float2 center, float radius, float width, float rotation, float aperture, uint16_t paint);
+
+void vgerFillRect(vgerContext, vector_float2 min, vector_float2 max, float radius, uint16_t paint);
+
+void vgerStrokeRect(vgerContext, vector_float2 min, vector_float2 max, float radius, uint16_t paint);
 
 #pragma mark - Text
 
