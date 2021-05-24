@@ -596,14 +596,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     vgerRender(vger, &bez);
     textAt(vger, 150, 450, "Quadratic Bezier stroke");
 
-    vgerPrim rect = {
-        .type = vgerRect,
-        .width = 0.0,
-        .radius = 10,
-        .cvs = {{50, 350}, {100,400}},
-        .paint = vgerLinearGradient(vger, float2{50,350}, float2{100,400}, cyan, magenta)
-    };
-    vgerRender(vger, &rect);
+    vgerFillRect(vger, float2{50,350}, float2{100,400}, 10, vgerLinearGradient(vger, float2{50,350}, float2{100,400}, cyan, magenta));
     textAt(vger, 150, 350, "Rounded rectangle");
 
     vgerPrim circle = {
