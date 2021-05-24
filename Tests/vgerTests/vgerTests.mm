@@ -599,14 +599,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     vgerFillRect(vger, float2{50,350}, float2{100,400}, 10, vgerLinearGradient(vger, float2{50,350}, float2{100,400}, cyan, magenta));
     textAt(vger, 150, 350, "Rounded rectangle");
 
-    vgerPrim circle = {
-        .type = vgerCircle,
-        .width = 0.0,
-        .radius = 25,
-        .cvs = {{75, 275}},
-        .paint = vgerLinearGradient(vger, float2{50,250}, float2{100,300}, cyan, magenta)
-    };
-    vgerRender(vger, &circle);
+    vgerFillCircle(vger, float2{75, 275}, 25, vgerLinearGradient(vger, float2{50,250}, float2{100,300}, cyan, magenta));
     textAt(vger, 150, 250, "Circle");
 
     vgerPrim line = {
