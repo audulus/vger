@@ -198,7 +198,6 @@ fragment float4 vger_tile_fragment(VertexOut in [[ stage_in ]],
 
 }
 
-// Not yet used.
 kernel void vger_tile_render(texture2d<half, access::write> outTexture [[texture(0)]],
                              const device Tile *tiles [[buffer(0)]],
                              device uint *tileLengths [[buffer(1)]],
