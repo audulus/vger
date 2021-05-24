@@ -18,7 +18,6 @@ using namespace simd;
 #endif
 
 // Rendering commands for experimental tile-based fine rendering.
-// Not yet in use.
 
 #define TILE_BUF_SIZE 4096
 #define MAX_TILES_WIDTH 256
