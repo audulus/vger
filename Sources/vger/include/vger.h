@@ -147,6 +147,8 @@ vector_int2 vgerTextureSize(vgerContext, int texID);
 /// Render a prim.
 void vgerRender(vgerContext, const vgerPrim* prim);
 
+#pragma mark - Text
+
 /// Render text.
 void vgerText(vgerContext, const char* str, vector_float4 color, int align);
 
@@ -158,6 +160,8 @@ void vgerTextBox(vgerContext, const char* str, float breakRowWidth, vector_float
 
 /// Returns bounds of multi-line text.
 void vgerTextBoxBounds(vgerContext, const char* str, float breakRowWidth, vector_float2* min, vector_float2* max, int align);
+
+#pragma mark - Paths
 
 /// Fill a path bounded by quadratic bezier segments.
 void vgerFillPath(vgerContext, vector_float2* cvs, int count, uint16_t paint, bool scan);
@@ -176,6 +180,8 @@ void vgerCubicApproxTo(vgerContext vg, vector_float2 b, vector_float2 c, vector_
 
 /// Fills the current path (and clears the path).
 void vgerFill(vgerContext, uint16_t paint);
+
+#pragma mark - Transforms
 
 /// Translates current coordinate system.
 void vgerTranslate(vgerContext, vector_float2 t);
@@ -196,6 +202,8 @@ void vgerSave(vgerContext);
 /// Pops and restores the current transform.
 void vgerRestore(vgerContext);
 
+#pragma mark - Encoding
+
 #ifdef __OBJC__
 /// Encode drawing commands to a metal command buffer.
 void vgerEncode(vgerContext, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
@@ -209,6 +217,8 @@ id<MTLTexture> vgerGetGlyphAtlas(vgerContext);
 /// For debugging.
 id<MTLTexture> vgerGetCoarseDebugTexture(vgerContext);
 #endif
+
+#pragma mark - Paints
 
 /// Create a paint for a constant color. Returns paint index. Paints are cleared each frame.
 uint16_t vgerColorPaint(vgerContext vg, vector_float4 color);
