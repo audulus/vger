@@ -138,6 +138,7 @@ static void SplitBezier(float t,
 
     vgerFillCircle(vg, float2{256, 256}, 40, cyan);
     vgerStrokeBezier(vg, float2{256,256}, float2{256,384}, float2{384,384}, 1, white);
+    vgerFillRect(vg, float2{400,100}, float2{450,150}, 10, vgerLinearGradient(vg, float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1}));
 
     vgerPrim primArray[] = {
         {
@@ -145,13 +146,6 @@ static void SplitBezier(float t,
             .width = 10,
             .cvs = {{100,100}, {200,200}},
             .paint = magenta,
-        },
-        {
-            .type = vgerRect,
-            .width = 0.01,
-            .cvs = {{400,100}, {450,150}},
-            .radius= 10,
-            .paint = vgerLinearGradient(vg, float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1})
         },
         {
             .type = vgerRectStroke,
