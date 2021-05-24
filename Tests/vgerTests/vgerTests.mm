@@ -776,6 +776,8 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
 
     makeCircle(vger, sz/2, 128);
 
+    makeCircle(vger, sz/2, 64);
+
     vgerFill(vger, paint);
 
     [self render:vger name:@"path_fill_circle.png"];
