@@ -137,8 +137,7 @@ void vgerBegin(vgerContext, float windowWidth, float windowHeight, float deviceP
 int  vgerAddTexture(vgerContext, const uint8_t* data, int width, int height);
 
 #ifdef __OBJC__
-/// Add a texture from a MTLTexture. This copies image data from the texture instead of referencing
-/// the texture.
+/// Add a MTLTexture. This references the texture, so you can render to it, etc.
 int vgerAddMTLTexture(vgerContext, id<MTLTexture>);
 #endif
 
