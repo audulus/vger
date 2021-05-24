@@ -137,14 +137,9 @@ static void SplitBezier(float t,
     auto magenta = vgerColorPaint(vg, float4{1,0,1,1});
 
     vgerFillCircle(vg, float2{256, 256}, 40, cyan);
+    vgerStrokeBezier(vg, float2{256,256}, float2{256,384}, float2{384,384}, 1, white);
 
     vgerPrim primArray[] = {
-        {
-            .type = vgerBezier,
-            .width = 1,
-            .cvs = {{256,256}, {256,384}, {384,384}},
-            .paint = white,
-        },
         {
             .type = vgerSegment,
             .width = 10,
