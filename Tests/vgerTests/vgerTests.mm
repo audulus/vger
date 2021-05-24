@@ -586,14 +586,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     vgerSave(vger);
 
-    vgerPrim bez = {
-        .type = vgerBezier,
-        .width = 1.0,
-        .cvs = {{50, 450}, {100,450}, {100,500}},
-        .paint = vgerLinearGradient(vger, float2{50,450}, float2{100,450}, cyan, magenta)
-    };
-
-    vgerRender(vger, &bez);
+    vgerStrokeBezier(vger, float2{50,450}, float2{100,450}, float2{100,500}, 2.0, vgerLinearGradient(vger, float2{50,450}, float2{100,450}, cyan, magenta));
     textAt(vger, 150, 450, "Quadratic Bezier stroke");
 
     vgerFillRect(vger, float2{50,350}, float2{100,400}, 10, vgerLinearGradient(vger, float2{50,350}, float2{100,400}, cyan, magenta));
