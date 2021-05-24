@@ -155,6 +155,8 @@ void vgerRender(vgerContext, const vgerPrim* prim);
 
 void vgerFillCircle(vgerContext, vector_float2 center, float radius, uint16_t paint);
 
+void vgerStrokeArc(vgerContext, vector_float2 center, float radius, float width, float rotation, float aperture, uint16_t paint);
+
 #pragma mark - Text
 
 /// Render text.

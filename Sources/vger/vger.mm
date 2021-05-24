@@ -133,6 +133,19 @@ void vgerFillCircle(vgerContext vg, vector_float2 center, float radius, uint16_t
     vgerRender(vg, &prim);
 }
 
+void vgerStrokeArc(vgerContext vg, vector_float2 center, float radius, float width, float rotation, float aperture, uint16_t paint) {
+
+    vgerPrim prim {
+        .type = vgerArc,
+        .radius = radius,
+        .cvs = { center, {sin(rotation), cos(rotation)}, {sin(aperture), cos(aperture)} },
+        .width = width,
+        .paint = paint
+    };
+
+    vgerRender(vg, &prim);
+}
+
 static float averageScale(const float3x3& M)
 {
     return 0.5f * (length(M.columns[0].xy) + length(M.columns[1].xy));
