@@ -613,14 +613,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     float theta = 0;      // orientation
     float ap = .5 * M_PI; // aperture size
-    vgerPrim arc = {
-        .type = vgerArc,
-        .width = 1.0,
-        .cvs = {{75, 75}, {sin(theta), cos(theta)}, {sin(ap), cos(ap)}},
-        .radius=25,
-        .paint = vgerLinearGradient(vger, float2{50,50}, float2{100,100}, cyan, magenta)
-    };
-    vgerRender(vger, &arc);
+    vgerStrokeArc(vger, float2{75,75}, 25, 2.0, theta, ap, vgerLinearGradient(vger, float2{50,50}, float2{100,100}, cyan, magenta));
     textAt(vger, 150, 050, "Arc");
 
     vgerRestore(vger);
