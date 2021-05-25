@@ -136,7 +136,7 @@ static void SplitBezier(float t,
     auto cyan = vgerColorPaint(vg, float4{0,1,1,1});
     auto magenta = vgerColorPaint(vg, float4{1,0,1,1});
 
-    vgerFillCircle(vg, { {256, 256}, 40, cyan} );
+    vgerFillCircle(vg, float2{256, 256}, 40, cyan);
     vgerStrokeBezier(vg, float2{256,256}, float2{256,384}, float2{384,384}, 1, white);
     vgerFillRect(vg, float2{400,100}, float2{450,150}, 10, vgerLinearGradient(vg, float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1}));
     vgerStrokeArc(vg, float2{100,400}, 30, 3, theta, ap, white);
@@ -569,7 +569,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     vgerFillRect(vger, float2{50,350}, float2{100,400}, 10, vgerLinearGradient(vger, float2{50,350}, float2{100,400}, cyan, magenta));
     textAt(vger, 150, 350, "Rounded rectangle");
 
-    vgerFillCircle(vger, {.center = {75, 275}, .radius = 25, vgerLinearGradient(vger, float2{50,250}, float2{100,300}, cyan, magenta)});
+    vgerFillCircle(vger, float2{75, 275}, 25, vgerLinearGradient(vger, float2{50,250}, float2{100,300}, cyan, magenta));
     textAt(vger, 150, 250, "Circle");
 
     vgerPrim line = {

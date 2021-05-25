@@ -121,13 +121,13 @@ void vgerRender(vgerContext vg, const vgerPrim* prim) {
 
 }
 
-void vgerFillCircle(vgerContext vg, vgerCircleInfo info) {
+void vgerFillCircle(vgerContext vg, vector_float2 center, float radius, uint16_t paint) {
 
     vgerPrim prim {
         .type = vgerCircle,
-        .cvs = { info.center },
-        .radius = info.radius,
-        .paint = info.paint
+        .cvs = { center },
+        .radius = radius,
+        .paint = paint
     };
 
     vgerRender(vg, &prim);

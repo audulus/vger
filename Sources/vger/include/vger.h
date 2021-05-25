@@ -152,13 +152,7 @@ vector_int2 vgerTextureSize(vgerContext, int texID);
 /// Render a prim.
 void vgerRender(vgerContext, const vgerPrim* prim);
 
-typedef struct {
-    vector_float2 center;
-    float radius;
-    uint16_t paint;
-} vgerCircleInfo;
-
-void vgerFillCircle(vgerContext, vgerCircleInfo);
+void vgerFillCircle(vgerContext, vector_float2 center, float radius, uint16_t paint);
 
 void vgerStrokeArc(vgerContext, vector_float2 center, float radius, float width, float rotation, float aperture, uint16_t paint);
 
