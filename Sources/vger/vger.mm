@@ -173,12 +173,12 @@ void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float 
 
 }
 
-void vgerStrokeBezier(vgerContext vg, vector_float2 a, vector_float2 b, vector_float2 c, float width, uint16_t paint) {
+void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, uint16_t paint) {
 
     vgerPrim prim {
         .type = vgerBezier,
         .width = width,
-        .cvs = { a, b, c },
+        .cvs = { s.a, s.b, s.c },
         .paint = paint
     };
 

@@ -160,7 +160,9 @@ void vgerFillRect(vgerContext, vector_float2 min, vector_float2 max, float radiu
 
 void vgerStrokeRect(vgerContext, vector_float2 min, vector_float2 max, float radius, float width, uint16_t paint);
 
-void vgerStrokeBezier(vgerContext, vector_float2 a, vector_float2 b, vector_float2 c, float width, uint16_t paint);
+typedef struct { vector_float2 a, b, c; } vgerBezierSegment;
+
+void vgerStrokeBezier(vgerContext, vgerBezierSegment, float width, uint16_t paint);
 
 void vgerStrokeSegment(vgerContext, vector_float2 a, vector_float2 b, float width, uint16_t paint);
 

@@ -137,7 +137,7 @@ static void SplitBezier(float t,
     auto magenta = vgerColorPaint(vg, float4{1,0,1,1});
 
     vgerFillCircle(vg, float2{256, 256}, 40, cyan);
-    vgerStrokeBezier(vg, float2{256,256}, float2{256,384}, float2{384,384}, 1, white);
+    vgerStrokeBezier(vg, {{256,256}, {256,384}, {384,384}}, 1, white);
     vgerFillRect(vg, float2{400,100}, float2{450,150}, 10, vgerLinearGradient(vg, float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1}));
     vgerStrokeArc(vg, float2{100,400}, 30, 3, theta, ap, white);
     vgerStrokeSegment(vg, float2{100,100}, float2{200,200}, 10, magenta);
@@ -530,7 +530,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     vgerSave(vger);
 
-    vgerStrokeBezier(vger, float2{50,450}, float2{100,450}, float2{100,500}, 2.0, vgerLinearGradient(vger, float2{50,450}, float2{100,450}, cyan, magenta));
+    vgerStrokeBezier(vger, {{50,450}, {100,450}, {100,500}}, 2.0, vgerLinearGradient(vger, float2{50,450}, float2{100,450}, cyan, magenta));
     textAt(vger, 150, 450, "Quadratic Bezier stroke");
 
     vgerFillRect(vger, float2{50,350}, float2{100,400}, 10, vgerLinearGradient(vger, float2{50,350}, float2{100,400}, cyan, magenta));
