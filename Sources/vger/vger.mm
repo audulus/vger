@@ -185,6 +185,18 @@ void vgerStrokeBezier(vgerContext vg, vector_float2 a, vector_float2 b, vector_f
     vgerRender(vg, &prim);
 }
 
+void vgerStrokeSegment(vgerContext vg, vector_float2 a, vector_float2 b, float width, uint16_t paint) {
+
+    vgerPrim prim {
+        .type = vgerSegment,
+        .width = width,
+        .cvs = { a, b },
+        .paint = paint
+    };
+
+    vgerRender(vg, &prim);
+}
+
 static float averageScale(const float3x3& M)
 {
     return 0.5f * (length(M.columns[0].xy) + length(M.columns[1].xy));
