@@ -185,21 +185,23 @@ static void SplitBezier(float t,
 
     vgerBegin(vger, 512, 512, 1.0);
 
-    vgerCircleInfo p = {
-        .center = {20, 20},
+    vgerPrim p = {
+        .type = vgerCircle,
+        .width = 0.00,
         .radius = 10,
+        .cvs = { {20, 20}},
         .paint = vgerColorPaint(vger, float4{0,1,1,1})
     };
 
     XCTAssertTrue(equal(vgerTransform(vger, float2{0,0}), float2{0, 0}));
 
-    vgerFillCircle(vger, p);
+    vgerRender(vger, &p);
 
     vgerSave(vger);
     vgerTranslate(vger, float2{100,0.0f});
     vgerTranslate(vger, float2{0.0f,100});
     vgerScale(vger, float2{4.0f, 4.0f});
-    vgerFillCircle(vger, p);
+    vgerRender(vger, &p);
 
     vgerRestore(vger);
 
