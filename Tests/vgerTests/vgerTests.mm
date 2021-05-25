@@ -1009,7 +1009,14 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
     vgerBegin(vger, w, h, 1.0);
 
     auto paint = vgerLinearGradient(vger, 0, sz, float4{0,1,1,1}, float4{1,0,1,1});
-    vgerFillPath(vger, cvs, n, paint, false);
+
+    auto start = sz * rand2();
+    vgerMoveTo(vger, start);
+    for(int i=0;i<10;++i) {
+        vgerQuadTo(vger, sz * rand2(), sz * rand2());
+    }
+    vgerQuadTo(vger, sz * rand2(), start);
+    vgerFillForTile(vger, paint);
 
     auto commandBuffer = [queue commandBuffer];
 

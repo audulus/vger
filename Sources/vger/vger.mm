@@ -594,6 +594,38 @@ void vger::fill(uint16_t paint) {
 
 }
 
+void vger::fillForTile(uint16_t paint) {
+
+    if(primCount == maxPrims) {
+        return;
+    }
+
+    vgerPrim prim = {
+        .type = vgerPathFill,
+        .paint = paint,
+        .xform = addxform(txStack.back()),
+        .start = cvCount,
+        .count = static_cast<uint16_t>(yScanner.segments.size()),
+        .width = 0
+    };
+
+    for(auto seg : yScanner.segments) {
+        addCV(seg.cvs[0]);
+        addCV(seg.cvs[1]);
+        addCV(seg.cvs[2]);
+    }
+
+    auto bounds = sdPrimBounds(prim, (float2*) scenes[curBuffer].cvs.contents).inset(-10);
+    prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
+    prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
+
+    *(primPtr++) = prim;
+    primCount++;
+
+    yScanner.segments.clear();
+
+}
+
 void vger::fillPath(float2* cvs, int count, uint16_t paint, bool scan) {
 
     if(count < 3) {
@@ -736,6 +768,10 @@ void vgerCubicApproxTo(vgerContext vg, float2 b, float2 c, float2 d) {
 
 void vgerFill(vgerContext vg, uint16_t paint) {
     vg->fill(paint);
+}
+
+void vgerFillForTile(vgerContext vg, uint16_t paint) {
+    vg->fillForTile(paint);
 }
 
 void vgerEncode(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {

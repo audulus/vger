@@ -171,6 +171,8 @@ struct vger {
 
     void fill(uint16_t paint);
 
+    void fillForTile(uint16_t paint);
+
     void fillPath(float2* cvs, int count, uint16_t paint, bool scan);
 
     void fillCubicPath(float2* cvs, int count, uint16_t paint, bool scan);

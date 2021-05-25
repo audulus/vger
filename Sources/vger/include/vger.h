@@ -200,6 +200,9 @@ void vgerCubicApproxTo(vgerContext vg, vector_float2 b, vector_float2 c, vector_
 /// Fills the current path (and clears the path).
 void vgerFill(vgerContext, uint16_t paint);
 
+/// Fills the current path (for experimental tile rendering).
+void vgerFillForTile(vgerContext vg, uint16_t paint);
+
 #pragma mark - Transforms
 
 /// Translates current coordinate system.
