@@ -182,12 +182,6 @@ void vgerTextBoxBounds(vgerContext, const char* str, float breakRowWidth, vector
 
 #pragma mark - Paths
 
-/// Fill a path bounded by quadratic bezier segments.
-void vgerFillPath(vgerContext, vector_float2* cvs, int count, uint16_t paint, bool scan);
-
-/// Fill a path bounded by cubic bezier segments (crude approximation).
-void vgerFillCubicPath(vgerContext vg, vector_float2* cvs, int count, uint16_t paint, bool scan);
-
 /// Move the pen to a point.
 void vgerMoveTo(vgerContext, vector_float2 pt);
 

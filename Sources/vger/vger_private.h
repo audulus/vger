@@ -173,10 +173,6 @@ struct vger {
 
     void fillForTile(uint16_t paint);
 
-    void fillPath(float2* cvs, int count, uint16_t paint, bool scan);
-
-    void fillCubicPath(float2* cvs, int count, uint16_t paint, bool scan);
-
     void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 
     void encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture);
