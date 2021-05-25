@@ -219,18 +219,11 @@ static void SplitBezier(float t,
 
     vgerSave(vger);
 
-    vgerPrim p = {
-        .type = vgerRect,
-        .width = 0.01,
-        .cvs = { {20,20}, {40,40}},
-        .radius=0.3,
-        .paint = vgerColorPaint(vger, float4(1))
-    };
+    auto white = vgerColorPaint(vger, float4(1));
 
-    for(int i=0;i<10;++i) {
-        vgerRender(vger, &p);
-        p.cvs[0].x += 40;
-        p.cvs[1].x += 40;
+    for(float i=0;i<10;++i) {
+        float2 p = {20+i*40,20};
+        vgerFillRect(vger, p, p + float2(20), 0.3, white);
     }
 
     vgerRestore(vger);
