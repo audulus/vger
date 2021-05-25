@@ -158,8 +158,12 @@ static void SplitBezier(float t,
 
     vgerSave(vg);
     vgerScale(vg, float2{100, 100});
-    float2 cvs2[] = {0, {1,0}, {1,1}, {0,1}, {0, 2} };
-    vgerFillPath(vg, cvs2, 5, white, true);
+    float2 cvs2[] = {0, {1,0}, {1,1}, {0,1}, {0, 2}, {0,1} };
+    vgerMoveTo(vg, cvs2[0]);
+    vgerQuadTo(vg, cvs2[1], cvs2[2]);
+    vgerQuadTo(vg, cvs2[3], cvs2[4]);
+    vgerQuadTo(vg, cvs2[5], cvs2[0]);
+    vgerFill(vg, white);
     vgerRestore(vg);
 
     [self checkRender:vg name:@"vger_basics.png"];
