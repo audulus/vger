@@ -146,13 +146,13 @@ void vgerStrokeArc(vgerContext vg, vector_float2 center, float radius, float wid
     vgerRender(vg, &prim);
 }
 
-void vgerFillRect(vgerContext vg, vgerFillRectInfo info) {
+void vgerFillRect(vgerContext vg, vector_float2 min, vector_float2 max, float radius, uint16_t paint) {
 
     vgerPrim prim {
         .type = vgerRect,
-        .radius = info.radius,
-        .cvs = { info.min, info.max },
-        .paint = info.paint
+        .radius = radius,
+        .cvs = { min, max },
+        .paint = paint
     };
 
     vgerRender(vg, &prim);
