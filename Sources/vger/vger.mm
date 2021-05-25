@@ -127,7 +127,8 @@ void vgerFillCircle(vgerContext vg, vector_float2 center, float radius, uint16_t
         .type = vgerCircle,
         .cvs = { center },
         .radius = radius,
-        .paint = paint
+        .paint = paint,
+        .width = 0.0
     };
 
     vgerRender(vg, &prim);

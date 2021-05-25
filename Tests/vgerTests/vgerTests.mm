@@ -653,13 +653,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     vgerRender(vger, &rect);
 
     auto magenta = vgerColorPaint(vger, float4{1,0,1,1.0});
-    vgerPrim dot = {
-        .type = vgerCircle,
-        .radius = 1,
-        .cvs = { {0,0} },
-        .paint = magenta
-    };
-    vgerRender(vger, &dot);
+    vgerFillCircle(vger, float2{0,0}, 1, magenta);
 
     vgerText(vger, str, float4(1), VGER_ALIGN_CENTER | VGER_ALIGN_MIDDLE);
     vgerRestore(vger);
