@@ -633,19 +633,18 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     int w = 512, h = 512;
     float2 sz = {float(w),float(h)};
 
-    constexpr int n = 15;
-    float2 cvs[n];
-    for(int i=0;i<n-1;++i) {
-        cvs[i] = sz * rand2();
-    }
-    cvs[n-1] = cvs[0];
-
     auto vger = vgerNew();
 
     vgerBegin(vger, w, h, 1.0);
 
     auto paint = vgerLinearGradient(vger, 0, sz, float4{0,1,1,1}, float4{1,0,1,1});
-    vgerFillPath(vger, cvs, n, paint, true);
+    auto start = sz * rand2();
+    vgerMoveTo(vger, start);
+    for(int i=0;i<10;++i) {
+        vgerQuadTo(vger, sz * rand2(), sz * rand2());
+    }
+    vgerQuadTo(vger, sz * rand2(), start);
+    vgerFill(vger, paint);
 
     [self render:vger name:@"path_fill.png"];
 
