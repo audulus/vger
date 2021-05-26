@@ -343,18 +343,7 @@ vector_float4 rand_color() {
 
 - (void) testBezierPerf {
 
-    __block std::vector<vgerPrim> primArray;
-
     int N = 10000;
-
-    for(int i=0;i<N;++i) {
-        vgerPrim p = {
-            .type = vgerBezier,
-            .width = 1,
-            .cvs ={ 512*rand2(), 512*rand2(), 512*rand2() },
-        };
-        primArray.push_back(p);
-    }
 
     auto vger = vgerNew();
 
@@ -362,9 +351,10 @@ vector_float4 rand_color() {
 
         vgerBegin(vger, 512, 512, 1.0);
 
-        for(auto& prim : primArray) {
-            prim.paint = vgerColorPaint(vger, rand_color());
-            vgerRender(vger, &prim);
+        for(int i=0;i<N;++i) {
+
+            auto paint = vgerColorPaint(vger, rand_color());
+            vgerStrokeBezier(vger, { 512*rand2(), 512*rand2(), 512*rand2() }, 1, paint);
         }
 
         auto commandBuffer = [queue commandBuffer];
