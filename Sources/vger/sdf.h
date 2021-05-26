@@ -4,6 +4,7 @@
 #define sdf_h
 
 #include "metal_compat.h"
+#include "prim.h"
 
 // Projection of b onto a.
 inline float2 proj(float2 a, float2 b) {

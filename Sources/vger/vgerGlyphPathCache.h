@@ -9,6 +9,7 @@
 #include <unordered_map>
 #import <CoreGraphics/CoreGraphics.h>
 #import <CoreText/CoreText.h>
+#import "prim.h"
 
 struct vgerGlyphPathCache {
     

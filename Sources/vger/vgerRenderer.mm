@@ -3,6 +3,7 @@
 #import "vgerRenderer.h"
 #import "vgerBundleHelper.h"
 #import "paint.h"
+#import "prim.h"
 
 static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
