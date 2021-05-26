@@ -871,23 +871,8 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
 
     vgerBegin(vger, 512, 512, 1.0);
 
-    vgerPrim segment {
-        .type = vgerSegment,
-        .cvs = { {128, 128}, {384, 384} },
-        .width = 5,
-        .paint = vgerColorPaint(vger, float4{0,1,1,1})
-    };
-
-    vgerRender(vger, &segment);
-
-    vgerPrim segment2 {
-        .type = vgerSegment,
-        .cvs = { {128, 384}, {384, 128} },
-        .width = 5,
-        .paint = vgerColorPaint(vger, float4{1,1,0,1})
-    };
-
-    vgerRender(vger, &segment2);
+    vgerStrokeSegment(vger, float2{128,128}, float2{384,384}, 5, vgerColorPaint(vger, float4{0,1,1,1}));
+    vgerStrokeSegment(vger, float2{128,384}, float2{384,128}, 5, vgerColorPaint(vger, float4{1,1,0,1}));
 
     auto commandBuffer = [queue commandBuffer];
 
