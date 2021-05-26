@@ -108,6 +108,9 @@ enum vgerAlign {
     VGER_ALIGN_BASELINE  = 1<<6, // Default, align text vertically to baseline.
 };
 
+/// Type safety for paint indices.
+typedef struct { uint16_t index; } vgerPaintIndex;
+
 #ifndef __METAL_VERSION__
 
 #ifdef __OBJC__
@@ -152,21 +155,21 @@ vector_int2 vgerTextureSize(vgerContext, int texID);
 /// Render a prim.
 void vgerRender(vgerContext, const vgerPrim* prim);
 
-void vgerFillCircle(vgerContext, vector_float2 center, float radius, uint16_t paint);
+void vgerFillCircle(vgerContext, vector_float2 center, float radius, vgerPaintIndex paint);
 
-void vgerStrokeArc(vgerContext, vector_float2 center, float radius, float width, float rotation, float aperture, uint16_t paint);
+void vgerStrokeArc(vgerContext, vector_float2 center, float radius, float width, float rotation, float aperture, vgerPaintIndex paint);
 
-void vgerFillRect(vgerContext, vector_float2 min, vector_float2 max, float radius, uint16_t paint);
+void vgerFillRect(vgerContext, vector_float2 min, vector_float2 max, float radius, vgerPaintIndex paint);
 
-void vgerStrokeRect(vgerContext, vector_float2 min, vector_float2 max, float radius, float width, uint16_t paint);
+void vgerStrokeRect(vgerContext, vector_float2 min, vector_float2 max, float radius, float width, vgerPaintIndex paint);
 
 typedef struct { vector_float2 a, b, c; } vgerBezierSegment;
 
-void vgerStrokeBezier(vgerContext, vgerBezierSegment, float width, uint16_t paint);
+void vgerStrokeBezier(vgerContext, vgerBezierSegment, float width, vgerPaintIndex paint);
 
-void vgerStrokeSegment(vgerContext, vector_float2 a, vector_float2 b, float width, uint16_t paint);
+void vgerStrokeSegment(vgerContext, vector_float2 a, vector_float2 b, float width, vgerPaintIndex paint);
 
-void vgerStrokeWire(vgerContext, vector_float2 a, vector_float2 b, float width, uint16_t paint);
+void vgerStrokeWire(vgerContext, vector_float2 a, vector_float2 b, float width, vgerPaintIndex paint);
 
 #pragma mark - Text
 
@@ -194,10 +197,10 @@ void vgerQuadTo(vgerContext, vector_float2 b, vector_float2 c);
 void vgerCubicApproxTo(vgerContext vg, vector_float2 b, vector_float2 c, vector_float2 d);
 
 /// Fills the current path (and clears the path).
-void vgerFill(vgerContext, uint16_t paint);
+void vgerFill(vgerContext, vgerPaintIndex paint);
 
 /// Fills the current path (for experimental tile rendering).
-void vgerFillForTile(vgerContext vg, uint16_t paint);
+void vgerFillForTile(vgerContext vg, vgerPaintIndex paint);
 
 #pragma mark - Transforms
 
@@ -239,15 +242,15 @@ id<MTLTexture> vgerGetCoarseDebugTexture(vgerContext);
 #pragma mark - Paints
 
 /// Create a paint for a constant color. Returns paint index. Paints are cleared each frame.
-uint16_t vgerColorPaint(vgerContext vg, vector_float4 color);
+vgerPaintIndex vgerColorPaint(vgerContext vg, vector_float4 color);
 
 /// Create a paint for a linear gradient. Returns paint index. Paints are cleared each frame.
-uint16_t vgerLinearGradient(vgerContext vg, vector_float2 start, vector_float2 end,
-                             vector_float4 innerColor, vector_float4 outerColor);
+vgerPaintIndex vgerLinearGradient(vgerContext vg, vector_float2 start, vector_float2 end,
+                                  vector_float4 innerColor, vector_float4 outerColor);
 
 /// Create a paint using a texture image. Returns paint index. Paints are cleared each frame.
-uint16_t vgerImagePattern(vgerContext vg, vector_float2 origin, vector_float2 size, float angle,
-                           int image, float alpha);
+vgerPaintIndex vgerImagePattern(vgerContext vg, vector_float2 origin, vector_float2 size, float angle,
+                                int image, float alpha);
 
 #ifdef __cplusplus
 }

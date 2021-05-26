@@ -158,34 +158,34 @@ struct vger {
         return 0;
     }
 
-    uint16_t addPaint(const vgerPaint& paint) {
+    vgerPaintIndex addPaint(const vgerPaint& paint) {
         if(paintCount < maxPrims) {
             *(paintPtr++) = paint;
-            return paintCount++;
+            return {paintCount++};
         }
-        return 0;
+        return {0};
     }
 
     CTLineRef createCTLine(const char* str);
     CTFrameRef createCTFrame(const char* str, float breakRowWidth);
 
-    void fill(uint16_t paint);
+    void fill(vgerPaintIndex paint);
 
-    void fillForTile(uint16_t paint);
+    void fillForTile(vgerPaintIndex paint);
 
     void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 
     void encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture);
 
-    bool renderCachedText(const TextLayoutKey& key, uint16_t paint, uint16_t xform);
+    bool renderCachedText(const TextLayoutKey& key, vgerPaintIndex paint, uint16_t xform);
 
-    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, uint16_t paint, float2 offset, float scale, uint16_t xform);
+    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, vgerPaintIndex paint, float2 offset, float scale, uint16_t xform);
 
     void renderText(const char* str, float4 color, int align);
 
     void renderTextBox(const char* str, float breakRowWidth, float4 color, int align);
 
-    void renderGlyphPath(CGGlyph glyph, uint16_t paint, float2 position, uint16_t xform);
+    void renderGlyphPath(CGGlyph glyph, vgerPaintIndex paint, float2 position, uint16_t xform);
 };
 
 inline vgerPaint makeLinearGradient(float2 start, float2 end,

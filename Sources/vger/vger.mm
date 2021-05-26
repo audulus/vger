@@ -121,89 +121,89 @@ void vgerRender(vgerContext vg, const vgerPrim* prim) {
 
 }
 
-void vgerFillCircle(vgerContext vg, vector_float2 center, float radius, uint16_t paint) {
+void vgerFillCircle(vgerContext vg, vector_float2 center, float radius, vgerPaintIndex paint) {
 
     vgerPrim prim {
         .type = vgerCircle,
         .cvs = { center },
         .radius = radius,
-        .paint = paint,
+        .paint = paint.index,
         .width = 0.0
     };
 
     vgerRender(vg, &prim);
 }
 
-void vgerStrokeArc(vgerContext vg, vector_float2 center, float radius, float width, float rotation, float aperture, uint16_t paint) {
+void vgerStrokeArc(vgerContext vg, vector_float2 center, float radius, float width, float rotation, float aperture, vgerPaintIndex paint) {
 
     vgerPrim prim {
         .type = vgerArc,
         .radius = radius,
         .cvs = { center, {sin(rotation), cos(rotation)}, {sin(aperture), cos(aperture)} },
         .width = width,
-        .paint = paint
+        .paint = paint.index
     };
 
     vgerRender(vg, &prim);
 }
 
-void vgerFillRect(vgerContext vg, vector_float2 min, vector_float2 max, float radius, uint16_t paint) {
+void vgerFillRect(vgerContext vg, vector_float2 min, vector_float2 max, float radius, vgerPaintIndex paint) {
 
     vgerPrim prim {
         .type = vgerRect,
         .radius = radius,
         .cvs = { min, max },
-        .paint = paint
+        .paint = paint.index
     };
 
     vgerRender(vg, &prim);
 }
 
-void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float radius, float width, uint16_t paint) {
+void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float radius, float width, vgerPaintIndex paint) {
 
     vgerPrim prim {
         .type = vgerRectStroke,
         .radius = radius,
         .width = width,
         .cvs = { min, max },
-        .paint = paint
+        .paint = paint.index
     };
 
     vgerRender(vg, &prim);
 
 }
 
-void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, uint16_t paint) {
+void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPaintIndex paint) {
 
     vgerPrim prim {
         .type = vgerBezier,
         .width = width,
         .cvs = { s.a, s.b, s.c },
-        .paint = paint
+        .paint = paint.index
     };
 
     vgerRender(vg, &prim);
 }
 
-void vgerStrokeSegment(vgerContext vg, vector_float2 a, vector_float2 b, float width, uint16_t paint) {
+void vgerStrokeSegment(vgerContext vg, vector_float2 a, vector_float2 b, float width, vgerPaintIndex paint) {
 
     vgerPrim prim {
         .type = vgerSegment,
         .width = width,
         .cvs = { a, b },
-        .paint = paint
+        .paint = paint.index
     };
 
     vgerRender(vg, &prim);
 }
 
-void vgerStrokeWire(vgerContext vg, vector_float2 a, vector_float2 b, float width, uint16_t paint) {
+void vgerStrokeWire(vgerContext vg, vector_float2 a, vector_float2 b, float width, vgerPaintIndex paint) {
 
     vgerPrim prim {
         .type = vgerWire,
         .width = width,
         .cvs = { a, b },
-        .paint = paint
+        .paint = paint.index
     };
 
     vgerRender(vg, &prim);
@@ -242,7 +242,7 @@ void vgerText(vgerContext vg, const char* str, float4 color, int align) {
     vg->renderText(str, color, align);
 }
 
-bool vger::renderCachedText(const TextLayoutKey& key, uint16_t paint, uint16_t xform) {
+bool vger::renderCachedText(const TextLayoutKey& key, vgerPaintIndex paint, uint16_t xform) {
 
     // Do we already have text in the cache?
     auto iter = textCache.find(key);
@@ -253,7 +253,7 @@ bool vger::renderCachedText(const TextLayoutKey& key, uint16_t paint, uint16_t x
         for(auto& prim : info.prims) {
             if(primCount < maxPrims) {
                 *primPtr = prim;
-                primPtr->paint = paint;
+                primPtr->paint = paint.index;
                 // Keep the old image index.
                 // primPtr->paint.image = prim.paint.image;
                 primPtr->xform = xform;
@@ -267,7 +267,7 @@ bool vger::renderCachedText(const TextLayoutKey& key, uint16_t paint, uint16_t x
     return false;
 }
 
-void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, uint16_t paint, float2 offset, float scale, uint16_t xform) {
+void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, vgerPaintIndex paint, float2 offset, float scale, uint16_t xform) {
 
     CFRange entire = CFRangeMake(0, 0);
 
@@ -297,7 +297,7 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, uint16_t pai
 
                 vgerPrim prim = {
                     .type = vgerGlyph,
-                    .paint = paint,
+                    .paint = paint.index,
                     .quadBounds = { a, b },
                     .texBounds = {
                         float2{GLYPH_MARGIN,   originY},
@@ -321,7 +321,7 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, uint16_t pai
 
 }
 
-void vger::renderGlyphPath(CGGlyph glyph, uint16_t paint, float2 position, uint16_t xform) {
+void vger::renderGlyphPath(CGGlyph glyph, vgerPaintIndex paint, float2 position, uint16_t xform) {
 
     auto& info = glyphPathCache.getInfo(glyph);
     auto n = cvCount;
@@ -333,7 +333,7 @@ void vger::renderGlyphPath(CGGlyph glyph, uint16_t paint, float2 position, uint1
         if(primCount < maxPrims) {
             *primPtr = prim;
             primPtr->xform = xform;
-            primPtr->paint = paint;
+            primPtr->paint = paint.index;
             primPtr->start += n;
             primPtr++;
             primCount++;
@@ -542,7 +542,7 @@ void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, flo
 
 }
 
-void vger::fill(uint16_t paint) {
+void vger::fill(vgerPaintIndex paint) {
 
     if(primCount == maxPrims) {
         return;
@@ -558,7 +558,7 @@ void vger::fill(uint16_t paint) {
 
         vgerPrim prim = {
             .type = vgerPathFill,
-            .paint = paint,
+            .paint = paint.index,
             .xform = xform,
             .start = cvCount,
             .count = uint16_t(n)
@@ -602,7 +602,7 @@ void vger::fill(uint16_t paint) {
 
 }
 
-void vger::fillForTile(uint16_t paint) {
+void vger::fillForTile(vgerPaintIndex paint) {
 
     if(primCount == maxPrims) {
         return;
@@ -610,7 +610,7 @@ void vger::fillForTile(uint16_t paint) {
 
     vgerPrim prim = {
         .type = vgerPathFill,
-        .paint = paint,
+        .paint = paint.index,
         .xform = addxform(txStack.back()),
         .start = cvCount,
         .count = static_cast<uint16_t>(yScanner.segments.size()),
@@ -651,11 +651,11 @@ void vgerCubicApproxTo(vgerContext vg, float2 b, float2 c, float2 d) {
     vgerQuadTo(vg, q[4], q[5]);
 }
 
-void vgerFill(vgerContext vg, uint16_t paint) {
+void vgerFill(vgerContext vg, vgerPaintIndex paint) {
     vg->fill(paint);
 }
 
-void vgerFillForTile(vgerContext vg, uint16_t paint) {
+void vgerFillForTile(vgerContext vg, vgerPaintIndex paint) {
     vg->fillForTile(paint);
 }
 
@@ -776,7 +776,7 @@ id<MTLTexture> vgerGetCoarseDebugTexture(vgerContext vg) {
     return [vg->tileRenderer getDebugTexture];
 }
 
-uint16_t vgerColorPaint(vgerContext vg, float4 color) {
+vgerPaintIndex vgerColorPaint(vgerContext vg, float4 color) {
 
     vgerPaint p;
     p.xform = matrix_identity_float3x3;
@@ -787,15 +787,15 @@ uint16_t vgerColorPaint(vgerContext vg, float4 color) {
     return vg->addPaint(p);
 }
 
-uint16_t vgerLinearGradient(vgerContext vg, float2 start, float2 end,
-                             float4 innerColor, float4 outerColor) {
+vgerPaintIndex vgerLinearGradient(vgerContext vg, float2 start, float2 end,
+                                  float4 innerColor, float4 outerColor) {
 
     return vg->addPaint(makeLinearGradient(start, end, innerColor, outerColor));
 
 }
 
-uint16_t vgerImagePattern(vgerContext vg, float2 origin, float2 size, float angle,
-                           int image, float alpha) {
+vgerPaintIndex vgerImagePattern(vgerContext vg, float2 origin, float2 size, float angle,
+                                int image, float alpha) {
 
     vgerPaint p;
     p.image = image;
