@@ -155,9 +155,6 @@ vector_int2 vgerTextureSize(vgerContext, vgerImageIndex texID);
 
 #pragma mark - Primitives
 
-/// Render a prim.
-void vgerRender(vgerContext, const vgerPrim* prim);
-
 void vgerFillCircle(vgerContext, vector_float2 center, float radius, vgerPaintIndex paint);
 
 void vgerStrokeArc(vgerContext, vector_float2 center, float radius, float width, float rotation, float aperture, vgerPaintIndex paint);
