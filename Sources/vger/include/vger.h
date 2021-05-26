@@ -111,6 +111,9 @@ enum vgerAlign {
 /// Type safety for paint indices.
 typedef struct { uint16_t index; } vgerPaintIndex;
 
+/// Type safety for image indices.
+typedef struct { uint32_t index; } vgerImageIndex;
+
 #ifndef __METAL_VERSION__
 
 #ifdef __OBJC__
@@ -137,18 +140,18 @@ void vgerBegin(vgerContext, float windowWidth, float windowHeight, float deviceP
 #pragma mark - Textures
 
 /// Create a texture to sample from.
-int  vgerAddTexture(vgerContext, const uint8_t* data, int width, int height);
+vgerImageIndex  vgerAddTexture(vgerContext, const uint8_t* data, int width, int height);
 
 #ifdef __OBJC__
 /// Add a MTLTexture. This references the texture, so you can render to it, etc.
-int vgerAddMTLTexture(vgerContext, id<MTLTexture>);
+vgerImageIndex vgerAddMTLTexture(vgerContext, id<MTLTexture>);
 #endif
 
 /// Remove a texture.
-void vgerDeleteTexture(vgerContext, int texID);
+void vgerDeleteTexture(vgerContext, vgerImageIndex texID);
 
 /// Get the size of a texture.
-vector_int2 vgerTextureSize(vgerContext, int texID);
+vector_int2 vgerTextureSize(vgerContext, vgerImageIndex texID);
 
 #pragma mark - Primitives
 
@@ -250,7 +253,7 @@ vgerPaintIndex vgerLinearGradient(vgerContext vg, vector_float2 start, vector_fl
 
 /// Create a paint using a texture image. Returns paint index. Paints are cleared each frame.
 vgerPaintIndex vgerImagePattern(vgerContext vg, vector_float2 origin, vector_float2 size, float angle,
-                                int image, float alpha);
+                                vgerImageIndex image, float alpha);
 
 #ifdef __cplusplus
 }

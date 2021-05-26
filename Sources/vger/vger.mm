@@ -74,7 +74,7 @@ void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devi
     vg->devicePxRatio = devicePxRatio;
 }
 
-int  vgerAddTexture(vgerContext vg, const uint8_t* data, int width, int height) {
+vgerImageIndex vgerAddTexture(vgerContext vg, const uint8_t* data, int width, int height) {
     assert(data);
 
     auto desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm width:width height:height mipmapped:NO];
@@ -93,20 +93,20 @@ int  vgerAddTexture(vgerContext vg, const uint8_t* data, int width, int height) 
     return vgerAddMTLTexture(vg, tex);
 }
 
-int vgerAddMTLTexture(vgerContext vg, id<MTLTexture> tex) {
+vgerImageIndex vgerAddMTLTexture(vgerContext vg, id<MTLTexture> tex) {
     assert(tex);
     [vg->textures addObject:tex];
-    return int(vg->textures.count)-1;
+    return {uint32_t(vg->textures.count)-1};
 }
 
-void vgerDeleteTexture(vgerContext vg, int texID) {
+void vgerDeleteTexture(vgerContext vg, vgerImageIndex texID) {
     assert(vg);
-    [vg->textures setObject:vg->nullTexture atIndexedSubscript:texID];
+    [vg->textures setObject:vg->nullTexture atIndexedSubscript:texID.index];
 }
 
 
-vector_int2 vgerTextureSize(vgerContext vg, int texID) {
-    auto tex = [vg->textures objectAtIndex:texID];
+vector_int2 vgerTextureSize(vgerContext vg, vgerImageIndex texID) {
+    auto tex = [vg->textures objectAtIndex:texID.index];
     return {int(tex.width), int(tex.height)};
 }
 
@@ -795,10 +795,10 @@ vgerPaintIndex vgerLinearGradient(vgerContext vg, float2 start, float2 end,
 }
 
 vgerPaintIndex vgerImagePattern(vgerContext vg, float2 origin, float2 size, float angle,
-                                int image, float alpha) {
+                                vgerImageIndex image, float alpha) {
 
     vgerPaint p;
-    p.image = image;
+    p.image = image.index;
 
     float3x3 R = {
         float3{ cosf(angle), sinf(angle), 0 },
