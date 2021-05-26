@@ -522,13 +522,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     vgerFillCircle(vger, float2{75, 275}, 25, vgerLinearGradient(vger, float2{50,250}, float2{100,300}, cyan, magenta));
     textAt(vger, 150, 250, "Circle");
 
-    vgerPrim line = {
-        .type = vgerSegment,
-        .width = 2.0,
-        .cvs = {{50, 150}, {100,200}},
-        .paint = vgerLinearGradient(vger, float2{50,150}, float2{100,200}, cyan, magenta)
-    };
-    vgerRender(vger, &line);
+    vgerStrokeSegment(vger, float2{50,150}, float2{100,200}, 2.0, vgerLinearGradient(vger, float2{50,150}, float2{100,200}, cyan, magenta));
     textAt(vger, 150, 150, "Line segment");
 
     float theta = 0;      // orientation
