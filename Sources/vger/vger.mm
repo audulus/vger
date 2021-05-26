@@ -3,6 +3,7 @@
 #import "vger.h"
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
+#import <MetalKit/MetalKit.h>
 
 #if TARGET_OS_OSX
 #import <Cocoa/Cocoa.h>
@@ -49,6 +50,8 @@ vger::vger() {
     nullTexture = [device newTextureWithDescriptor:desc];
 
     textures = [NSMutableArray new];
+
+    textureLoader = [[MTKTextureLoader alloc] initWithDevice:device];
 }
 
 vgerContext vgerNew() {
@@ -72,6 +75,18 @@ void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devi
     vg->paintCount = 0;
     vg->windowSize = {windowWidth, windowHeight};
     vg->devicePxRatio = devicePxRatio;
+}
+
+vgerImageIndex vgerCreateImage(vgerContext vg, const char* filename) {
+
+    auto url = [NSURL fileURLWithPath:[NSString stringWithUTF8String:filename]];
+
+    NSError* error;
+    auto tex = [vg->textureLoader newTextureWithContentsOfURL:url options:nil error:&error];
+
+    assert(error == nil);
+
+    return vgerAddMTLTexture(vg, tex);
 }
 
 vgerImageIndex vgerAddTexture(vgerContext vg, const uint8_t* data, int width, int height) {

@@ -141,6 +141,9 @@ struct vger {
     /// The current location when creating paths.
     float2 pen;
 
+    /// For loading images from files.
+    MTKTextureLoader* textureLoader;
+
     vger();
 
     void addCV(float2 p) {
