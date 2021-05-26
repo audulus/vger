@@ -904,15 +904,7 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
 
     vgerBegin(vger, 512, 512, 1.0);
 
-    vgerPrim rect {
-        .type = vgerRect,
-        .cvs = { {128, 128}, {384, 384} },
-        .width = 5,
-        .radius = 32,
-        .paint = vgerColorPaint(vger, float4{1,0,1,1})
-    };
-
-    vgerRender(vger, &rect);
+    vgerFillRect(vger, float2{128,128}, float2{384,384}, 32, vgerColorPaint(vger, float4{1,0,1,1}));
 
     auto commandBuffer = [queue commandBuffer];
 
