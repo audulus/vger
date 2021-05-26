@@ -388,23 +388,12 @@ vector_float4 rand_color() {
 
         for(int i=0;i<N;++i) {
             simd_float2 cvs[3] = { 512*rand2(), 512*rand2(), 512*rand2() };
-            auto c = vgerColorPaint(vger, rand_color());
-            vgerPrim p[2] = {
-                {
-                    .type = vgerBezier,
-                    .width = 0.01,
-                    .paint = c
-                },
-                {
-                    .type = vgerBezier,
-                    .width = 0.01,
-                    .paint = c
-                }
-            };
-            SplitBezier(.5, cvs, p[0].cvs, p[1].cvs);
+            auto paint = vgerColorPaint(vger, rand_color());
+            simd_float2 a[3], b[3];
+            SplitBezier(.5, cvs, a, b);
 
-            vgerRender(vger, &p[0]);
-            vgerRender(vger, &p[1]);
+            vgerStrokeBezier(vger, {a[0], a[1], a[2]}, 1, paint);
+            vgerStrokeBezier(vger, {b[0], b[1], b[2]}, 1, paint);
         }
 
         auto commandBuffer = [queue commandBuffer];
