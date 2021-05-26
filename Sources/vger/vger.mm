@@ -197,6 +197,18 @@ void vgerStrokeSegment(vgerContext vg, vector_float2 a, vector_float2 b, float w
     vgerRender(vg, &prim);
 }
 
+void vgerStrokeWire(vgerContext vg, vector_float2 a, vector_float2 b, float width, uint16_t paint) {
+
+    vgerPrim prim {
+        .type = vgerWire,
+        .width = width,
+        .cvs = { a, b },
+        .paint = paint
+    };
+
+    vgerRender(vg, &prim);
+}
+
 static float averageScale(const float3x3& M)
 {
     return 0.5f * (length(M.columns[0].xy) + length(M.columns[1].xy));

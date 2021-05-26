@@ -166,6 +166,8 @@ void vgerStrokeBezier(vgerContext, vgerBezierSegment, float width, uint16_t pain
 
 void vgerStrokeSegment(vgerContext, vector_float2 a, vector_float2 b, float width, uint16_t paint);
 
+void vgerStrokeWire(vgerContext, vector_float2 a, vector_float2 b, float width, uint16_t paint);
+
 #pragma mark - Text
 
 /// Render text.
