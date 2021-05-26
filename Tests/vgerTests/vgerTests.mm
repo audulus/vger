@@ -682,14 +682,7 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
 
     float2 cvs[2];
     vgerTextBoxBounds(vger, str, breakWidth, cvs, cvs+1, 0);
-    vgerPrim rect = {
-        .type = vgerRect,
-        .width = 0.0,
-        .radius = 0,
-        .cvs = {cvs[0], cvs[1]},
-        .paint = vgerColorPaint(vger, float4{.2,.2,.2,1.0})
-    };
-    vgerRender(vger, &rect);
+    vgerFillRect(vger, cvs[0], cvs[1], 0, vgerColorPaint(vger, float4{.2,.2,.2,1.0}));
 
     vgerTextBox(vger, str, breakWidth, float4(1), 0);
     vgerRestore(vger);
