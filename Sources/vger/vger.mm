@@ -32,14 +32,18 @@ vger::vger() {
     for(int i=0;i<3;++i) {
         auto prims = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
                                        options:MTLResourceStorageModeShared];
+        assert(prims);
         prims.label = @"prim buffer";
         auto cvs = [device newBufferWithLength:maxCvs * sizeof(float2)
                                        options:MTLResourceStorageModeShared];
+        assert(cvs);
         cvs.label = @"cv buffer";
         auto xforms = [device newBufferWithLength:maxPrims * sizeof(simd_float3x3) options:MTLResourceStorageModeShared];
+        assert(xforms);
         xforms.label = @"xform buffer";
 
         auto paints = [device newBufferWithLength:maxPrims * sizeof(vgerPaint) options:MTLResourceStorageModeShared];
+        assert(paints);
         paints.label = @"paints buffer";
 
         scenes[i] = {prims, cvs, xforms, paints};
