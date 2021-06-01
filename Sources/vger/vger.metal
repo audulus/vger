@@ -117,6 +117,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
         auto t = (paint.xform * float3(in.t,1)).xy;
         t.y = 1.0 - t.y;
         color = tex.sample(textureSampler, t);
+        color.a *= paint.innerColor.a;
     }
 
     return mix(float4(color.rgb,0.0), color, 1.0-smoothstep(-fw/2,fw/2,d) );
