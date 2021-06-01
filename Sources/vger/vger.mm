@@ -550,12 +550,31 @@ void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, flo
     NSArray *lines = (__bridge id)CTFrameGetLines(frame);
     assert(lines);
 
-    CGPoint lastOrigin;
-    CTFrameGetLineOrigins(frame, CFRangeMake(lines.count-1, 1), &lastOrigin);
-    min->x = 0;
-    min->y = lastOrigin.y-big;
-    max->x = breakRowWidth;
-    max->y = 0;
+    *min = float2{FLT_MAX, FLT_MAX};
+    *max = -*min;
+
+    CGPoint origins[lines.count];
+    CTFrameGetLineOrigins(frame, CFRangeMake(0, lines.count), origins);
+
+    int i = 0;
+    for(id obj in lines) {
+        auto line = (__bridge CTLineRef)obj;
+        auto bounds = CTLineGetImageBounds(line, nil);
+
+        bounds.origin.x += origins[i].x;
+        bounds.origin.y += origins[i].y;
+
+        min->x = std::min(float(bounds.origin.x), min->x);
+        max->x = std::max(float(bounds.origin.x + bounds.size.width), max->x);
+
+        min->y = std::min(float(bounds.origin.y), min->y);
+        max->y = std::max(float(bounds.origin.y + bounds.size.height), max->y);
+
+        ++i;
+    }
+
+    min->y -= big;
+    max->y -= big;
 
     CFRelease(frame);
 
