@@ -676,6 +676,10 @@ void vgerMoveTo(vgerContext vg, float2 pt) {
     vg->pen = pt;
 }
 
+void vgerLineTo(vgerContext vg, vector_float2 b) {
+    vgerQuadTo(vg, (vg->pen + b)/2, b);
+}
+
 void vgerQuadTo(vgerContext vg, float2 b, float2 c) {
     vg->yScanner.segments.push_back({vg->pen, b, c});
     vg->pen = c;

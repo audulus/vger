@@ -120,6 +120,9 @@ void vgerTextBoxBounds(vgerContext, const char* str, float breakRowWidth, vector
 /// Move the pen to a point.
 void vgerMoveTo(vgerContext, vector_float2 pt);
 
+/// Line.
+void vgerLineTo(vgerContext, vector_float2 b);
+
 /// Quadratic bezier.
 void vgerQuadTo(vgerContext, vector_float2 b, vector_float2 c);
 
