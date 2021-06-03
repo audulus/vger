@@ -55,8 +55,16 @@ typedef struct vger *vgerContext;
 
 #pragma mark - Context
 
+enum vgerCreateFlags {
+    // Flag indicating if double buffering scheme is used.
+    VGER_DOUBLE_BUFFER = 1 << 0,
+
+    // Flag indicating if triple buffering scheme is used.
+    VGER_TRIPLE_BUFFER = 1 << 1,
+};
+
 /// Create a new state object.
-vgerContext vgerNew();
+vgerContext vgerNew(int flags);
 
 /// Deallocate state object.
 void vgerDelete(vgerContext);

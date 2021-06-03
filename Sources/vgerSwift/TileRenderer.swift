@@ -7,7 +7,7 @@ import vger
 /// Renderer for experimental tile-based rendering.
 class TileRenderer: NSObject, MTKViewDelegate {
 
-    var vg = vgerNew()
+    var vg = vgerNew(0)
     var device: MTLDevice!
     var queue: MTLCommandQueue!
     var renderCallback : ((OpaquePointer) -> Void)?

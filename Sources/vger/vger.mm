@@ -21,7 +21,7 @@ using namespace simd;
 #import "bezier.h"
 #import "vger_private.h"
 
-vger::vger() {
+vger::vger(int flags) {
     device = MTLCreateSystemDefaultDevice();
     renderer = [[vgerRenderer alloc] initWithDevice:device];
     glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
@@ -29,7 +29,14 @@ vger::vger() {
     printf("cv buffer size: %d MB\n", (int)(maxCvs * sizeof(float2))/(1024*1024));
     printf("xform buffer size: %d MB\n", (int)(maxPrims * sizeof(simd_float3x3))/(1024*1024));
     printf("paints buffer size: %d MB\n", (int)(maxPrims * sizeof(vgerPaint))/(1024*1024));
-    for(int i=0;i<3;++i) {
+
+    if(flags & VGER_DOUBLE_BUFFER) {
+        maxBuffers = 2;
+    } else if(flags & VGER_TRIPLE_BUFFER) {
+        maxBuffers = 3;
+    }
+
+    for(int i=0;i<maxBuffers;++i) {
         auto prims = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
                                        options:MTLResourceStorageModeShared];
         assert(prims);
@@ -58,8 +65,8 @@ vger::vger() {
     textureLoader = [[MTKTextureLoader alloc] initWithDevice:device];
 }
 
-vgerContext vgerNew() {
-    return new vger;
+vgerContext vgerNew(int flags) {
+    return new vger(flags);
 }
 
 void vgerDelete(vgerContext vg) {
@@ -67,7 +74,7 @@ void vgerDelete(vgerContext vg) {
 }
 
 void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devicePxRatio) {
-    vg->curBuffer = (vg->curBuffer+1)%3;
+    vg->curBuffer = (vg->curBuffer+1) % vg->maxBuffers;
     auto& scene = vg->scenes[vg->curBuffer];
     vg->primPtr = (vgerPrim*) scene.prims.contents;
     vg->primCount = 0;

@@ -69,6 +69,9 @@ struct vger {
     /// Transform matrix stack.
     std::vector<float3x3> txStack;
 
+    /// Number of buffers.
+    int maxBuffers = 1;
+
     /// We cycle through three scenes for streaming.
     vgerScene scenes[3];
 
@@ -144,7 +147,7 @@ struct vger {
     /// For loading images from files.
     MTKTextureLoader* textureLoader;
 
-    vger();
+    vger(int flags);
 
     void addCV(float2 p) {
         if(cvCount < maxCvs) {

@@ -128,7 +128,7 @@ static void SplitBezier(float t,
     float theta = 0;
     float ap = .5 * M_PI;
 
-    auto vg = vgerNew();
+    auto vg = vgerNew(0);
 
     vgerBegin(vg, 512, 512, 1.0);
 
@@ -162,7 +162,7 @@ static void SplitBezier(float t,
 
 - (void) testTransformStack {
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -186,7 +186,7 @@ static void SplitBezier(float t,
 
 - (void) testRects {
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
     assert(vger);
 
     vgerBegin(vger, 512, 512, 1.0);
@@ -224,7 +224,7 @@ static void SplitBezier(float t,
 
 - (void) testRenderTexture {
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -247,7 +247,7 @@ static void SplitBezier(float t,
 
 - (void) testText {
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -281,7 +281,7 @@ static void SplitBezier(float t,
 
 - (void) testScaleText {
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -333,7 +333,7 @@ vector_float4 rand_color() {
 
     int N = 10000;
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     [self measureBlock:^{
 
@@ -366,7 +366,7 @@ vector_float4 rand_color() {
 
 - (void) testBezierPerfSplit {
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     [self measureBlock:^{
 
@@ -495,7 +495,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     auto cyan = float4{0,1,1,1};
     auto magenta = float4{1,0,1,1};
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -561,7 +561,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
 - (void) testTextAlgin {
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -594,7 +594,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     int w = 512, h = 512;
     float2 sz = {float(w),float(h)};
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     vgerBegin(vger, w, h, 1.0);
 
@@ -635,7 +635,7 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
     int w = 512, h = 512;
     float2 sz = {float(w),float(h)};
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     vgerBegin(vger, w, h, 1.0);
 
@@ -655,7 +655,7 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
 
 - (void) testTextBox {
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -689,7 +689,7 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
 
     printf("size: %f x %f\n", image->width, image->height);
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -736,7 +736,7 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
 
     printf("size: %f x %f\n", image->width, image->height);
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     [self measureBlock:^{
 
@@ -822,7 +822,7 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
     XCTAssertEqual(sizeof(vgerCmdSegment), 24);
     XCTAssertEqual(sizeof(vgerCmdSolid), 8);
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -855,7 +855,7 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
 
 - (void) testTileBlend {
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -888,7 +888,7 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
     XCTAssertEqual(sizeof(vgerCmdSegment), 24);
     XCTAssertEqual(sizeof(vgerCmdSolid), 8);
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -934,7 +934,7 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
     }
     cvs[n-1] = cvs[0];
 
-    auto vger = vgerNew();
+    auto vger = vgerNew(0);
 
     vgerBegin(vger, w, h, 1.0);
 
