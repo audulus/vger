@@ -147,7 +147,7 @@ struct vger {
     /// For loading images from files.
     MTKTextureLoader* textureLoader;
 
-    vger(int flags);
+    vger(uint32_t flags);
 
     void addCV(float2 p) {
         if(cvCount < maxCvs) {

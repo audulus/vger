@@ -64,7 +64,7 @@ enum vgerCreateFlags {
 };
 
 /// Create a new state object.
-vgerContext vgerNew(int flags);
+vgerContext vgerNew(uint32_t flags);
 
 /// Deallocate state object.
 void vgerDelete(vgerContext);

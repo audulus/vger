@@ -21,7 +21,7 @@ using namespace simd;
 #import "bezier.h"
 #import "vger_private.h"
 
-vger::vger(int flags) {
+vger::vger(uint32_t flags) {
     device = MTLCreateSystemDefaultDevice();
     renderer = [[vgerRenderer alloc] initWithDevice:device];
     glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
@@ -65,7 +65,7 @@ vger::vger(int flags) {
     textureLoader = [[MTKTextureLoader alloc] initWithDevice:device];
 }
 
-vgerContext vgerNew(int flags) {
+vgerContext vgerNew(uint32_t flags) {
     return new vger(flags);
 }
 
