@@ -113,15 +113,19 @@ bool vgerPathScanner::next() {
 
     // Activate and deactivate segments.
     for(;index < n && nodes[index].coord == y; ++index) {
+        assert(index < n);
         auto& node = nodes[index];
+        assert(node.seg < segments.size());
         if(node.end) {
             --activeCount;
             auto& prev = segments[node.seg].previous;
             auto& next = segments[node.seg].next;
             if(prev != -1) {
+                assert(prev < segments.size());
                 segments[prev].next = next;
             }
             if(next != -1) {
+                assert(next < segments.size());
                 segments[next].previous = prev;
             }
             if(first == node.seg) {
@@ -132,6 +136,7 @@ bool vgerPathScanner::next() {
             ++activeCount;
             segments[node.seg].next = first;
             if(first != -1) {
+                assert(first < segments.size());
                 segments[first].previous = node.seg;
             }
             first = node.seg;
