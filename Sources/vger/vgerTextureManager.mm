@@ -33,7 +33,7 @@
         stbrp_init_target(&ctx, ATLAS_SIZE, ATLAS_SIZE, nodes.data(), 2*ATLAS_SIZE);
 
         atlasDesc.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite;
-#if TARGET_OS_OSX
+#if TARGET_OS_OSX || TARGET_OS_MACCATALYST
         atlasDesc.storageMode = MTLStorageModeManaged;
 #else
         atlasDesc.storageMode = MTLStorageModeShared;
@@ -51,7 +51,7 @@
 
     auto desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:atlasDesc.pixelFormat width:width height:height mipmapped:NO];
     desc.usage = MTLTextureUsageShaderRead;
-#if TARGET_OS_OSX
+#if TARGET_OS_OSX || TARGET_OS_MACCATALYST
     desc.storageMode = MTLStorageModeManaged;
 #else
     desc.storageMode = MTLStorageModeShared;

@@ -99,7 +99,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
                             mipmapped:NO];
 
         textureDesc.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite;
-#if TARGET_OS_OSX
+#if TARGET_OS_OSX || TARGET_OS_MACCATALYST
         textureDesc.storageMode = MTLStorageModeManaged;
 #else
         textureDesc.storageMode = MTLStorageModeShared;

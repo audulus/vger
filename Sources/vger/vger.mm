@@ -105,7 +105,7 @@ vgerImageIndex vgerAddTexture(vgerContext vg, const uint8_t* data, int width, in
 
     auto desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm width:width height:height mipmapped:NO];
     desc.usage = MTLTextureUsageShaderRead;
-#if TARGET_OS_OSX
+#if TARGET_OS_OSX || TARGET_OS_MACCATALYST
     desc.storageMode = MTLStorageModeManaged;
 #else
     desc.storageMode = MTLStorageModeShared;
