@@ -867,3 +867,18 @@ vgerPaintIndex vgerImagePattern(vgerContext vg, float2 origin, float2 size, floa
 
     return vg->addPaint(p);
 }
+
+vgerPaintIndex vgerGrid(vgerContext vg, vector_float2 origin, vector_float2 size,
+                        float width, vector_float4 color) {
+
+    vgerPaint p;
+    p.image = -2;
+    p.innerColor = color;
+    p.xform = {
+        float3{ 1/size.x, 0, 0},
+        float3{ 0, 1/size.y, 0},
+        float3{ -origin.x, -origin.y, 1}
+    };
+
+    return vg->addPaint(p);
+}

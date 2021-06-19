@@ -78,6 +78,23 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
     return out;
 }
 
+// Adapted from https://www.shadertoy.com/view/MtlcWX
+inline float4 applyGrid(const DEVICE vgerPaint& paint, float2 p) {
+
+    auto pos = paint.xform * float3{p.x, p.y, 1.0};
+    float aa = length(fwidth(pos));
+    float thickness = aa;
+
+    auto toGrid = pos - round(pos);
+    auto dist = min(abs(toGrid.x), abs(toGrid.y));
+    float alpha = smoothstep(0.5f * (thickness + aa), 0.5f * (thickness - aa), abs(dist));
+
+    auto color = paint.innerColor;
+    color.a *= alpha;
+    return color;
+
+}
+
 fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
                               const device float2* cvs,
@@ -109,6 +126,8 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
 
     if(paint.image == -1) {
         color = applyPaint(paint, in.t);
+    } else if(paint.image == -2) {
+        color = applyGrid(paint, in.t);
     } else {
 
         constexpr sampler textureSampler (mag_filter::linear,

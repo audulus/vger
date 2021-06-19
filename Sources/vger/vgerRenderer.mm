@@ -109,7 +109,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
         int imageID = paints[p->paint].image;
 
         // Texture ID changed, render.
-        if(imageID != -1 and imageID != currentTexture) {
+        if(imageID >= 0 and imageID != currentTexture) {
 
             if(m) {
                 [enc setVertexBufferOffset:offset atIndex:0];
@@ -120,11 +120,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
                       instanceCount:m];
             }
 
-            if(imageID == -1) {
-                [enc setFragmentTexture:nil atIndex:0];
-            } else {
-                [enc setFragmentTexture:[textures objectAtIndex:imageID] atIndex:0];
-            }
+            [enc setFragmentTexture:[textures objectAtIndex:imageID] atIndex:0];
             
             currentTexture = imageID;
             offset = i*sizeof(vgerPrim);

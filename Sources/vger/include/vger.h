@@ -193,6 +193,9 @@ vgerPaintIndex vgerLinearGradient(vgerContext vg, vector_float2 start, vector_fl
 vgerPaintIndex vgerImagePattern(vgerContext vg, vector_float2 origin, vector_float2 size, float angle,
                                 vgerImageIndex image, float alpha);
 
+/// Create a paint to render a grid. Reduces the number of primitives required for a big grid.
+vgerPaintIndex vgerGrid(vgerContext, vector_float2 offset, vector_float2 size, float width, vector_float4 color);
+
 #ifdef __cplusplus
 }
 #endif
