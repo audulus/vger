@@ -218,4 +218,32 @@ inline vgerPaint makeLinearGradient(float2 start, float2 end,
     return p;
 }
 
+inline vgerPaint makeImagePattern(float2 origin,
+                                  float2 size,
+                                  float angle,
+                                  vgerImageIndex image,
+                                  float alpha) {
+
+    vgerPaint p;
+    p.image = image.index;
+
+    float3x3 R = {
+        float3{ cosf(angle), sinf(angle), 0 },
+        float3{ -sinf(angle), cosf(angle), 0 },
+        float3{ -origin.x, -origin.y, 1}
+    };
+
+    float3x3 S = {
+        float3{ 1/size.x, 0, 0 },
+        float3{ 0, 1/size.y, 0},
+        float3{ 0, 0, 1}
+    };
+
+    p.xform = matrix_multiply(R, S);
+
+    p.innerColor = p.outerColor = float4{1,1,1,alpha};
+
+    return p;
+}
+
 #endif /* vger_private_h */
