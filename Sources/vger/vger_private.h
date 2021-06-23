@@ -239,7 +239,7 @@ inline vgerPaint makeImagePattern(float2 origin,
         float3{ 0, 0, 1}
     };
 
-    p.xform = matrix_multiply(R, S);
+    p.xform = matrix_multiply(S, R);
 
     p.innerColor = p.outerColor = float4{1,1,1,alpha};
 
