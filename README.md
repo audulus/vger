@@ -1,6 +1,8 @@
 # vger
 
 ![build status](https://github.com/audulus/vger/actions/workflows/build.yml/badge.svg)
+<img src="https://img.shields.io/badge/SPM-5.3-blue.svg?style=flat"
+     alt="Swift Package Manager (SPM) compatible" />
 
 vger is a vector graphics renderer which renders a limited set of primitives, but does so almost entirely on the GPU. Works on iOS and macOS.
 
