@@ -100,6 +100,18 @@ vgerImageIndex vgerCreateImage(vgerContext vg, const char* filename) {
     return vgerAddMTLTexture(vg, tex);
 }
 
+vgerImageIndex vgerCreateImageMem(vgerContext vg, const uint8_t* data, size_t size) {
+
+    auto nsdata = [NSData dataWithBytesNoCopy:(void*)data length:size freeWhenDone:NO];
+
+    NSError* error;
+    auto tex = [vg->textureLoader newTextureWithData:nsdata options:nil error:&error];
+
+    assert(error == nil);
+
+    return vgerAddMTLTexture(vg, tex);
+}
+
 vgerImageIndex vgerAddTexture(vgerContext vg, const uint8_t* data, int width, int height) {
     assert(data);
 

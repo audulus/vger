@@ -77,6 +77,9 @@ void vgerBegin(vgerContext, float windowWidth, float windowHeight, float deviceP
 /// Load an image from a file.
 vgerImageIndex vgerCreateImage(vgerContext, const char* filename);
 
+/// Load an image from data in memory.
+vgerImageIndex vgerCreateImageMem(vgerContext, const uint8_t* data, size_t size);
+
 /// Create a texture to sample from.
 vgerImageIndex  vgerAddTexture(vgerContext, const uint8_t* data, int width, int height);
 
