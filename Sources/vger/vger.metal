@@ -86,7 +86,7 @@ inline float4 applyGrid(const DEVICE vgerPaint& paint, float2 p) {
 
     auto toGrid = pos - round(pos);
     auto dist = min(abs(toGrid.x), abs(toGrid.y));
-    float alpha = smoothstep(aa, 0, abs(dist));
+    float alpha = smoothstep(aa, 0, dist);
 
     auto color = paint.innerColor;
     color.a *= alpha;
