@@ -4,7 +4,7 @@
 <img src="https://img.shields.io/badge/SPM-5.3-blue.svg?style=flat"
      alt="Swift Package Manager (SPM) compatible" />
 
-vger is a vector graphics renderer which renders a limited set of primitives, but does so almost entirely on the GPU. Works on iOS and macOS.
+vger is a vector graphics renderer which renders a limited set of primitives, but does so almost entirely on the GPU. Works on iOS and macOS. API is plain C.
 
 <img src="demo.png" alt="demo" width="256" height="256">
 
