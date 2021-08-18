@@ -500,11 +500,9 @@ CTFrameRef vger::createCTFrame(const char* str, int align, float breakRowWidth) 
 
     auto *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
     if(align & VGER_ALIGN_CENTER) {
-        printf("center align\n");
-        [paragraphStyle setAlignment:NSTextAlignmentCenter];
+        paragraphStyle.alignment = NSTextAlignmentCenter;
     } else if(align & VGER_ALIGN_RIGHT) {
-        printf("right align\n");
-        [paragraphStyle setAlignment:NSTextAlignmentRight];
+        paragraphStyle.alignment = NSTextAlignmentRight;
     }
     auto attributes = @{ NSFontAttributeName : (__bridge id)[glyphCache getFont],
                          NSParagraphStyleAttributeName : paragraphStyle
