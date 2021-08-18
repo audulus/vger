@@ -979,4 +979,15 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
 
 }
 
+- (void) testTextLayoutKey {
+
+    TextLayoutKey keyA{"test", 12, VGER_ALIGN_LEFT};
+    TextLayoutKey keyB{"test", 12, VGER_ALIGN_RIGHT};
+
+    XCTAssertNotEqual(keyA, keyB);
+
+    std::hash<TextLayoutKey> hash;
+    XCTAssertNotEqual(hash(keyA), hash(keyB));
+}
+
 @end
