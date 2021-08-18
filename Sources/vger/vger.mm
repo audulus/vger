@@ -498,7 +498,7 @@ CTFrameRef vger::createCTFrame(const char* str, int align, float breakRowWidth) 
 
     assert(str);
 
-    auto *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+    auto *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
     if(align & VGER_ALIGN_CENTER) {
         paragraphStyle.alignment = NSTextAlignmentCenter;
     } else if(align & VGER_ALIGN_RIGHT) {
