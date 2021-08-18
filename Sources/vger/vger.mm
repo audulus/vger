@@ -494,11 +494,21 @@ void vgerTextBox(vgerContext vg, const char* str, float breakRowWidth, float4 co
 
 static constexpr float big = 10000;
 
-CTFrameRef vger::createCTFrame(const char* str, float breakRowWidth) {
+CTFrameRef vger::createCTFrame(const char* str, int align, float breakRowWidth) {
 
     assert(str);
 
-    auto attributes = @{ NSFontAttributeName : (__bridge id)[glyphCache getFont] };
+    auto *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+    if(align & VGER_ALIGN_CENTER) {
+        printf("center align\n");
+        [paragraphStyle setAlignment:NSTextAlignmentCenter];
+    } else if(align & VGER_ALIGN_RIGHT) {
+        printf("right align\n");
+        [paragraphStyle setAlignment:NSTextAlignmentRight];
+    }
+    auto attributes = @{ NSFontAttributeName : (__bridge id)[glyphCache getFont],
+                         NSParagraphStyleAttributeName : paragraphStyle
+    };
     auto string = [NSString stringWithUTF8String:str];
     auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
     auto framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
@@ -531,7 +541,7 @@ void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int
         return;
     }
 
-    auto frame = createCTFrame(str, breakRowWidth);
+    auto frame = createCTFrame(str, align, breakRowWidth);
 
     NSArray *lines = (__bridge id)CTFrameGetLines(frame);
 
@@ -564,7 +574,7 @@ void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, flo
 
     CFRange entire = CFRangeMake(0, 0);
 
-    auto frame = vg->createCTFrame(str, breakRowWidth);
+    auto frame = vg->createCTFrame(str, align, breakRowWidth);
 
     NSArray *lines = (__bridge id)CTFrameGetLines(frame);
     assert(lines);

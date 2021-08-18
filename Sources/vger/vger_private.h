@@ -173,7 +173,7 @@ struct vger {
     }
 
     CTLineRef createCTLine(const char* str);
-    CTFrameRef createCTFrame(const char* str, float breakRowWidth);
+    CTFrameRef createCTFrame(const char* str, int align, float breakRowWidth);
 
     void fill(vgerPaintIndex paint);
 
