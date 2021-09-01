@@ -97,7 +97,10 @@ vgerImageIndex vgerCreateImage(vgerContext vg, const char* filename) {
     NSError* error;
     auto tex = [vg->textureLoader newTextureWithContentsOfURL:url options:nil error:&error];
 
-    assert(error == nil);
+    if(error) {
+        NSLog(@"error loading texture: %@", error);
+        return {0};
+    }
 
     return vgerAddMTLTexture(vg, tex);
 }
@@ -109,7 +112,10 @@ vgerImageIndex vgerCreateImageMem(vgerContext vg, const uint8_t* data, size_t si
     NSError* error;
     auto tex = [vg->textureLoader newTextureWithData:nsdata options:nil error:&error];
 
-    assert(error == nil);
+    if(error) {
+        NSLog(@"error loading texture: %@", error);
+        return {0};
+    }
 
     return vgerAddMTLTexture(vg, tex);
 }
