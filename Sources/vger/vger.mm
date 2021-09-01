@@ -61,6 +61,8 @@ vger::vger(uint32_t flags) {
     nullTexture = [device newTextureWithDescriptor:desc];
 
     textures = [NSMutableArray new];
+    // Texture 0 is used to indicate errors.
+    [textures addObject:nullTexture];
 
     textureLoader = [[MTKTextureLoader alloc] initWithDevice:device];
 }
