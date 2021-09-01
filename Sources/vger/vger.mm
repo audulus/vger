@@ -107,6 +107,13 @@ vgerImageIndex vgerCreateImage(vgerContext vg, const char* filename) {
 
 vgerImageIndex vgerCreateImageMem(vgerContext vg, const uint8_t* data, size_t size) {
 
+    assert(data);
+
+    if(size == 0) {
+        NSLog(@"Error: image data is empty");
+        return {0};
+    }
+
     auto nsdata = [NSData dataWithBytesNoCopy:(void*)data length:size freeWhenDone:NO];
 
     NSError* error;
