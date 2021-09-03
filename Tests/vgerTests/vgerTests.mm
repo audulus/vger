@@ -585,10 +585,11 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     vgerTextBounds(vger, str, cvs, cvs+1, VGER_ALIGN_CENTER | VGER_ALIGN_MIDDLE);
     vgerFillRect(vger, cvs[0], cvs[1], 0, vgerColorPaint(vger, float4{.2,.2,.2,1.0}));
 
+    vgerText(vger, str, float4(1), VGER_ALIGN_CENTER | VGER_ALIGN_MIDDLE);
+
     auto magenta = vgerColorPaint(vger, float4{1,0,1,1.0});
     vgerFillCircle(vger, float2{0,0}, 1, magenta);
 
-    vgerText(vger, str, float4(1), VGER_ALIGN_CENTER | VGER_ALIGN_MIDDLE);
     vgerRestore(vger);
 
     [self render:vger name:@"test_align.png"];
