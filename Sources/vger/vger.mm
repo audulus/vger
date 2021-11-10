@@ -159,6 +159,8 @@ void vgerDeleteTexture(vgerContext vg, vgerImageIndex texID) {
 
 
 vector_int2 vgerTextureSize(vgerContext vg, vgerImageIndex texID) {
+    assert(vg);
+    assert(texID.index < vg->textures.count);
     auto tex = [vg->textures objectAtIndex:texID.index];
     return {int(tex.width), int(tex.height)};
 }
