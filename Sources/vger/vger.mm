@@ -408,6 +408,7 @@ CTLineRef vger::createCTLine(const char* str) {
 
     auto attributes = @{ NSFontAttributeName : (__bridge id)glyphPathCache.ctFont };
     auto string = [NSString stringWithUTF8String:str];
+    assert(string);
     auto attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
     auto typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attrString);
     auto line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, attrString.length));
