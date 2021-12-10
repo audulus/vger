@@ -87,8 +87,10 @@ void vgerDelete(vgerContext vg) {
 void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devicePxRatio) {
     vg->currentScene = (vg->currentScene+1) % vg->maxBuffers;
     auto& scene = vg->scenes[vg->currentScene];
-    vg->primPtr = (vgerPrim*) scene.prims[0].contents;
-    vg->primCount = 0;
+    for(int layer=0;layer<VGER_MAX_LAYERS;++layer) {
+        vg->primPtr[layer] = (vgerPrim*) scene.prims[0].contents;
+        vg->primCount[layer] = 0;
+    }
     vg->cvPtr = (float2*) scene.cvs.contents;
     vg->cvCount = 0;
     vg->xformPtr = (float3x3*) scene.xforms.contents;
@@ -176,11 +178,12 @@ vector_int2 vgerTextureSize(vgerContext vg, vgerImageIndex texID) {
 
 void vgerRender(vgerContext vg, const vgerPrim* prim) {
 
-    if(vg->primCount < vg->maxPrims) {
-        *vg->primPtr = *prim;
-        vg->primPtr->xform = vg->addxform(vg->txStack.back());
-        vg->primPtr++;
-        vg->primCount++;
+    if(vg->primCount[vg->currentLayer] < vg->maxPrims) {
+        auto& pp = vg->primPtr[vg->currentLayer];
+        *pp = *prim;
+        pp->xform = vg->addxform(vg->txStack.back());
+        pp++;
+        vg->primCount[vg->currentLayer]++;
     }
 
 }
@@ -315,14 +318,14 @@ bool vger::renderCachedText(const TextLayoutKey& key, vgerPaintIndex paint, uint
         auto& info = iter->second;
         info.lastFrame = currentFrame;
         for(auto& prim : info.prims) {
-            if(primCount < maxPrims) {
-                *primPtr = prim;
-                primPtr->paint = paint.index;
+            if(primCount[currentLayer] < maxPrims) {
+                *(primPtr[currentLayer]) = prim;
+                primPtr[currentLayer]->paint = paint.index;
                 // Keep the old image index.
                 // primPtr->paint.image = prim.paint.image;
-                primPtr->xform = xform;
-                primPtr++;
-                primCount++;
+                primPtr[currentLayer]->xform = xform;
+                primPtr[currentLayer]++;
+                primCount[currentLayer]++;
             }
         }
         return true;
@@ -374,10 +377,11 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, vgerPaintInd
 
                 textInfo.prims.push_back(prim);
 
-                if(primCount < maxPrims) {
-                    *this->primPtr = prim;
-                    this->primPtr++;
-                    primCount++;
+                if(primCount[currentLayer] < maxPrims) {
+                    auto& pp = primPtr[currentLayer];
+                    *pp = prim;
+                    pp++;
+                    primCount[currentLayer]++;
                 }
             }
         }
@@ -394,13 +398,14 @@ void vger::renderGlyphPath(CGGlyph glyph, vgerPaintIndex paint, float2 position,
     vgerTranslate(this, position);
     
     for(auto& prim : info.prims) {
-        if(primCount < maxPrims) {
-            *primPtr = prim;
-            primPtr->xform = xform;
-            primPtr->paint = paint.index;
-            primPtr->start += n;
-            primPtr++;
-            primCount++;
+        if(primCount[currentLayer] < maxPrims) {
+            auto& pp = primPtr[currentLayer];
+            *pp = prim;
+            pp->xform = xform;
+            pp->paint = paint.index;
+            pp->start += n;
+            pp++;
+            primCount[currentLayer]++;
         }
     }
     
@@ -636,7 +641,7 @@ void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, flo
 
 void vger::fill(vgerPaintIndex paint) {
 
-    if(primCount == maxPrims) {
+    if(primCount[currentLayer] == maxPrims) {
         return;
     }
 
@@ -656,7 +661,7 @@ void vger::fill(vgerPaintIndex paint) {
             .count = uint16_t(n)
         };
 
-        if(primCount < maxPrims and cvCount+n*3 < maxCvs) {
+        if(primCount[currentLayer] < maxPrims and cvCount+n*3 < maxCvs) {
 
             Interval xInt{FLT_MAX, -FLT_MAX};
 
@@ -683,8 +688,8 @@ void vger::fill(vgerPaintIndex paint) {
             prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
             prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
 
-            *(primPtr++) = prim;
-            primCount++;
+            *(primPtr[currentLayer]++) = prim;
+            primCount[currentLayer]++;
         }
     }
 
@@ -696,7 +701,7 @@ void vger::fill(vgerPaintIndex paint) {
 
 void vger::fillForTile(vgerPaintIndex paint) {
 
-    if(primCount == maxPrims) {
+    if(primCount[currentLayer] == maxPrims) {
         return;
     }
 
@@ -719,8 +724,8 @@ void vger::fillForTile(vgerPaintIndex paint) {
     prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
     prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
 
-    *(primPtr++) = prim;
-    primCount++;
+    *(primPtr[currentLayer]++) = prim;
+    primCount[currentLayer]++;
 
     yScanner.segments.clear();
 
@@ -775,7 +780,7 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
     auto glyphRects = [glyphCache getRects];
     auto& scene = scenes[currentScene];
     auto primp = (vgerPrim*) scene.prims[0].contents;
-    for(int i=0;i<primCount;++i) {
+    for(int i=0;i<primCount[currentLayer];++i) {
         auto& prim = primp[i];
         if(prim.type == vgerGlyph) {
             auto r = glyphRects[prim.glyph-1];
@@ -788,7 +793,7 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
     [renderer encodeTo:buf
                   pass:pass
                  scene:scene
-                 count:primCount
+                 count:primCount[currentLayer]
                  layer:0
               textures:textures
           glyphTexture:[glyphCache getAltas]
@@ -816,7 +821,7 @@ void vger::encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTextu
 
     [tileRenderer encodeTo:buf
                      scene:scenes[currentScene]
-                     count:primCount
+                     count:primCount[currentLayer]
                      layer:0
                   textures:textures
               glyphTexture:[glyphCache getAltas]

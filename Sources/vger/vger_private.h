@@ -78,11 +78,14 @@ struct vger {
     /// The current scene we're writing to.
     int currentScene = 0;
 
+    /// Current layer we're rendering to.
+    int currentLayer = 0;
+
     /// Pointer to the next prim to be saved in the buffer.
-    vgerPrim* primPtr;
+    vgerPrim* primPtr[VGER_MAX_LAYERS];
 
     /// Number of prims we've saved in the buffer.
-    int primCount = 0;
+    int primCount[VGER_MAX_LAYERS] = {0,0,0,0};
 
     /// Prim buffer capacity.
     int maxPrims = 65536;
