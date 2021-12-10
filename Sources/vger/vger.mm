@@ -779,18 +779,19 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
 
     auto glyphRects = [glyphCache getRects];
     auto& scene = scenes[currentScene];
-    auto primp = (vgerPrim*) scene.prims[0].contents;
-    for(int i=0;i<primCount[currentLayer];++i) {
-        auto& prim = primp[i];
-        if(prim.type == vgerGlyph) {
-            auto r = glyphRects[prim.glyph-1];
-            for(int i=0;i<2;++i) {
-                prim.texBounds[i] += float2{float(r.x), float(r.y)};
-            }
-        }
-    }
 
     for(int layer = 0; layer < layerCount; ++layer) {
+        auto primp = (vgerPrim*) scene.prims[layer].contents;
+        for(int i=0;i<primCount[layer];++i) {
+            auto& prim = primp[i];
+            if(prim.type == vgerGlyph) {
+                auto r = glyphRects[prim.glyph-1];
+                for(int i=0;i<2;++i) {
+                    prim.texBounds[i] += float2{float(r.x), float(r.y)};
+                }
+            }
+        }
+
         [renderer encodeTo:buf
                       pass:pass
                      scene:scene
