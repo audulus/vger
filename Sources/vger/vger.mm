@@ -85,8 +85,8 @@ void vgerDelete(vgerContext vg) {
 }
 
 void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devicePxRatio) {
-    vg->curBuffer = (vg->curBuffer+1) % vg->maxBuffers;
-    auto& scene = vg->scenes[vg->curBuffer];
+    vg->currentScene = (vg->currentScene+1) % vg->maxBuffers;
+    auto& scene = vg->scenes[vg->currentScene];
     vg->primPtr = (vgerPrim*) scene.prims[0].contents;
     vg->primCount = 0;
     vg->cvPtr = (float2*) scene.cvs.contents;
@@ -715,7 +715,7 @@ void vger::fillForTile(vgerPaintIndex paint) {
         addCV(seg.cvs[2]);
     }
 
-    auto bounds = sdPrimBounds(prim, (float2*) scenes[curBuffer].cvs.contents).inset(-10);
+    auto bounds = sdPrimBounds(prim, (float2*) scenes[currentScene].cvs.contents).inset(-10);
     prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
     prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
 
@@ -773,7 +773,7 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
     [glyphCache update:buf];
 
     auto glyphRects = [glyphCache getRects];
-    auto& scene = scenes[curBuffer];
+    auto& scene = scenes[currentScene];
     auto primp = (vgerPrim*) scene.prims[0].contents;
     for(int i=0;i<primCount;++i) {
         auto& prim = primp[i];
@@ -815,7 +815,7 @@ void vger::encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTextu
     }
 
     [tileRenderer encodeTo:buf
-                     scene:scenes[curBuffer]
+                     scene:scenes[currentScene]
                      count:primCount
                      layer:0
                   textures:textures

@@ -75,8 +75,8 @@ struct vger {
     /// We cycle through three scenes for streaming.
     vgerScene scenes[3];
 
-    /// The prim buffer we're currently using.
-    int curBuffer = 0;
+    /// The current scene we're writing to.
+    int currentScene = 0;
 
     /// Pointer to the next prim to be saved in the buffer.
     vgerPrim* primPtr;
