@@ -790,14 +790,16 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
         }
     }
 
-    [renderer encodeTo:buf
-                  pass:pass
-                 scene:scene
-                 count:primCount[currentLayer]
-                 layer:0
-              textures:textures
-          glyphTexture:[glyphCache getAltas]
-            windowSize:windowSize];
+    for(int layer = 0; layer < layerCount; ++layer) {
+        [renderer encodeTo:buf
+                      pass:pass
+                     scene:scene
+                     count:primCount[currentLayer]
+                     layer:layer
+                  textures:textures
+              glyphTexture:[glyphCache getAltas]
+                windowSize:windowSize];
+    }
 
     currentFrame++;
 
