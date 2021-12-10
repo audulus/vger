@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) encodeTo:(id<MTLCommandBuffer>) buffer
             scene:(vgerScene) scene
             count:(int)n
+            layer:(int)layer
          textures:(NSArray<id<MTLTexture>>*)textures
      glyphTexture:(id<MTLTexture>)glyphTexture
     renderTexture:(id<MTLTexture>)renderTexture

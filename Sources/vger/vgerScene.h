@@ -4,9 +4,10 @@
 #define scene_h
 
 #import <Metal/Metal.h>
+#define VGER_MAX_LAYERS 4
 
 struct vgerScene {
-    id<MTLBuffer> prims;  // vgerPrim
+    id<MTLBuffer> prims[VGER_MAX_LAYERS];  // vgerPrim
     id<MTLBuffer> cvs;    // float2
     id<MTLBuffer> xforms; // float3x3
     id<MTLBuffer> paints; // vgerPaint
