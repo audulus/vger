@@ -81,6 +81,9 @@ struct vger {
     /// Current layer we're rendering to.
     int currentLayer = 0;
 
+    /// Number of layers.
+    int layerCount = 1;
+
     /// Pointer to the next prim to be saved in the buffer.
     vgerPrim* primPtr[VGER_MAX_LAYERS];
 

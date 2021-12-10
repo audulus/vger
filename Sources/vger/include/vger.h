@@ -167,6 +167,14 @@ void vgerSave(vgerContext);
 /// Pops and restores the current transform.
 void vgerRestore(vgerContext);
 
+#pragma mark - Layers
+
+/// Sets the number of layers (currently the max is 4). Default is 1.
+void vgerSetLayerCount(vgerContext, int layers);
+
+/// Sets the current layer index.
+void vgerSetLayer(vgerContext, int layer);
+
 #pragma mark - Encoding
 
 #ifdef __OBJC__

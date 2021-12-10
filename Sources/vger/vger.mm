@@ -871,6 +871,18 @@ void vgerRestore(vgerContext vg) {
     assert(!vg->txStack.empty());
 }
 
+void vgerSetLayerCount(vgerContext vg, int layerCount) {
+    assert(layerCount > 0);
+    assert(layerCount <= VGER_MAX_LAYERS);
+    vg->layerCount = layerCount;
+}
+
+void vgerSetLayer(vgerContext vg, int layer) {
+    assert(layer < VGER_MAX_LAYERS);
+    assert(layer >= 0);
+    vg->currentLayer = layer;
+}
+
 id<MTLTexture> vgerGetGlyphAtlas(vgerContext vg) {
     return [vg->glyphCache getAltas];
 }
