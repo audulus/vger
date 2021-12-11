@@ -91,6 +91,7 @@ void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devi
         vg->primPtr[layer] = (vgerPrim*) scene.prims[layer].contents;
         vg->primCount[layer] = 0;
     }
+    vg->currentLayer = 0;
     vg->cvPtr = (float2*) scene.cvs.contents;
     vg->cvCount = 0;
     vg->xformPtr = (float3x3*) scene.xforms.contents;
@@ -99,6 +100,10 @@ void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devi
     vg->paintCount = 0;
     vg->windowSize = {windowWidth, windowHeight};
     vg->devicePxRatio = devicePxRatio;
+
+    // Add a dummy prim so we always render something (and at least the
+    // framebuffer is cleared).
+    vgerFillRect(vg, float2{0,0}, float2{0,0}, 0, vgerColorPaint(vg, float4{0,0,0,0}));
 }
 
 vgerImageIndex vgerCreateImage(vgerContext vg, const char* filename) {
