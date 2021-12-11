@@ -991,4 +991,28 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
     XCTAssertNotEqual(hash(keyA), hash(keyB));
 }
 
+- (void) testLayers {
+
+    auto vger = vgerNew(0);
+    vgerSetLayerCount(vger, 2);
+
+    vgerBegin(vger, 512, 512, 1.0);
+
+    XCTAssertTrue(equal(vgerTransform(vger, float2{0,0}), float2{0, 0}));
+
+    auto cyan = vgerColorPaint(vger, float4{0,1,1,1});
+    auto magenta = vgerColorPaint(vger, float4{1,0,1,1});
+
+    vgerSetLayer(vger, 1);
+    vgerFillCircle(vger, float2{80,80}, 20, magenta);
+
+    vgerSetLayer(vger, 0);
+    vgerFillCircle(vger, float2{80,80}, 30, cyan);
+
+    // Magenta circle should be on top!
+    [self render:vger name:@"layers.png"];
+
+    vgerDelete(vger);
+}
+
 @end

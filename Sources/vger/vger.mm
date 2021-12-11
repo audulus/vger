@@ -88,7 +88,7 @@ void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devi
     vg->currentScene = (vg->currentScene+1) % vg->maxBuffers;
     auto& scene = vg->scenes[vg->currentScene];
     for(int layer=0;layer<VGER_MAX_LAYERS;++layer) {
-        vg->primPtr[layer] = (vgerPrim*) scene.prims[0].contents;
+        vg->primPtr[layer] = (vgerPrim*) scene.prims[layer].contents;
         vg->primCount[layer] = 0;
     }
     vg->cvPtr = (float2*) scene.cvs.contents;
@@ -792,10 +792,14 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
             }
         }
 
+        if(layer) {
+            pass.colorAttachments[0].loadAction = MTLLoadActionLoad;
+        }
+
         [renderer encodeTo:buf
                       pass:pass
                      scene:scene
-                     count:primCount[currentLayer]
+                     count:primCount[layer]
                      layer:layer
                   textures:textures
               glyphTexture:[glyphCache getAltas]
