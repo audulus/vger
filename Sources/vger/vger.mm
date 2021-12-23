@@ -914,10 +914,14 @@ vgerPaintIndex vgerColorPaint(vgerContext vg, float4 color) {
     return vg->addPaint(p);
 }
 
-vgerPaintIndex vgerLinearGradient(vgerContext vg, float2 start, float2 end,
-                                  float4 innerColor, float4 outerColor) {
+vgerPaintIndex vgerLinearGradient(vgerContext vg,
+                                  float2 start,
+                                  float2 end,
+                                  float4 innerColor,
+                                  float4 outerColor,
+                                  float glow) {
 
-    return vg->addPaint(makeLinearGradient(start, end, innerColor, outerColor));
+    return vg->addPaint(makeLinearGradient(start, end, innerColor, outerColor, glow));
 
 }
 

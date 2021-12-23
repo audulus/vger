@@ -17,6 +17,9 @@ typedef struct {
 
     vector_float4 outerColor;
 
+    /// Render into the glow layer?
+    float glow;
+
     /// Image if we're texturing.
     int32_t image;
 

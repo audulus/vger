@@ -200,8 +200,11 @@ struct vger {
     void renderGlyphPath(CGGlyph glyph, vgerPaintIndex paint, float2 position, uint16_t xform);
 };
 
-inline vgerPaint makeLinearGradient(float2 start, float2 end,
-                                    float4 innerColor, float4 outerColor) {
+inline vgerPaint makeLinearGradient(float2 start,
+                                    float2 end,
+                                    float4 innerColor,
+                                    float4 outerColor,
+                                    float glow) {
     
     vgerPaint p;
 
@@ -220,6 +223,7 @@ inline vgerPaint makeLinearGradient(float2 start, float2 end,
     p.innerColor = innerColor;
     p.outerColor = outerColor;
     p.image = -1;
+    p.glow = glow;
 
     return p;
 }

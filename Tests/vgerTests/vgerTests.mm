@@ -138,7 +138,7 @@ static void SplitBezier(float t,
 
     vgerFillCircle(vg, float2{256, 256}, 40, cyan);
     vgerStrokeBezier(vg, {{256,256}, {256,384}, {384,384}}, 1, white);
-    vgerFillRect(vg, float2{400,100}, float2{450,150}, 10, vgerLinearGradient(vg, float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1}));
+    vgerFillRect(vg, float2{400,100}, float2{450,150}, 10, vgerLinearGradient(vg, float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1}, 0));
     vgerStrokeArc(vg, float2{100,400}, 30, 3, theta, ap, white);
     vgerStrokeSegment(vg, float2{100,100}, float2{200,200}, 10, magenta);
     vgerStrokeRect(vg, float2{400,100}, float2{450,150}, 10, 2.0, magenta);
@@ -501,21 +501,21 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     vgerSave(vger);
 
-    vgerStrokeBezier(vger, {{50,450}, {100,450}, {100,500}}, 2.0, vgerLinearGradient(vger, float2{50,450}, float2{100,450}, cyan, magenta));
+    vgerStrokeBezier(vger, {{50,450}, {100,450}, {100,500}}, 2.0, vgerLinearGradient(vger, float2{50,450}, float2{100,450}, cyan, magenta, 0));
     textAt(vger, 150, 450, "Quadratic Bezier stroke");
 
-    vgerFillRect(vger, float2{50,350}, float2{100,400}, 10, vgerLinearGradient(vger, float2{50,350}, float2{100,400}, cyan, magenta));
+    vgerFillRect(vger, float2{50,350}, float2{100,400}, 10, vgerLinearGradient(vger, float2{50,350}, float2{100,400}, cyan, magenta, 0));
     textAt(vger, 150, 350, "Rounded rectangle");
 
-    vgerFillCircle(vger, float2{75, 275}, 25, vgerLinearGradient(vger, float2{50,250}, float2{100,300}, cyan, magenta));
+    vgerFillCircle(vger, float2{75, 275}, 25, vgerLinearGradient(vger, float2{50,250}, float2{100,300}, cyan, magenta, 0));
     textAt(vger, 150, 250, "Circle");
 
-    vgerStrokeSegment(vger, float2{50,150}, float2{100,200}, 2.0, vgerLinearGradient(vger, float2{50,150}, float2{100,200}, cyan, magenta));
+    vgerStrokeSegment(vger, float2{50,150}, float2{100,200}, 2.0, vgerLinearGradient(vger, float2{50,150}, float2{100,200}, cyan, magenta, 0));
     textAt(vger, 150, 150, "Line segment");
 
     float theta = 0;      // orientation
     float ap = .5 * M_PI; // aperture size
-    vgerStrokeArc(vger, float2{75,75}, 25, 2.0, theta, ap, vgerLinearGradient(vger, float2{50,50}, float2{100,100}, cyan, magenta));
+    vgerStrokeArc(vger, float2{75,75}, 25, 2.0, theta, ap, vgerLinearGradient(vger, float2{50,50}, float2{100,100}, cyan, magenta, 0));
     textAt(vger, 150, 050, "Arc");
 
     vgerRestore(vger);
@@ -528,29 +528,29 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
 - (void) testPaint {
 
-    auto p = makeLinearGradient(float2{0,0}, float2{1,0}, float4(0), float4(1));
+    auto p = makeLinearGradient(float2{0,0}, float2{1,0}, float4(0), float4(1), 0);
 
     XCTAssertTrue(equal(applyPaint(p, float2{0,0}), float4(0)));
     XCTAssertTrue(equal(applyPaint(p, float2{.5,0}), float4(.5)));
     XCTAssertTrue(equal(applyPaint(p, float2{1,0}), float4(1)));
 
-    p = makeLinearGradient(float2{0,0}, float2{0,1}, float4(0), float4(1));
+    p = makeLinearGradient(float2{0,0}, float2{0,1}, float4(0), float4(1), 0);
 
     XCTAssertTrue(equal(applyPaint(p, float2{0,0}), float4(0)));
     XCTAssertTrue(equal(applyPaint(p, float2{0,1}), float4(1)));
 
-    p = makeLinearGradient(float2{1,0}, float2{2,0}, float4(0), float4(1));
+    p = makeLinearGradient(float2{1,0}, float2{2,0}, float4(0), float4(1), 0);
     XCTAssertTrue(equal(applyPaint(p, float2{0,0}), float4(0)));
     XCTAssertTrue(equal(applyPaint(p, float2{1,0}), float4(0)));
     XCTAssertTrue(equal(applyPaint(p, float2{1.5,0}), float4(.5)));
     XCTAssertTrue(equal(applyPaint(p, float2{2,0}), float4(1)));
     XCTAssertTrue(equal(applyPaint(p, float2{3,0}), float4(1)));
 
-    p = makeLinearGradient(float2{1,2}, float2{2,3}, float4(0), float4(1));
+    p = makeLinearGradient(float2{1,2}, float2{2,3}, float4(0), float4(1), 0);
     XCTAssertTrue(equal(applyPaint(p, float2{1,2}), float4(0)));
     XCTAssertTrue(equal(applyPaint(p, float2{2,3}), float4(1)));
 
-    p = makeLinearGradient(float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1});
+    p = makeLinearGradient(float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1}, 0);
     XCTAssertTrue(simd_length(applyPaint(p, float2{400,100}) - float4{0,1,1,1}) < 0.001f);
 
     auto c = applyPaint(p, float2{425,125});
@@ -607,7 +607,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     vgerBegin(vger, w, h, 1.0);
 
-    auto paint = vgerLinearGradient(vger, 0, sz, float4{0,1,1,1}, float4{1,0,1,1});
+    auto paint = vgerLinearGradient(vger, 0, sz, float4{0,1,1,1}, float4{1,0,1,1}, 0);
     auto start = sz * rand2();
     vgerMoveTo(vger, start);
     for(int i=0;i<10;++i) {
@@ -648,7 +648,7 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
 
     vgerBegin(vger, w, h, 1.0);
 
-    auto paint = vgerLinearGradient(vger, 0, sz, float4{0,1,1,1}, float4{1,0,1,1});
+    auto paint = vgerLinearGradient(vger, 0, sz, float4{0,1,1,1}, float4{1,0,1,1}, 0);
 
     makeCircle(vger, sz/2, 128);
 
@@ -947,7 +947,7 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
 
     vgerBegin(vger, w, h, 1.0);
 
-    auto paint = vgerLinearGradient(vger, 0, sz, float4{0,1,1,1}, float4{1,0,1,1});
+    auto paint = vgerLinearGradient(vger, 0, sz, float4{0,1,1,1}, float4{1,0,1,1}, 0);
 
     auto start = sz * rand2();
     vgerMoveTo(vger, start);
