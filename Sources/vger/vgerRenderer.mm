@@ -73,6 +73,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
          textures:(NSArray<id<MTLTexture>>*)textures
      glyphTexture:(id<MTLTexture>)glyphTexture
        windowSize:(vector_float2)windowSize
+             glow:(bool)glow
 {
     if(n == 0) {
         return;
@@ -99,6 +100,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [enc setFragmentBuffer:scene.prims[layer] offset:0 atIndex:0];
     [enc setFragmentBuffer:scene.cvs offset:0 atIndex:1];
     [enc setFragmentBuffer:scene.paints offset:0 atIndex:2];
+    [enc setFragmentBytes:&glow length:sizeof(bool) atIndex:3];
 
     vgerPrim* p = (vgerPrim*) scene.prims[layer].contents;
     vgerPaint* paints = (vgerPaint*) scene.paints.contents;

@@ -185,7 +185,7 @@ struct vger {
 
     void fillForTile(vgerPaintIndex paint);
 
-    void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
+    void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, bool glow);
 
     void encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture);
 
@@ -252,6 +252,7 @@ inline vgerPaint makeImagePattern(float2 origin,
     p.xform = matrix_multiply(S, R);
 
     p.innerColor = p.outerColor = float4{1,1,1,alpha};
+    p.glow = 0;
 
     return p;
 }

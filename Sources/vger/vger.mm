@@ -766,10 +766,10 @@ void vgerFillForTile(vgerContext vg, vgerPaintIndex paint) {
 }
 
 void vgerEncode(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
-    vg->encode(buf, pass);
+    vg->encode(buf, pass, false);
 }
 
-void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
+void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, bool glow) {
 
     // Prune the text cache.
     for(auto it = begin(textCache); it != end(textCache);) {
@@ -808,7 +808,8 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
                      layer:layer
                   textures:textures
               glyphTexture:[glyphCache getAltas]
-                windowSize:windowSize];
+                windowSize:windowSize
+                      glow:glow];
     }
 
     currentFrame++;
@@ -818,6 +819,10 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
         glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
         textCache.clear();
     }
+}
+
+void vgerEncodeGlowPass(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
+    vg->encode(buf, pass, true);
 }
 
 void vgerEncodeTileRender(vgerContext vg, id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture) {
@@ -910,6 +915,7 @@ vgerPaintIndex vgerColorPaint(vgerContext vg, float4 color) {
     p.innerColor = color;
     p.outerColor = color;
     p.image = -1;
+    p.glow = 0;
 
     return vg->addPaint(p);
 }
@@ -942,6 +948,7 @@ vgerPaintIndex vgerGrid(vgerContext vg, vector_float2 origin, vector_float2 size
         float3{ 0, 1/size.y, 0},
         float3{ -origin.x, -origin.y, 1}
     };
+    p.glow = 0;
 
     return vg->addPaint(p);
 }

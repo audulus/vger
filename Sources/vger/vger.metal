@@ -103,6 +103,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                               const device vgerPrim* prims,
                               const device float2* cvs,
                               const device vgerPaint* paints,
+                              constant bool& glow,
                               texture2d<float, access::sample> tex,
                               texture2d<float, access::sample> glyphs) {
 

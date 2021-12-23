@@ -25,7 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
             layer:(int)layer
          textures:(NSArray<id<MTLTexture>>*)textures
      glyphTexture:(id<MTLTexture>)glyphTexture
-       windowSize:(vector_float2)windowSize;
+       windowSize:(vector_float2)windowSize
+             glow:(bool)glow;
 
 @end
 
