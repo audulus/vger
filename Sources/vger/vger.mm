@@ -84,22 +84,28 @@ void vgerDelete(vgerContext vg) {
     delete vg;
 }
 
-void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devicePxRatio) {
-    vg->currentScene = (vg->currentScene+1) % vg->maxBuffers;
-    auto& scene = vg->scenes[vg->currentScene];
+void vger::begin(float windowWidth, float windowHeight, float devicePxRatio) {
+    currentScene = (currentScene+1) % maxBuffers;
+    auto& scene = scenes[currentScene];
     for(int layer=0;layer<VGER_MAX_LAYERS;++layer) {
-        vg->primPtr[layer] = (vgerPrim*) scene.prims[layer].contents;
-        vg->primCount[layer] = 0;
+        primPtr[layer] = (vgerPrim*) scene.prims[layer].contents;
+        primCount[layer] = 0;
     }
-    vg->currentLayer = 0;
-    vg->cvPtr = (float2*) scene.cvs.contents;
-    vg->cvCount = 0;
-    vg->xformPtr = (float3x3*) scene.xforms.contents;
-    vg->xformCount = 0;
-    vg->paintPtr = (vgerPaint*) scene.paints.contents;
-    vg->paintCount = 0;
-    vg->windowSize = {windowWidth, windowHeight};
-    vg->devicePxRatio = devicePxRatio;
+    currentLayer = 0;
+    cvPtr = (float2*) scene.cvs.contents;
+    cvCount = 0;
+    xformPtr = (float3x3*) scene.xforms.contents;
+    xformCount = 0;
+    paintPtr = (vgerPaint*) scene.paints.contents;
+    paintCount = 0;
+    windowSize = {windowWidth, windowHeight};
+    this->devicePxRatio = devicePxRatio;
+    computedGlyphBounds = false;
+}
+
+void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devicePxRatio) {
+
+    vg->begin(windowWidth, windowHeight, devicePxRatio);
 
     // Add a dummy prim so we always render something (and at least the
     // framebuffer is cleared).
@@ -772,29 +778,33 @@ void vgerEncode(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescripto
 void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, bool glow) {
 
     // Prune the text cache.
-    for(auto it = begin(textCache); it != end(textCache);) {
+    for(auto it = std::begin(textCache); it != std::end(textCache);) {
         if (it->second.lastFrame != currentFrame) {
             it = textCache.erase(it);
         } else {
             ++it;
         }
     }
-    
+
     [glyphCache update:buf];
 
     auto glyphRects = [glyphCache getRects];
     auto& scene = scenes[currentScene];
 
     for(int layer = 0; layer < layerCount; ++layer) {
-        auto primp = (vgerPrim*) scene.prims[layer].contents;
-        for(int i=0;i<primCount[layer];++i) {
-            auto& prim = primp[i];
-            if(prim.type == vgerGlyph) {
-                auto r = glyphRects[prim.glyph-1];
-                for(int i=0;i<2;++i) {
-                    prim.texBounds[i] += float2{float(r.x), float(r.y)};
+
+        if(!computedGlyphBounds) {
+            auto primp = (vgerPrim*) scene.prims[layer].contents;
+            for(int i=0;i<primCount[layer];++i) {
+                auto& prim = primp[i];
+                if(prim.type == vgerGlyph) {
+                    auto r = glyphRects[prim.glyph-1];
+                    for(int i=0;i<2;++i) {
+                        prim.texBounds[i] += float2{float(r.x), float(r.y)};
+                    }
                 }
             }
+            computedGlyphBounds = true;
         }
 
         if(layer) {

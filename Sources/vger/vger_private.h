@@ -153,6 +153,9 @@ struct vger {
     /// For loading images from files.
     MTKTextureLoader* textureLoader;
 
+    /// Have we already computed glyph bounds?
+    bool computedGlyphBounds = false;
+
     vger(uint32_t flags);
 
     void addCV(float2 p) {
@@ -180,6 +183,8 @@ struct vger {
 
     CTLineRef createCTLine(const char* str);
     CTFrameRef createCTFrame(const char* str, int align, float breakRowWidth);
+
+    void begin(float windowWidth, float windowHeight, float devicePxRatio);
 
     void fill(vgerPaintIndex paint);
 
