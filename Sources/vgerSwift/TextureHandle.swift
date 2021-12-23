@@ -6,7 +6,7 @@ public class TextureHandle {
     var vger: vgerContext
     var textureIndex: vgerImageIndex
 
-    init(vger: vgerContext, index: vgerImageIndex) {
+    public init(vger: vgerContext, index: vgerImageIndex) {
         self.vger = vger
         self.textureIndex = index
     }
