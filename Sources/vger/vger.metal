@@ -117,7 +117,13 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
                                           coord::pixel);
 
         auto c = paint.innerColor;
-        return float4(c.rgb, c.a * glyphs.sample(glyphSampler, in.t).a);
+        auto color = float4(c.rgb, c.a * glyphs.sample(glyphSampler, in.t).a);
+
+        if(glow) {
+            color.a *= paint.glow;
+        }
+
+        return color;
     }
 
     float fw = length(fwidth(in.t));
