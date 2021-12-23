@@ -3,8 +3,8 @@
 import vger
 
 public class TextureHandle {
-    var vger: vgerContext
-    var textureIndex: vgerImageIndex
+    public let vger: vgerContext
+    public let textureIndex: vgerImageIndex
 
     public init(vger: vgerContext, index: vgerImageIndex) {
         self.vger = vger
