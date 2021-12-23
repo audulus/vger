@@ -144,6 +144,10 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
         color.a *= paint.innerColor.a;
     }
 
+    if(glow) {
+        color.a *= paint.glow;
+    }
+
     return mix(float4(color.rgb,0.0), color, 1.0-smoothstep(-fw/2,fw/2,d) );
 
 }
