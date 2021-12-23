@@ -101,6 +101,23 @@ void vger::begin(float windowWidth, float windowHeight, float devicePxRatio) {
     windowSize = {windowWidth, windowHeight};
     this->devicePxRatio = devicePxRatio;
     computedGlyphBounds = false;
+
+    // Prune the text cache.
+    for(auto it = std::begin(textCache); it != std::end(textCache);) {
+        if (it->second.lastFrame != currentFrame) {
+            it = textCache.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    currentFrame++;
+
+    // Do we need to create a new glyph cache?
+    if(glyphCache.usage > 0.8f) {
+        glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
+        textCache.clear();
+    }
 }
 
 void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devicePxRatio) {
@@ -777,23 +794,20 @@ void vgerEncode(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescripto
 
 void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, bool glow) {
 
-    // Prune the text cache.
-    for(auto it = std::begin(textCache); it != std::end(textCache);) {
-        if (it->second.lastFrame != currentFrame) {
-            it = textCache.erase(it);
-        } else {
-            ++it;
-        }
-    }
-
     [glyphCache update:buf];
 
     auto glyphRects = [glyphCache getRects];
     auto& scene = scenes[currentScene];
 
+    bool computeGlyphBounds = false;
+    if(!computedGlyphBounds) {
+        computeGlyphBounds = true;
+        computedGlyphBounds = true;
+    }
+
     for(int layer = 0; layer < layerCount; ++layer) {
 
-        if(!computedGlyphBounds) {
+        if(computeGlyphBounds) {
             auto primp = (vgerPrim*) scene.prims[layer].contents;
             for(int i=0;i<primCount[layer];++i) {
                 auto& prim = primp[i];
@@ -804,7 +818,6 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, bool 
                     }
                 }
             }
-            computedGlyphBounds = true;
         }
 
         if(layer) {
@@ -820,14 +833,6 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, bool 
               glyphTexture:[glyphCache getAltas]
                 windowSize:windowSize
                       glow:glow];
-    }
-
-    currentFrame++;
-
-    // Do we need to create a new glyph cache?
-    if(glyphCache.usage > 0.8f) {
-        glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
-        textCache.clear();
     }
 }
 
