@@ -63,6 +63,8 @@ struct vger {
     id<MTLDevice> device;
     vgerRenderer* renderer;
 
+    vgerRenderer* glowRenderer;
+
     /// New experimental tile renderer.
     vgerTileRenderer* tileRenderer;
 

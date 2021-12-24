@@ -31,7 +31,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 @implementation vgerRenderer
 
 - (instancetype)initWithDevice:(id<MTLDevice>) device
-{
+                   pixelFormat:(MTLPixelFormat) pixelFormat {
     self = [super init];
     if (self) {
         auto lib = GetMetalLibrary(device);
@@ -41,7 +41,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
         desc.fragmentFunction = [lib newFunctionWithName:@"vger_fragment"];
 
         auto ad = desc.colorAttachments[0];
-        ad.pixelFormat = MTLPixelFormatBGRA8Unorm;
+        ad.pixelFormat = pixelFormat;
         ad.blendingEnabled = true;
         ad.sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
         ad.sourceAlphaBlendFactor = MTLBlendFactorSourceAlpha;

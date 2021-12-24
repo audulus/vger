@@ -10,7 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface vgerRenderer : NSObject
 
-- (instancetype)initWithDevice:(id<MTLDevice>) device;
+- (instancetype)initWithDevice:(id<MTLDevice>) device
+                   pixelFormat:(MTLPixelFormat) pixelFormat;
 
 /// Render a buffer of prims.
 /// @param buffer commnd buffer for encoding

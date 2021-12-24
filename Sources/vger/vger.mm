@@ -23,7 +23,8 @@ using namespace simd;
 
 vger::vger(uint32_t flags) {
     device = MTLCreateSystemDefaultDevice();
-    renderer = [[vgerRenderer alloc] initWithDevice:device];
+    renderer = [[vgerRenderer alloc] initWithDevice:device pixelFormat:MTLPixelFormatBGRA8Unorm];
+    glowRenderer = [[vgerRenderer alloc] initWithDevice:device pixelFormat:MTLPixelFormatRGBA16Unorm];
     glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
     printf("prim buffer size: %d MB\n", (int)(maxPrims * sizeof(vgerPrim))/(1024*1024));
     printf("cv buffer size: %d MB\n", (int)(maxCvs * sizeof(float2))/(1024*1024));
@@ -824,15 +825,15 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, bool 
             pass.colorAttachments[0].loadAction = MTLLoadActionLoad;
         }
 
-        [renderer encodeTo:buf
-                      pass:pass
-                     scene:scene
-                     count:primCount[layer]
-                     layer:layer
-                  textures:textures
-              glyphTexture:[glyphCache getAltas]
-                windowSize:windowSize
-                      glow:glow];
+        [(glow ? glowRenderer : renderer) encodeTo:buf
+                                              pass:pass
+                                             scene:scene
+                                             count:primCount[layer]
+                                             layer:layer
+                                          textures:textures
+                                      glyphTexture:[glyphCache getAltas]
+                                        windowSize:windowSize
+                                              glow:glow];
     }
 }
 
