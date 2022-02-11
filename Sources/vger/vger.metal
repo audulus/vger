@@ -127,7 +127,7 @@ fragment float4 vger_fragment(VertexOut in [[ stage_in ]],
     }
 
     float fw = length(fwidth(in.t));
-    float d = sdPrim(prim, cvs, in.t, /*exact*/false, fw);
+    float d = sdPrim(prim, cvs, in.t, fw);
 
     //if(d > 2*sw) {
     //    discard_fragment();

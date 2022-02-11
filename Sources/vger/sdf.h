@@ -316,7 +316,7 @@ inline bool pointInsidePath(const DEVICE vgerPrim& prim, const DEVICE float2* cv
 
 }
 
-inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p, bool exact=false, float filterWidth = 0) {
+inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p, float filterWidth = 0) {
     float d = FLT_MAX;
     float s = 1;
     switch(prim.type) {
@@ -362,25 +362,19 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
                 auto c = cvs[j+2];
 
                 bool skip = false;
+                auto xmax = p.x + filterWidth;
+                auto xmin = p.x - filterWidth;
 
-                if(exact) {
+                // If the hull is far enough away, don't bother with
+                // a sdf.
+                if(a.x > xmax and b.x > xmax and c.x > xmax) {
+                    skip = true;
+                } else if(a.x < xmin and b.x < xmin and c.x < xmin) {
+                    skip = true;
+                }
+
+                if(!skip) {
                     d = min(d, sdBezier(p, a, b, c));
-                } else {
-                    auto xmax = p.x + filterWidth;
-                    auto xmin = p.x - filterWidth;
-
-                    // If the hull is far enough away, don't bother with
-                    // a sdf.
-                    if(a.x > xmax and b.x > xmax and c.x > xmax) {
-                        skip = true;
-                    } else if(a.x < xmin and b.x < xmin and c.x < xmin) {
-                        skip = true;
-                    }
-
-                    if(!skip) {
-                        d = min(d, sdBezierApprox2(p, a, b, c));
-                    }
-
                 }
 
                 if(lineTest(p, a, c)) {
