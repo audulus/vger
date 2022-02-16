@@ -78,7 +78,8 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
     return out;
 }
 
-float gridAlpha(float3 pos, float aa) {
+float gridAlpha(float3 pos) {
+    float aa = length(fwidth(pos));
     auto toGrid = abs(pos - round(pos));
     auto dist = min(toGrid.x, toGrid.y);
     return 0.5 * smoothstep(aa, 0, dist);
@@ -88,9 +89,7 @@ float gridAlpha(float3 pos, float aa) {
 inline float4 applyGrid(const device vgerPaint& paint, float2 p) {
 
     auto pos = paint.xform * float3{p.x, p.y, 1.0};
-    float aa = length(fwidth(pos));
-
-    float alpha = gridAlpha(pos, aa) + gridAlpha(pos/8, aa/8);
+    float alpha = gridAlpha(pos) + gridAlpha(pos/8);
 
     auto color = paint.innerColor;
     color.a *= alpha;
