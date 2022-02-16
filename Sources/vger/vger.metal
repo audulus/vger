@@ -89,7 +89,7 @@ float gridAlpha(float3 pos) {
 inline float4 applyGrid(const device vgerPaint& paint, float2 p) {
 
     auto pos = paint.xform * float3{p.x, p.y, 1.0};
-    float alpha = gridAlpha(pos) + gridAlpha(pos/8);
+    float alpha = gridAlpha(pos);
 
     auto color = paint.innerColor;
     color.a *= alpha;
