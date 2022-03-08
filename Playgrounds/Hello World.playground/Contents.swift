@@ -10,6 +10,7 @@ struct HelloView: View {
         VgerView(renderCallback: { vger in
             vgerText(vger, "Hello world. This is V'Ger.", cyan, 0)
         })
+        .frame(width: 500, height: 500)
     }
 }
 import PlaygroundSupport
