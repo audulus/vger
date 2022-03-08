@@ -1,6 +1,9 @@
 // Copyright © 2021 Audulus LLC. All rights reserved.
 
 #import "vgerBundleHelper.h"
+#import <Metal/Metal.h>
+#import <CoreText/CoreText.h>
+#import <MetalKit/MetalKit.h>
 
 @implementation vgerBundleHelper
 
