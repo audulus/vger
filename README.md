@@ -56,7 +56,7 @@ See [the demo app](https://github.com/audulus/vger-demo) for an example of using
 ```swift
 import SwiftUI
 import vger      // C/C++/ObjC interface.
-import vgerSwift // Swift nicities.
+import vgerSwift // Swift niceties.
 
 struct HelloView: View {
 
