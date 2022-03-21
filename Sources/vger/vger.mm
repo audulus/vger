@@ -885,6 +885,17 @@ void vgerScale(vgerContext vg, float2 s) {
     A = matrix_multiply(A, M);
 }
 
+void vgerRotate(vgerContext vg, float theta) {
+    auto M = matrix_identity_float3x3;
+    M.columns[0].x = cosf(theta);
+    M.columns[0].y = sinf(theta);
+    M.columns[1].x = - M.columns[0].y;
+    M.columns[1].y = M.columns[0].x;
+
+    auto& A = vg->txStack.back();
+    A = matrix_multiply(A, M);
+}
+
 /// Transforms a point according to the current transformation.
 float2 vgerTransform(vgerContext vg, float2 p) {
     auto& M = vg->txStack.back();

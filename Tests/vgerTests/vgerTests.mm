@@ -184,6 +184,28 @@ static void SplitBezier(float t,
     vgerDelete(vger);
 }
 
+- (void) testRotate {
+
+    auto vger = vgerNew(0);
+
+    vgerBegin(vger, 512, 512, 1.0);
+
+    XCTAssertTrue(equal(vgerTransform(vger, float2{0,0}), float2{0, 0}));
+
+    auto cyan = vgerColorPaint(vger, float4{0,1,1,1});
+
+    vgerSave(vger);
+    vgerTranslate(vger, float2{256,256});
+    vgerRotate(vger, M_PI / 20.0);
+    vgerFillRect(vger, float2{-100,-100}, float2{100,100}, 5.0, cyan);
+
+    vgerRestore(vger);
+
+    [self render:vger name:@"rotate.png"];
+
+    vgerDelete(vger);
+}
+
 - (void) testRects {
 
     auto vger = vgerNew(0);

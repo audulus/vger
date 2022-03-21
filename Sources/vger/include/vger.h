@@ -154,6 +154,9 @@ void vgerTranslate(vgerContext, vector_float2 t);
 /// Scales current coordinate system.
 void vgerScale(vgerContext, vector_float2 s);
 
+/// Rotates current coordinate system (radians).
+void vgerRotate(vgerContext, float theta);
+
 /// Transforms a point according to the current transformation.
 vector_float2 vgerTransform(vgerContext, vector_float2 p);
 
