@@ -674,6 +674,10 @@ void vger::fill(vgerPaintIndex paint) {
         return;
     }
 
+    if(yScanner.segments.size() == 0) {
+        return;
+    }
+
     auto xform = addxform(txStack.back());
 
     yScanner._init();

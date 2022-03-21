@@ -622,6 +622,21 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
 }
 
+- (void) testEmptyPathFill {
+
+    int w = 512, h = 512;
+    float2 sz = {float(w),float(h)};
+
+    auto vger = vgerNew(0);
+
+    vgerBegin(vger, w, h, 1.0);
+
+    auto paint = vgerLinearGradient(vger, 0, sz, float4{0,1,1,1}, float4{1,0,1,1}, 0);
+    vgerFill(vger, paint);
+
+    vgerDelete(vger);
+}
+
 float2 circle(float theta) {
     return float2{cosf(theta), sinf(theta)};
 }
