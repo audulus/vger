@@ -170,6 +170,9 @@ void vgerSave(vgerContext);
 /// Pops and restores the current transform.
 void vgerRestore(vgerContext);
 
+/// Returns the depth of the transform stack.
+size_t vgerStackDepth(vgerContext);
+
 #pragma mark - Layers
 
 /// Sets the number of layers (currently the max is 4). Default is 1.

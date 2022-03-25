@@ -919,6 +919,10 @@ void vgerRestore(vgerContext vg) {
     assert(!vg->txStack.empty());
 }
 
+size_t vgerStackDepth(vgerContext vg) {
+    return vg->txStack.size();
+}
+
 void vgerSetLayerCount(vgerContext vg, int layerCount) {
     assert(layerCount > 0);
     assert(layerCount <= VGER_MAX_LAYERS);
