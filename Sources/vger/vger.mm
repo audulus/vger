@@ -271,14 +271,29 @@ void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float 
 
 void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPaintIndex paint) {
 
-    vgerPrim prim {
-        .type = vgerBezier,
-        .width = width,
-        .cvs = { s.a, s.b, s.c },
-        .paint = paint.index
-    };
+    // Are the points collinear?
+    float3x3 M = { float3{s.a.x, s.a.y, 1}, float3{s.b.x, s.b.y, 1}, float3{s.c.x, s.c.y, 1} };
+    if(fabsf(determinant(M)) < FLT_EPSILON) {
 
-    vgerRender(vg, &prim);
+        vgerPrim prim {
+            .type = vgerSegment,
+            .width = 2.0f * width,
+            .cvs = { s.a, s.c },
+            .paint = paint.index
+        };
+
+        vgerRender(vg, &prim);
+
+    } else {
+        vgerPrim prim {
+            .type = vgerBezier,
+            .width = width,
+            .cvs = { s.a, s.b, s.c },
+            .paint = paint.index
+        };
+
+        vgerRender(vg, &prim);
+    }
 }
 
 void vgerStrokeSegment(vgerContext vg, vector_float2 a, vector_float2 b, float width, vgerPaintIndex paint) {
