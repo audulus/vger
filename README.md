@@ -56,16 +56,16 @@ See [the demo app](https://github.com/audulus/vger-demo) for an example of using
 ```swift
 import SwiftUI
 import vger      // C/C++/ObjC interface.
-import vgerSwift // Swift nicities.
+import vgerSwift // Swift niceties.
 
 struct HelloView: View {
 
     let cyan = SIMD4<Float>(0,1,1,1)
 
     var body: some View {
-        VgerView(renderCallback: { vger in
+        VgerView { vger in
             vgerText(vger, "Hello world. This is V'Ger.", cyan, 0)
-        })
+        }
     }
 }
 ```
