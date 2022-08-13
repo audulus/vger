@@ -45,7 +45,7 @@ vger::vger(uint32_t flags) {
                                            options:MTLResourceStorageModeShared];
 
             assert(prims);
-            prims.label = @"prim buffer";
+            prims.label = [NSString stringWithFormat:@"prim buffer scene %d, layer %d", i, layer];
             scene.prims[layer] = prims;
         }
 
@@ -53,15 +53,15 @@ vger::vger(uint32_t flags) {
         scene.cvs = [device newBufferWithLength:maxCvs * sizeof(float2)
                                        options:MTLResourceStorageModeShared];
         assert(scene.cvs);
-        scene.cvs.label = @"cv buffer";
+        scene.cvs.label = [NSString stringWithFormat:@"cv buffer scene %d", i];
 
         scene.xforms = [device newBufferWithLength:maxPrims * sizeof(simd_float3x3) options:MTLResourceStorageModeShared];
         assert(scene.xforms);
-        scene.xforms.label = @"xform buffer";
+        scene.xforms.label = [NSString stringWithFormat:@"xform buffer scene %d", i];
 
         scene.paints = [device newBufferWithLength:maxPrims * sizeof(vgerPaint) options:MTLResourceStorageModeShared];
         assert(scene.paints);
-        scene.paints.label = @"paints buffer";
+        scene.paints.label = [NSString stringWithFormat:@"paints buffer scene %d", i];
 
         scenes[i] = scene;
     }
