@@ -5,7 +5,7 @@
 
 #include "metal_compat.h"
 
-typedef struct {
+struct vgerPaint {
 
 #ifdef __METAL_VERSION__
     float3x3 xform;
@@ -23,7 +23,7 @@ typedef struct {
     /// Image if we're texturing.
     int32_t image;
 
-} vgerPaint;
+};
 
 inline float4 applyPaint(const DEVICE vgerPaint& paint, float2 p) {
 
