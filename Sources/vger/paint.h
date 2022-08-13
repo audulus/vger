@@ -13,9 +13,9 @@ struct vgerPaint {
     matrix_float3x3 xform;
 #endif
 
-    vector_float4 innerColor;
+    float4 innerColor;
 
-    vector_float4 outerColor;
+    float4 outerColor;
 
     /// Render into the glow layer?
     float glow;
