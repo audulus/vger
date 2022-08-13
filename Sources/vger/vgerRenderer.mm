@@ -123,6 +123,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
                       instanceCount:m];
             }
 
+            assert(imageID < textures.count);
             [enc setFragmentTexture:[textures objectAtIndex:imageID] atIndex:0];
             
             currentTexture = imageID;

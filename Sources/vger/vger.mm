@@ -208,6 +208,7 @@ vector_int2 vgerTextureSize(vgerContext vg, vgerImageIndex texID) {
 void vgerRender(vgerContext vg, const vgerPrim* prim) {
 
     if(vg->primCount[vg->currentLayer] < vg->maxPrims) {
+        assert(prim->paint < vg->paintCount);
         auto& pp = vg->primPtr[vg->currentLayer];
         *pp = *prim;
         pp->xform = vg->addxform(vg->txStack.back());
@@ -983,7 +984,7 @@ vgerPaintIndex vgerLinearGradient(vgerContext vg,
 
 vgerPaintIndex vgerImagePattern(vgerContext vg, float2 origin, float2 size, float angle,
                                 vgerImageIndex image, float alpha) {
-
+    assert(image.index < vg->textures.count);
     return vg->addPaint(makeImagePattern(origin, size, angle, image, alpha));
 }
 
