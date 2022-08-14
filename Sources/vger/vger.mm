@@ -366,8 +366,6 @@ bool vger::renderCachedText(const TextLayoutKey& key, vgerPaintIndex paint, uint
             if(primCount[currentLayer] < maxPrims) {
                 *(primPtr[currentLayer]) = prim;
                 primPtr[currentLayer]->paint = paint.index;
-                // Keep the old image index.
-                // primPtr->paint.image = prim.paint.image;
                 primPtr[currentLayer]->xform = xform;
                 primPtr[currentLayer]++;
                 primCount[currentLayer]++;
