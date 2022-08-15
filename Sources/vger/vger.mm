@@ -205,19 +205,6 @@ vector_int2 vgerTextureSize(vgerContext vg, vgerImageIndex texID) {
     return {int(tex.width), int(tex.height)};
 }
 
-void vgerRender(vgerContext vg, const vgerPrim* prim) {
-
-    if(vg->primCount[vg->currentLayer] < vg->maxPrims) {
-        assert(prim->paint < vg->paintCount);
-        auto& pp = vg->primPtr[vg->currentLayer];
-        *pp = *prim;
-        pp->xform = vg->addxform(vg->txStack.back());
-        pp++;
-        vg->primCount[vg->currentLayer]++;
-    }
-
-}
-
 void vgerFillCircle(vgerContext vg, vector_float2 center, float radius, vgerPaintIndex paint) {
 
     vgerPrim prim {
@@ -228,7 +215,7 @@ void vgerFillCircle(vgerContext vg, vector_float2 center, float radius, vgerPain
         .width = 0.0
     };
 
-    vgerRender(vg, &prim);
+    vg->addPrim(prim);
 }
 
 void vgerStrokeArc(vgerContext vg, vector_float2 center, float radius, float width, float rotation, float aperture, vgerPaintIndex paint) {
@@ -241,7 +228,7 @@ void vgerStrokeArc(vgerContext vg, vector_float2 center, float radius, float wid
         .paint = paint.index
     };
 
-    vgerRender(vg, &prim);
+    vg->addPrim(prim);
 }
 
 void vgerFillRect(vgerContext vg, vector_float2 min, vector_float2 max, float radius, vgerPaintIndex paint) {
@@ -253,7 +240,7 @@ void vgerFillRect(vgerContext vg, vector_float2 min, vector_float2 max, float ra
         .paint = paint.index
     };
 
-    vgerRender(vg, &prim);
+    vg->addPrim(prim);
 }
 
 void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float radius, float width, vgerPaintIndex paint) {
@@ -266,7 +253,7 @@ void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float 
         .paint = paint.index
     };
 
-    vgerRender(vg, &prim);
+    vg->addPrim(prim);
 
 }
 
@@ -283,7 +270,7 @@ void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPain
             .paint = paint.index
         };
 
-        vgerRender(vg, &prim);
+        vg->addPrim(prim);
 
     } else {
         vgerPrim prim {
@@ -293,7 +280,7 @@ void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPain
             .paint = paint.index
         };
 
-        vgerRender(vg, &prim);
+        vg->addPrim(prim);
     }
 }
 
@@ -306,7 +293,7 @@ void vgerStrokeSegment(vgerContext vg, vector_float2 a, vector_float2 b, float w
         .paint = paint.index
     };
 
-    vgerRender(vg, &prim);
+    vg->addPrim(prim);
 }
 
 void vgerStrokeWire(vgerContext vg, vector_float2 a, vector_float2 b, float width, vgerPaintIndex paint) {
@@ -318,7 +305,7 @@ void vgerStrokeWire(vgerContext vg, vector_float2 a, vector_float2 b, float widt
         .paint = paint.index
     };
 
-    vgerRender(vg, &prim);
+    vg->addPrim(prim);
 }
 
 static float averageScale(const float3x3& M)

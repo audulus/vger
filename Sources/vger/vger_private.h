@@ -160,6 +160,19 @@ struct vger {
 
     vger(uint32_t flags);
 
+    void addPrim(const vgerPrim& prim) {
+
+        if(primCount[currentLayer] < maxPrims) {
+            assert(prim.paint < paintCount);
+            auto& pp = primPtr[currentLayer];
+            *pp = prim;
+            pp->xform = addxform(txStack.back());
+            pp++;
+            primCount[currentLayer]++;
+        }
+
+    }
+
     void addCV(float2 p) {
         if(cvCount < maxCvs) {
             *(cvPtr++) = p;
