@@ -212,7 +212,8 @@ void vgerFillCircle(vgerContext vg, vector_float2 center, float radius, vgerPain
         .cvs = { center },
         .radius = radius,
         .paint = paint.index,
-        .width = 0.0
+        .width = 0.0,
+        .xform = vg->addxform(vg->txStack.back())
     };
 
     vg->addPrim(prim);
@@ -225,7 +226,8 @@ void vgerStrokeArc(vgerContext vg, vector_float2 center, float radius, float wid
         .radius = radius,
         .cvs = { center, {sin(rotation), cos(rotation)}, {sin(aperture), cos(aperture)} },
         .width = width,
-        .paint = paint.index
+        .paint = paint.index,
+        .xform = vg->addxform(vg->txStack.back())
     };
 
     vg->addPrim(prim);
@@ -237,7 +239,8 @@ void vgerFillRect(vgerContext vg, vector_float2 min, vector_float2 max, float ra
         .type = vgerRect,
         .radius = radius,
         .cvs = { min, max },
-        .paint = paint.index
+        .paint = paint.index,
+        .xform = vg->addxform(vg->txStack.back())
     };
 
     vg->addPrim(prim);
@@ -250,7 +253,8 @@ void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float 
         .radius = radius,
         .width = width,
         .cvs = { min, max },
-        .paint = paint.index
+        .paint = paint.index,
+        .xform = vg->addxform(vg->txStack.back())
     };
 
     vg->addPrim(prim);
@@ -267,7 +271,8 @@ void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPain
             .type = vgerSegment,
             .width = 2.0f * width,
             .cvs = { s.a, s.c },
-            .paint = paint.index
+            .paint = paint.index,
+            .xform = vg->addxform(vg->txStack.back())
         };
 
         vg->addPrim(prim);
@@ -277,7 +282,8 @@ void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPain
             .type = vgerBezier,
             .width = width,
             .cvs = { s.a, s.b, s.c },
-            .paint = paint.index
+            .paint = paint.index,
+            .xform = vg->addxform(vg->txStack.back())
         };
 
         vg->addPrim(prim);
@@ -290,7 +296,8 @@ void vgerStrokeSegment(vgerContext vg, vector_float2 a, vector_float2 b, float w
         .type = vgerSegment,
         .width = width,
         .cvs = { a, b },
-        .paint = paint.index
+        .paint = paint.index,
+        .xform = vg->addxform(vg->txStack.back())
     };
 
     vg->addPrim(prim);
@@ -302,7 +309,8 @@ void vgerStrokeWire(vgerContext vg, vector_float2 a, vector_float2 b, float widt
         .type = vgerWire,
         .width = width,
         .cvs = { a, b },
-        .paint = paint.index
+        .paint = paint.index,
+        .xform = vg->addxform(vg->txStack.back())
     };
 
     vg->addPrim(prim);

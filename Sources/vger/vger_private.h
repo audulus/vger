@@ -166,7 +166,6 @@ struct vger {
             assert(prim.paint < paintCount);
             auto& pp = primPtr[currentLayer];
             *pp = prim;
-            pp->xform = addxform(txStack.back());
             pp++;
             primCount[currentLayer]++;
         }
