@@ -86,7 +86,7 @@ struct vger {
     /// Number of layers.
     int layerCount = 1;
 
-    /// Pointer to the next prim to be saved in the buffer.
+    /// Pointers to prim buffers.
     vgerPrim* primPtr[VGER_MAX_LAYERS];
 
     /// Number of prims we've saved in the buffer.
@@ -162,12 +162,11 @@ struct vger {
 
     void addPrim(const vgerPrim& prim) {
 
-        if(primCount[currentLayer] < maxPrims) {
+        auto& count = primCount[currentLayer];
+        if(count < maxPrims) {
             assert(prim.paint < paintCount);
-            auto& pp = primPtr[currentLayer];
-            *pp = prim;
-            pp++;
-            primCount[currentLayer]++;
+            primPtr[currentLayer][count] = prim;
+            ++count;
         }
 
     }
