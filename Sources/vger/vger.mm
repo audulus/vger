@@ -349,14 +349,10 @@ bool vger::renderCachedText(const TextLayoutKey& key, vgerPaintIndex paint, uint
         // Copy prims to output.
         auto& info = iter->second;
         info.lastFrame = currentFrame;
-        for(auto& prim : info.prims) {
-            if(primCount[currentLayer] < maxPrims) {
-                *(primPtr[currentLayer]) = prim;
-                primPtr[currentLayer]->paint = paint.index;
-                primPtr[currentLayer]->xform = xform;
-                primPtr[currentLayer]++;
-                primCount[currentLayer]++;
-            }
+        for(auto prim : info.prims) {
+            prim.paint = paint.index;
+            prim.xform = xform;
+            addPrim(prim);
         }
         return true;
     }
