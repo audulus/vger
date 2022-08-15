@@ -411,12 +411,7 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, vgerPaintInd
 
                 textInfo.prims.push_back(prim);
 
-                if(primCount[currentLayer] < maxPrims) {
-                    auto& pp = primPtr[currentLayer];
-                    *pp = prim;
-                    pp++;
-                    primCount[currentLayer]++;
-                }
+                addPrim(prim);
             }
         }
     }
@@ -431,16 +426,11 @@ void vger::renderGlyphPath(CGGlyph glyph, vgerPaintIndex paint, float2 position,
     vgerSave(this);
     vgerTranslate(this, position);
     
-    for(auto& prim : info.prims) {
-        if(primCount[currentLayer] < maxPrims) {
-            auto& pp = primPtr[currentLayer];
-            *pp = prim;
-            pp->xform = xform;
-            pp->paint = paint.index;
-            pp->start += n;
-            pp++;
-            primCount[currentLayer]++;
-        }
+    for(auto prim : info.prims) {
+        prim.xform = xform;
+        prim.paint = paint.index;
+        prim.start += n;
+        addPrim(prim);
     }
     
     for(auto cv : info.cvs) {
@@ -726,8 +716,7 @@ void vger::fill(vgerPaintIndex paint) {
             prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
             prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
 
-            *(primPtr[currentLayer]++) = prim;
-            primCount[currentLayer]++;
+            addPrim(prim);
         }
     }
 
@@ -762,8 +751,7 @@ void vger::fillForTile(vgerPaintIndex paint) {
     prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
     prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
 
-    *(primPtr[currentLayer]++) = prim;
-    primCount[currentLayer]++;
+    addPrim(prim);
 
     yScanner.segments.clear();
 
