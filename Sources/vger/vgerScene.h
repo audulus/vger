@@ -6,12 +6,16 @@
 #import <Metal/Metal.h>
 #define VGER_MAX_LAYERS 4
 
+#import "prim.h"
+
 template<class T>
 struct GPUVec {
     id<MTLBuffer> buffer;
-    T* ptr;
+    T* ptr = nullptr;
     size_t count = 0;
     size_t capacity = 65536;
+
+    GPUVec() { }
 
     GPUVec(id<MTLDevice> device) {
         buffer = [device newBufferWithLength:capacity * sizeof(T)
