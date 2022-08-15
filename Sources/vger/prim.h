@@ -60,13 +60,13 @@ typedef struct {
     uint16_t count;
 
     /// Index of paint applied to drawing region.
-    uint16_t paint;
+    uint32_t paint;
 
     /// Glyph region index. (used internally)
-    uint16_t glyph;
+    uint32_t glyph;
 
     /// Index of transform applied to drawing region. (used internally)
-    uint16_t xform;
+    uint32_t xform;
 
     /// Min and max coordinates of the quad we're rendering. (used internally)
     vector_float2 quadBounds[2];

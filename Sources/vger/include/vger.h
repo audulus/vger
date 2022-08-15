@@ -36,7 +36,7 @@ enum vgerAlign {
 };
 
 /// Type safety for paint indices.
-typedef struct { uint16_t index; } vgerPaintIndex;
+typedef struct { uint32_t index; } vgerPaintIndex;
 
 /// Type safety for image indices.
 typedef struct { uint32_t index; } vgerImageIndex;

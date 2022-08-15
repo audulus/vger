@@ -354,7 +354,7 @@ void vgerText(vgerContext vg, const char* str, float4 color, int align) {
     vg->renderText(str, color, align);
 }
 
-bool vger::renderCachedText(const TextLayoutKey& key, vgerPaintIndex paint, uint16_t xform) {
+bool vger::renderCachedText(const TextLayoutKey& key, vgerPaintIndex paint, uint32_t xform) {
 
     // Do we already have text in the cache?
     auto iter = textCache.find(key);
@@ -377,7 +377,7 @@ bool vger::renderCachedText(const TextLayoutKey& key, vgerPaintIndex paint, uint
     return false;
 }
 
-void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, vgerPaintIndex paint, float2 offset, float scale, uint16_t xform) {
+void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, vgerPaintIndex paint, float2 offset, float scale, uint32_t xform) {
 
     CFRange entire = CFRangeMake(0, 0);
 
@@ -432,7 +432,7 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, vgerPaintInd
 
 }
 
-void vger::renderGlyphPath(CGGlyph glyph, vgerPaintIndex paint, float2 position, uint16_t xform) {
+void vger::renderGlyphPath(CGGlyph glyph, vgerPaintIndex paint, float2 position, uint32_t xform) {
 
     auto& info = glyphPathCache.getInfo(glyph);
     auto n = cvCount;

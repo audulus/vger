@@ -105,13 +105,13 @@ struct vger {
     uint32_t maxCvs = 1024*1024;
 
     /// How many xforms?
-    uint16_t xformCount = 0;
+    uint32_t xformCount = 0;
 
     /// Pointer to the next transform.
     float3x3* xformPtr;
 
     /// How many paints?
-    uint16_t paintCount = 0;
+    uint32_t paintCount = 0;
 
     /// Pointer to the next paint.
     vgerPaint* paintPtr;
@@ -167,7 +167,7 @@ struct vger {
         }
     }
 
-    uint16_t addxform(const matrix_float3x3& M) {
+    uint32_t addxform(const matrix_float3x3& M) {
         if(xformCount < maxPrims) {
             *(xformPtr++) = M;
             return xformCount++;
@@ -196,15 +196,15 @@ struct vger {
 
     void encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture);
 
-    bool renderCachedText(const TextLayoutKey& key, vgerPaintIndex paint, uint16_t xform);
+    bool renderCachedText(const TextLayoutKey& key, vgerPaintIndex paint, uint32_t xform);
 
-    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, vgerPaintIndex paint, float2 offset, float scale, uint16_t xform);
+    void renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, vgerPaintIndex paint, float2 offset, float scale, uint32_t xform);
 
     void renderText(const char* str, float4 color, int align);
 
     void renderTextBox(const char* str, float breakRowWidth, float4 color, int align);
 
-    void renderGlyphPath(CGGlyph glyph, vgerPaintIndex paint, float2 position, uint16_t xform);
+    void renderGlyphPath(CGGlyph glyph, vgerPaintIndex paint, float2 position, uint32_t xform);
 };
 
 inline vgerPaint makeLinearGradient(float2 start,
