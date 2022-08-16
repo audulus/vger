@@ -142,7 +142,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     bounds.label = @"bounds encoder";
     [bounds setComputePipelineState:boundsPipeline];
     [bounds setBuffer:scene.prims[layer].buffer offset:0 atIndex:0];
-    [bounds setBuffer:scene.cvs offset:0 atIndex:1];
+    [bounds setBuffer:scene.cvs.buffer offset:0 atIndex:1];
     [bounds setBytes:&n length:sizeof(uint) atIndex:2];
     [bounds dispatchThreadgroups:MTLSizeMake(n/128+1, 1, 1)
           threadsPerThreadgroup:MTLSizeMake(128, 1, 1)];
@@ -157,7 +157,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     float2 maxWindowSize{MAX_TILES_WIDTH * TILE_SIZE_PIXELS, MAX_TILES_WIDTH * TILE_SIZE_PIXELS};
     [enc setVertexBytes:&maxWindowSize length:sizeof(maxWindowSize) atIndex:2];
     [enc setFragmentBuffer:scene.prims[layer].buffer offset:0 atIndex:0];
-    [enc setFragmentBuffer:scene.cvs offset:0 atIndex:1];
+    [enc setFragmentBuffer:scene.cvs.buffer offset:0 atIndex:1];
     [enc setFragmentBuffer:scene.paints offset:0 atIndex:2];
     [enc setFragmentBuffer:tileBuffer offset:0 atIndex:3];
     [enc setFragmentBuffer:lengthBuffer offset:0 atIndex:4];
@@ -175,7 +175,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [render setTexture:renderTexture atIndex:0];
     [render setBuffer:tileBuffer offset:0 atIndex:0];
     [render setBuffer:lengthBuffer offset:0 atIndex:1];
-    [render setBuffer:scene.cvs offset:0 atIndex:2];
+    [render setBuffer:scene.cvs.buffer offset:0 atIndex:2];
     [render dispatchThreadgroups:MTLSizeMake(int(windowSize.x/TILE_SIZE_PIXELS)+1, int(windowSize.y/TILE_SIZE_PIXELS)+1, 1)
            threadsPerThreadgroup:MTLSizeMake(TILE_SIZE_PIXELS, TILE_SIZE_PIXELS, 1)];
     [render endEncoding];

@@ -7,6 +7,9 @@
 #define VGER_MAX_LAYERS 4
 
 #import "prim.h"
+#import <simd/simd.h>
+
+using namespace simd;
 
 template<class T>
 struct GPUVec {
@@ -47,7 +50,7 @@ struct GPUVec {
 
 struct vgerScene {
     GPUVec<vgerPrim> prims[VGER_MAX_LAYERS];
-    id<MTLBuffer> cvs;    // float2
+    GPUVec<float2>   cvs;
     id<MTLBuffer> xforms; // float3x3
     id<MTLBuffer> paints; // vgerPaint
 };

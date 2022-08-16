@@ -89,12 +89,6 @@ struct vger {
     /// Prim buffer capacity.
     int maxPrims = 65536;
 
-    /// Pointer to the next cv to be saved in the buffer.
-    float2* cvPtr;
-
-    /// Number of cvs we've saved in the current cv buffer.
-    uint32_t cvCount = 0;
-
     /// CV buffer capacity.
     uint32_t maxCvs = 1024*1024;
 
@@ -159,10 +153,7 @@ struct vger {
     }
 
     void addCV(float2 p) {
-        if(cvCount < maxCvs) {
-            *(cvPtr++) = p;
-            cvCount++;
-        }
+        scenes[currentScene].cvs.append(p);
     }
 
     uint32_t addxform(const matrix_float3x3& M) {

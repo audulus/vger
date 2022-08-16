@@ -46,10 +46,8 @@ vger::vger(uint32_t flags) {
             scene.prims[layer] = vec;
         }
 
-        scene.cvs = [device newBufferWithLength:maxCvs * sizeof(float2)
-                                       options:MTLResourceStorageModeShared];
-        assert(scene.cvs);
-        scene.cvs.label = [NSString stringWithFormat:@"cv buffer scene %d", i];
+        scene.cvs = GPUVec<float2>(device);
+        scene.cvs.buffer.label = [NSString stringWithFormat:@"cv buffer scene %d", i];
 
         scene.xforms = [device newBufferWithLength:maxPrims * sizeof(simd_float3x3) options:MTLResourceStorageModeShared];
         assert(scene.xforms);
@@ -88,8 +86,7 @@ void vger::begin(float windowWidth, float windowHeight, float devicePxRatio) {
         scene.prims[layer].reset();
     }
     currentLayer = 0;
-    cvPtr = (float2*) scene.cvs.contents;
-    cvCount = 0;
+    scene.cvs.reset();
     xformPtr = (float3x3*) scene.xforms.contents;
     xformCount = 0;
     paintPtr = (vgerPaint*) scene.paints.contents;
@@ -416,15 +413,14 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, vgerPaintInd
 void vger::renderGlyphPath(CGGlyph glyph, vgerPaintIndex paint, float2 position, uint32_t xform) {
 
     auto& info = glyphPathCache.getInfo(glyph);
-    auto n = cvCount;
-    
+
     vgerSave(this);
     vgerTranslate(this, position);
     
     for(auto prim : info.prims) {
         prim.xform = xform;
         prim.paint = paint.index;
-        prim.start += n;
+        prim.start += scenes[currentScene].cvs.count;
         addPrim(prim);
     }
     
@@ -676,39 +672,36 @@ void vger::fill(vgerPaintIndex paint) {
             .type = vgerPathFill,
             .paint = paint.index,
             .xform = xform,
-            .start = cvCount,
+            .start = static_cast<uint32_t>(scenes[currentScene].cvs.count),
             .count = uint16_t(n)
         };
 
-        if(cvCount+n*3 < maxCvs) {
+        Interval xInt{FLT_MAX, -FLT_MAX};
 
-            Interval xInt{FLT_MAX, -FLT_MAX};
+        for(int a = yScanner.first; a != -1; a = yScanner.segments[a].next) {
 
-            for(int a = yScanner.first; a != -1; a = yScanner.segments[a].next) {
-
-                assert(a < yScanner.segments.size());
-                for(int i=0;i<3;++i) {
-                    auto p = yScanner.segments[a].cvs[i];
-                    addCV(p);
-                    xInt.a = std::min(xInt.a, p.x);
-                    xInt.b = std::max(xInt.b, p.x);
-                }
-
+            assert(a < yScanner.segments.size());
+            for(int i=0;i<3;++i) {
+                auto p = yScanner.segments[a].cvs[i];
+                addCV(p);
+                xInt.a = std::min(xInt.a, p.x);
+                xInt.b = std::max(xInt.b, p.x);
             }
 
-            BBox bounds;
-            bounds.min.x = xInt.a;
-            bounds.max.x = xInt.b;
-            bounds.min.y = yScanner.interval.a;
-            bounds.max.y = yScanner.interval.b;
-
-            // Calculate the prim vertices at this stage,
-            // as we do for glyphs.
-            prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
-            prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
-
-            addPrim(prim);
         }
+
+        BBox bounds;
+        bounds.min.x = xInt.a;
+        bounds.max.x = xInt.b;
+        bounds.min.y = yScanner.interval.a;
+        bounds.max.y = yScanner.interval.b;
+
+        // Calculate the prim vertices at this stage,
+        // as we do for glyphs.
+        prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
+        prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
+
+        addPrim(prim);
     }
 
     assert(yScanner.activeCount == 0);
@@ -723,7 +716,7 @@ void vger::fillForTile(vgerPaintIndex paint) {
         .type = vgerPathFill,
         .paint = paint.index,
         .xform = addxform(txStack.back()),
-        .start = cvCount,
+        .start = static_cast<uint32_t>(scenes[currentScene].cvs.count),
         .count = static_cast<uint16_t>(yScanner.segments.size()),
         .width = 0
     };
@@ -734,7 +727,7 @@ void vger::fillForTile(vgerPaintIndex paint) {
         addCV(seg.cvs[2]);
     }
 
-    auto bounds = sdPrimBounds(prim, (float2*) scenes[currentScene].cvs.contents).inset(-10);
+    auto bounds = sdPrimBounds(prim, (float2*) scenes[currentScene].cvs.ptr).inset(-10);
     prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
     prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
 
