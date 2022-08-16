@@ -99,11 +99,11 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:2];
     [enc setFragmentBuffer:scene.prims[layer].buffer offset:0 atIndex:0];
     [enc setFragmentBuffer:scene.cvs.buffer offset:0 atIndex:1];
-    [enc setFragmentBuffer:scene.paints offset:0 atIndex:2];
+    [enc setFragmentBuffer:scene.paints.buffer offset:0 atIndex:2];
     [enc setFragmentBytes:&glow length:sizeof(bool) atIndex:3];
 
     vgerPrim* p = scene.prims[layer].ptr;
-    vgerPaint* paints = (vgerPaint*) scene.paints.contents;
+    vgerPaint* paints = (vgerPaint*) scene.paints.ptr;
     int currentTexture = -1;
     int m = 0;
     int offset = 0;

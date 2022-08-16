@@ -92,12 +92,6 @@ struct vger {
     /// CV buffer capacity.
     uint32_t maxCvs = 1024*1024;
 
-    /// How many paints?
-    uint32_t paintCount = 0;
-
-    /// Pointer to the next paint.
-    vgerPaint* paintPtr;
-
     /// Atlas for finding glyph images.
     vgerGlyphCache* glyphCache;
 
@@ -157,11 +151,9 @@ struct vger {
     }
 
     vgerPaintIndex addPaint(const vgerPaint& paint) {
-        if(paintCount < maxPrims) {
-            *(paintPtr++) = paint;
-            return {paintCount++};
-        }
-        return {0};
+        uint32_t idx = scenes[currentScene].paints.count;
+        scenes[currentScene].paints.append(paint);
+        return {idx};
     }
 
     CTLineRef createCTLine(const char* str);
