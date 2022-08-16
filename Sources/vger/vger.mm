@@ -79,14 +79,8 @@ void vgerDelete(vgerContext vg) {
 
 void vger::begin(float windowWidth, float windowHeight, float devicePxRatio) {
     currentScene = (currentScene+1) % maxBuffers;
-    auto& scene = scenes[currentScene];
-    for(int layer=0;layer<VGER_MAX_LAYERS;++layer) {
-        scene.prims[layer].reset();
-    }
+    scenes[currentScene].clear();
     currentLayer = 0;
-    scene.cvs.reset();
-    scene.xforms.reset();
-    scene.paints.reset();
     windowSize = {windowWidth, windowHeight};
     this->devicePxRatio = devicePxRatio;
     computedGlyphBounds = false;

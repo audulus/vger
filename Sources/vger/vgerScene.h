@@ -44,7 +44,7 @@ struct GPUVec {
         ptr[count++] = value;
     }
 
-    void reset() {
+    void clear() {
         count = 0;
     }
 };
@@ -54,6 +54,15 @@ struct vgerScene {
     GPUVec<float2>    cvs;
     GPUVec<float3x3>  xforms;
     GPUVec<vgerPaint> paints;
+
+    void clear() {
+        for(int layer=0;layer<VGER_MAX_LAYERS;++layer) {
+            prims[layer].clear();
+        }
+        cvs.clear();
+        xforms.clear();
+        paints.clear();
+    }
 };
 
 #endif /* scene_h */
