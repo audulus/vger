@@ -82,7 +82,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     auto bounds = [buffer computeCommandEncoder];
     bounds.label = @"bounds encoder";
     [bounds setComputePipelineState:boundsPipeline];
-    [bounds setBuffer:scene.prims[layer] offset:0 atIndex:0];
+    [bounds setBuffer:scene.prims[layer].buffer offset:0 atIndex:0];
     [bounds setBuffer:scene.cvs offset:0 atIndex:1];
     [bounds setBytes:&n length:sizeof(uint) atIndex:2];
     [bounds dispatchThreadgroups:MTLSizeMake(n/128+1, 1, 1)
@@ -94,15 +94,15 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     
     [enc setRenderPipelineState:pipeline];
     [enc setFragmentTexture:glyphTexture atIndex:1];
-    [enc setVertexBuffer:scene.prims[layer] offset:0 atIndex:0];
+    [enc setVertexBuffer:scene.prims[layer].buffer offset:0 atIndex:0];
     [enc setVertexBuffer:scene.xforms offset:0 atIndex:1];
     [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:2];
-    [enc setFragmentBuffer:scene.prims[layer] offset:0 atIndex:0];
+    [enc setFragmentBuffer:scene.prims[layer].buffer offset:0 atIndex:0];
     [enc setFragmentBuffer:scene.cvs offset:0 atIndex:1];
     [enc setFragmentBuffer:scene.paints offset:0 atIndex:2];
     [enc setFragmentBytes:&glow length:sizeof(bool) atIndex:3];
 
-    vgerPrim* p = (vgerPrim*) scene.prims[layer].contents;
+    vgerPrim* p = scene.prims[layer].ptr;
     vgerPaint* paints = (vgerPaint*) scene.paints.contents;
     int currentTexture = -1;
     int m = 0;

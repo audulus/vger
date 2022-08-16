@@ -41,14 +41,10 @@ vger::vger(uint32_t flags) {
 
         vgerScene scene;
         for(int layer=0;layer<VGER_MAX_LAYERS;++layer) {
-            auto prims = [device newBufferWithLength:maxPrims * sizeof(vgerPrim)
-                                           options:MTLResourceStorageModeShared];
-
-            assert(prims);
-            prims.label = [NSString stringWithFormat:@"prim buffer scene %d, layer %d", i, layer];
-            scene.prims[layer] = prims;
+            auto vec = GPUVec<vgerPrim>(device);
+            vec.buffer.label = [NSString stringWithFormat:@"prim buffer scene %d, layer %d", i, layer];
+            scene.prims[layer] = vec;
         }
-
 
         scene.cvs = [device newBufferWithLength:maxCvs * sizeof(float2)
                                        options:MTLResourceStorageModeShared];
@@ -89,8 +85,7 @@ void vger::begin(float windowWidth, float windowHeight, float devicePxRatio) {
     currentScene = (currentScene+1) % maxBuffers;
     auto& scene = scenes[currentScene];
     for(int layer=0;layer<VGER_MAX_LAYERS;++layer) {
-        primPtr[layer] = (vgerPrim*) scene.prims[layer].contents;
-        primCount[layer] = 0;
+        scene.prims[layer].reset();
     }
     currentLayer = 0;
     cvPtr = (float2*) scene.cvs.contents;
@@ -665,10 +660,6 @@ void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, flo
 
 void vger::fill(vgerPaintIndex paint) {
 
-    if(primCount[currentLayer] == maxPrims) {
-        return;
-    }
-
     if(yScanner.segments.size() == 0) {
         return;
     }
@@ -689,7 +680,7 @@ void vger::fill(vgerPaintIndex paint) {
             .count = uint16_t(n)
         };
 
-        if(primCount[currentLayer] < maxPrims and cvCount+n*3 < maxCvs) {
+        if(cvCount+n*3 < maxCvs) {
 
             Interval xInt{FLT_MAX, -FLT_MAX};
 
@@ -727,10 +718,6 @@ void vger::fill(vgerPaintIndex paint) {
 }
 
 void vger::fillForTile(vgerPaintIndex paint) {
-
-    if(primCount[currentLayer] == maxPrims) {
-        return;
-    }
 
     vgerPrim prim = {
         .type = vgerPathFill,
@@ -805,9 +792,11 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, bool 
 
     for(int layer = 0; layer < layerCount; ++layer) {
 
+        auto count = scene.prims[layer].count;
+
         if(computeGlyphBounds) {
-            auto primp = (vgerPrim*) scene.prims[layer].contents;
-            for(int i=0;i<primCount[layer];++i) {
+            auto primp = scene.prims[layer].ptr;
+            for(int i=0;i<count;++i) {
                 auto& prim = primp[i];
                 if(prim.type == vgerGlyph) {
                     auto r = glyphRects[prim.glyph-1];
@@ -825,7 +814,7 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, bool 
         [(glow ? glowRenderer : renderer) encodeTo:buf
                                               pass:pass
                                              scene:scene
-                                             count:primCount[layer]
+                                             count:count
                                              layer:layer
                                           textures:textures
                                       glyphTexture:[glyphCache getAltas]
@@ -851,7 +840,7 @@ void vger::encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTextu
 
     [tileRenderer encodeTo:buf
                      scene:scenes[currentScene]
-                     count:primCount[currentLayer]
+                     count:scenes[currentScene].prims[currentLayer].count
                      layer:0
                   textures:textures
               glyphTexture:[glyphCache getAltas]

@@ -86,12 +86,6 @@ struct vger {
     /// Number of layers.
     int layerCount = 1;
 
-    /// Pointers to prim buffers.
-    vgerPrim* primPtr[VGER_MAX_LAYERS];
-
-    /// Number of prims we've saved in the buffer.
-    int primCount[VGER_MAX_LAYERS] = {0,0,0,0};
-
     /// Prim buffer capacity.
     int maxPrims = 65536;
 
@@ -161,14 +155,7 @@ struct vger {
     vger(uint32_t flags);
 
     void addPrim(const vgerPrim& prim) {
-
-        auto& count = primCount[currentLayer];
-        if(count < maxPrims) {
-            assert(prim.paint < paintCount);
-            primPtr[currentLayer][count] = prim;
-            ++count;
-        }
-
+        scenes[currentScene].prims[currentLayer].append(prim);
     }
 
     void addCV(float2 p) {
