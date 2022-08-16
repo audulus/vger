@@ -20,7 +20,7 @@ struct GPUVec {
     GPUVec(id<MTLDevice> device) {
         buffer = [device newBufferWithLength:capacity * sizeof(T)
                                      options:MTLResourceStorageModeShared];
-        ptr = static_cast<vgerPrim*>(buffer.contents);
+        ptr = static_cast<T*>(buffer.contents);
     }
 
     void allocate(id<MTLDevice> device, size_t cap) {
@@ -28,7 +28,7 @@ struct GPUVec {
         buffer = [device newBufferWithLength:capacity * sizeof(T)
                                      options:MTLResourceStorageModeShared];
         memcpy(buffer.contents, ptr, count * sizeof(T));
-        ptr = static_cast<vgerPrim*>(buffer.contents);
+        ptr = static_cast<T*>(buffer.contents);
     }
 
     void append(const T& value) {
