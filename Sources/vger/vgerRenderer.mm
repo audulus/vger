@@ -95,7 +95,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     [enc setRenderPipelineState:pipeline];
     [enc setFragmentTexture:glyphTexture atIndex:1];
     [enc setVertexBuffer:scene.prims[layer].buffer offset:0 atIndex:0];
-    [enc setVertexBuffer:scene.xforms offset:0 atIndex:1];
+    [enc setVertexBuffer:scene.xforms.buffer offset:0 atIndex:1];
     [enc setVertexBytes:&windowSize length:sizeof(windowSize) atIndex:2];
     [enc setFragmentBuffer:scene.prims[layer].buffer offset:0 atIndex:0];
     [enc setFragmentBuffer:scene.cvs.buffer offset:0 atIndex:1];

@@ -51,7 +51,7 @@ struct GPUVec {
 struct vgerScene {
     GPUVec<vgerPrim> prims[VGER_MAX_LAYERS];
     GPUVec<float2>   cvs;
-    id<MTLBuffer> xforms; // float3x3
+    GPUVec<float3x3> xforms;
     id<MTLBuffer> paints; // vgerPaint
 };
 

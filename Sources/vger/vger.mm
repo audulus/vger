@@ -49,9 +49,8 @@ vger::vger(uint32_t flags) {
         scene.cvs = GPUVec<float2>(device);
         scene.cvs.buffer.label = [NSString stringWithFormat:@"cv buffer scene %d", i];
 
-        scene.xforms = [device newBufferWithLength:maxPrims * sizeof(simd_float3x3) options:MTLResourceStorageModeShared];
-        assert(scene.xforms);
-        scene.xforms.label = [NSString stringWithFormat:@"xform buffer scene %d", i];
+        scene.xforms = GPUVec<float3x3>(device);
+        scene.xforms.buffer.label = [NSString stringWithFormat:@"xform buffer scene %d", i];
 
         scene.paints = [device newBufferWithLength:maxPrims * sizeof(vgerPaint) options:MTLResourceStorageModeShared];
         assert(scene.paints);
@@ -87,8 +86,7 @@ void vger::begin(float windowWidth, float windowHeight, float devicePxRatio) {
     }
     currentLayer = 0;
     scene.cvs.reset();
-    xformPtr = (float3x3*) scene.xforms.contents;
-    xformCount = 0;
+    scene.xforms.reset();
     paintPtr = (vgerPaint*) scene.paints.contents;
     paintCount = 0;
     windowSize = {windowWidth, windowHeight};

@@ -92,12 +92,6 @@ struct vger {
     /// CV buffer capacity.
     uint32_t maxCvs = 1024*1024;
 
-    /// How many xforms?
-    uint32_t xformCount = 0;
-
-    /// Pointer to the next transform.
-    float3x3* xformPtr;
-
     /// How many paints?
     uint32_t paintCount = 0;
 
@@ -157,11 +151,9 @@ struct vger {
     }
 
     uint32_t addxform(const matrix_float3x3& M) {
-        if(xformCount < maxPrims) {
-            *(xformPtr++) = M;
-            return xformCount++;
-        }
-        return 0;
+        auto idx = scenes[currentScene].xforms.count;
+        scenes[currentScene].xforms.append(M);
+        return idx;
     }
 
     vgerPaintIndex addPaint(const vgerPaint& paint) {

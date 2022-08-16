@@ -153,7 +153,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
     [enc setRenderPipelineState:coarsePipeline];
     [enc setVertexBuffer:scene.prims[layer].buffer offset:0 atIndex:0];
-    [enc setVertexBuffer:scene.xforms offset:0 atIndex:1];
+    [enc setVertexBuffer:scene.xforms.buffer offset:0 atIndex:1];
     float2 maxWindowSize{MAX_TILES_WIDTH * TILE_SIZE_PIXELS, MAX_TILES_WIDTH * TILE_SIZE_PIXELS};
     [enc setVertexBytes:&maxWindowSize length:sizeof(maxWindowSize) atIndex:2];
     [enc setFragmentBuffer:scene.prims[layer].buffer offset:0 atIndex:0];
