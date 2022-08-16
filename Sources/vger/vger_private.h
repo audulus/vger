@@ -86,12 +86,6 @@ struct vger {
     /// Number of layers.
     int layerCount = 1;
 
-    /// Prim buffer capacity.
-    int maxPrims = 65536;
-
-    /// CV buffer capacity.
-    uint32_t maxCvs = 1024*1024;
-
     /// Atlas for finding glyph images.
     vgerGlyphCache* glyphCache;
 

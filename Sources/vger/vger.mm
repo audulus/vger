@@ -26,10 +26,6 @@ vger::vger(uint32_t flags) {
     renderer = [[vgerRenderer alloc] initWithDevice:device pixelFormat:MTLPixelFormatBGRA8Unorm];
     glowRenderer = [[vgerRenderer alloc] initWithDevice:device pixelFormat:MTLPixelFormatRGBA16Unorm];
     glyphCache = [[vgerGlyphCache alloc] initWithDevice:device];
-    printf("prim buffer size: %d MB\n", (int)(maxPrims * sizeof(vgerPrim))/(1024*1024));
-    printf("cv buffer size: %d MB\n", (int)(maxCvs * sizeof(float2))/(1024*1024));
-    printf("xform buffer size: %d MB\n", (int)(maxPrims * sizeof(simd_float3x3))/(1024*1024));
-    printf("paints buffer size: %d MB\n", (int)(maxPrims * sizeof(vgerPaint))/(1024*1024));
 
     if(flags & VGER_DOUBLE_BUFFER) {
         maxBuffers = 2;
