@@ -25,9 +25,10 @@ struct GPUVec {
 
     void allocate(id<MTLDevice> device, size_t cap) {
         capacity = cap;
+        auto oldBuffer = buffer;
         buffer = [device newBufferWithLength:capacity * sizeof(T)
                                      options:MTLResourceStorageModeShared];
-        memcpy(buffer.contents, ptr, count * sizeof(T));
+        memcpy(buffer.contents, oldBuffer.contents, count * sizeof(T));
         ptr = static_cast<T*>(buffer.contents);
     }
 
