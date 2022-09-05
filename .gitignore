@@ -69,3 +69,6 @@ iOSInjectionProject/
 
 ## Swift Package Manager
 .build/
+
+.DS_Store
+Package.resolved
