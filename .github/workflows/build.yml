@@ -19,3 +19,19 @@ jobs:
         run: |
           set -euo pipefail
           xcodebuild -scheme vger clean build | xcpretty
+
+  demo:
+    strategy:
+      matrix:
+        xcode_version: ['12.4']
+    runs-on: macos-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode_version }}.app
+    steps:
+      - name: Check out vger-demo
+        uses: actions/checkout@v2
+      - name: Build vger-demo
+        run: |
+          set -euo pipefail
+          cd Demo
+          xcodebuild -scheme "VgerDemo (macOS)" clean build | xcpretty
