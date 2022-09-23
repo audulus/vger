@@ -51,7 +51,7 @@ See [`vger.h`](https://github.com/audulus/vger/blob/main/Sources/vger/include/vg
 
 Vger has a C interface and can be used from C, C++, ObjC, or Swift. `vgerEncode` must be called from either ObjC or Swift since it takes a `MTLCommandBuffer`.
 
-See [the demo app](https://github.com/audulus/vger-demo) for an example of using vger in a iOS/macOS SwiftUI app. vger includes `VgerView` to make it really easy to use Vger within SwiftUI:
+See [the demo app](https://github.com/audulus/vger/blob/main/Demo) for an example of using vger in a iOS/macOS SwiftUI app. vger includes `VgerView` to make it really easy to use Vger within SwiftUI:
 
 ```swift
 import SwiftUI
