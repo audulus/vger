@@ -22,7 +22,7 @@ public struct VgerView: NSViewRepresentable {
         return Coordinator()
     }
 
-    public func makeNSView(context: Context) -> some NSView {
+    public func makeNSView(context: Context) -> MTKView {
         let metalView = MTKView(frame: CGRect(x: 0, y: 0, width: 1024, height: 768),
                                 device: MTLCreateSystemDefaultDevice()!)
         metalView.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 1.0)
@@ -33,8 +33,9 @@ public struct VgerView: NSViewRepresentable {
         return metalView
     }
 
-    public func updateNSView(_ nsView: NSViewType, context: Context) {
+    public func updateNSView(_ nsView: MTKView, context: Context) {
         context.coordinator.renderer.renderCallback = renderCallback
+        nsView.setNeedsDisplay()
     }
 }
 
@@ -56,7 +57,7 @@ public struct VgerView: UIViewRepresentable {
         return Coordinator()
     }
 
-    public func makeUIView(context: Context) -> some UIView {
+    public func makeUIView(context: Context) -> MTKView {
         let metalView = MTKView(frame: CGRect(x: 0, y: 0, width: 1024, height: 768),
                                 device: MTLCreateSystemDefaultDevice()!)
         metalView.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 1.0)
@@ -67,8 +68,9 @@ public struct VgerView: UIViewRepresentable {
         return metalView
     }
 
-    public func updateUIView(_ nsView: UIViewType, context: Context) {
+    public func updateUIView(_ uiView: MTKView, context: Context) {
         context.coordinator.renderer.renderCallback = renderCallback
+        uiView.setNeedsDisplay()
     }
 }
 
