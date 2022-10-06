@@ -27,6 +27,8 @@ public struct VgerView: NSViewRepresentable {
                                 device: MTLCreateSystemDefaultDevice()!)
         metalView.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 1.0)
         metalView.delegate = context.coordinator.renderer
+        metalView.isPaused = true
+        metalView.enableSetNeedsDisplay = true
         context.coordinator.renderer.renderCallback = renderCallback
         return metalView
     }
@@ -59,6 +61,8 @@ public struct VgerView: UIViewRepresentable {
                                 device: MTLCreateSystemDefaultDevice()!)
         metalView.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 1.0)
         metalView.delegate = context.coordinator.renderer
+        metalView.isPaused = true
+        metalView.enableSetNeedsDisplay = true
         context.coordinator.renderer.renderCallback = renderCallback
         return metalView
     }
