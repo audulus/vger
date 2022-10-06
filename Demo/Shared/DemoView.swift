@@ -16,7 +16,7 @@ struct DemoView: View {
         vgerRestore(vger)
     }
 
-    func draw(vger: vgerContext) {
+    func draw(vger: vgerContext, size: CGSize) {
         vgerSave(vger)
 
         let bezPaint = vgerLinearGradient(vger, .init(x: 50, y: 450), .init(x: 100, y: 450), cyan, magenta, 0.0)

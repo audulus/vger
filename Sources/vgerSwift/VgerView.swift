@@ -8,9 +8,9 @@ import vger
 
 public struct VgerView: NSViewRepresentable {
 
-    var renderCallback : (OpaquePointer) -> Void
+    var renderCallback : (vgerContext, CGSize) -> Void
 
-    public init(renderCallback: @escaping (OpaquePointer) -> Void) {
+    public init(renderCallback: @escaping (vgerContext, CGSize) -> Void) {
         self.renderCallback = renderCallback
     }
 
@@ -40,9 +40,9 @@ public struct VgerView: NSViewRepresentable {
 
 public struct VgerView: UIViewRepresentable {
 
-    var renderCallback : (OpaquePointer) -> Void
+    var renderCallback : (vgerContext, CGSize) -> Void
 
-    public init(renderCallback: @escaping (OpaquePointer) -> Void) {
+    public init(renderCallback: @escaping (vgerContext, CGSize) -> Void) {
         self.renderCallback = renderCallback
     }
 
@@ -72,7 +72,7 @@ public struct VgerView: UIViewRepresentable {
 
 struct VgerView_Previews: PreviewProvider {
     static var previews: some View {
-        VgerView(renderCallback: { vger in
+        VgerView(renderCallback: { vger, _ in
             vgerText(vger, "hello world", SIMD4<Float>(repeating: 1), 0)
         })
     }

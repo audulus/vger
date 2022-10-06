@@ -9,7 +9,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var vg = vgerNew(0)
     var device: MTLDevice!
     var queue: MTLCommandQueue!
-    var renderCallback : ((OpaquePointer) -> Void)?
+    var renderCallback : ((vgerContext, CGSize) -> Void)?
 
     static let MaxBuffers = 3
     private let inflightSemaphore = DispatchSemaphore(value: MaxBuffers)
@@ -46,7 +46,7 @@ class Renderer: NSObject, MTKViewDelegate {
             semaphore.signal()
         }
 
-        renderCallback?(vg!)
+        renderCallback?(vg!, size)
 
         if let renderPassDescriptor = view.currentRenderPassDescriptor, let currentDrawable = view.currentDrawable {
 
