@@ -348,6 +348,7 @@ bool vger::renderCachedText(const TextLayoutKey& key, vgerPaintIndex paint, uint
 
 void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, vgerPaintIndex paint, float2 offset, float scale, uint32_t xform) {
 
+    assert(!isnan(scale));
     CFRange entire = CFRangeMake(0, 0);
 
     NSArray* runs = (__bridge id) CTLineGetGlyphRuns(line);
