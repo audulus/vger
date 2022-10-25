@@ -445,6 +445,8 @@ void vger::renderText(const char* str, float4 color, int align) {
     }
     
     auto paint = vgerColorPaint(this, color);
+
+    assert(!txStack.empty());
     auto xform = addxform(txStack.back());
     
     if(glyphPaths) {
@@ -829,22 +831,58 @@ void vger::encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTextu
 
 }
 
+static bool isValid(float2 v) {
+    return !(isnan(v.x) || isnan(v.y) || isinf(v.x) || isinf(v.y));
+}
+
+static bool isValid(float3 v) {
+    return !(isnan(v.x) || isnan(v.y) || isnan(v.z) || isinf(v.x) || isinf(v.y) || isinf(v.z));
+}
+
+static bool isValid(matrix_float3x3 M) {
+    return isValid(M.columns[0]) &&
+           isValid(M.columns[1]) &&
+           isValid(M.columns[2]);
+}
+
 void vgerTranslate(vgerContext vg, float2 t) {
+    if(!isValid(t)) {
+        fprintf(stderr, "vgerTranslate: bad translation: (%f, %f)\n", t.x, t.y);
+        return;
+    }
     auto M = matrix_identity_float3x3;
     M.columns[2] = vector3(t, 1);
 
-    auto& A = vg->txStack.back();
+    assert(!vg->txStack.empty());
+    auto A = vg->txStack.back();
     A = matrix_multiply(A, M);
+
+    if(isValid(A)) {
+        vg->txStack.back() = A;
+    } else {
+        fprintf(stderr, "vgerTranslate: translation of: (%f, %f) cannot be concatenated with current transformation matrix\n", t.x, t.y);
+    }
 }
 
 /// Scales current coordinate system.
 void vgerScale(vgerContext vg, float2 s) {
+    if(!isValid(s)) {
+        fprintf(stderr, "vgerScale: bad scale: (%f, %f)\n", s.x, s.y);
+        return;
+    }
     auto M = matrix_identity_float3x3;
     M.columns[0].x = s.x;
     M.columns[1].y = s.y;
 
-    auto& A = vg->txStack.back();
+    assert(!vg->txStack.empty());
+    auto A = vg->txStack.back();
     A = matrix_multiply(A, M);
+
+    if(isValid(A)) {
+        vg->txStack.back() = A;
+    } else {
+        fprintf(stderr, "vgerScale: scale of: (%f, %f) cannot be concatenated with current transformation matrix\n", s.x, s.y);
+    }
 }
 
 void vgerRotate(vgerContext vg, float theta) {
@@ -873,6 +911,7 @@ simd_float3x2 vgerCurrentTransform(vgerContext vg) {
 }
 
 void vgerSave(vgerContext vg) {
+    assert(!vg->txStack.empty());
     vg->txStack.push_back(vg->txStack.back());
 }
 
