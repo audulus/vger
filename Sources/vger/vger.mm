@@ -241,6 +241,14 @@ void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float 
 
 void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPaintIndex paint) {
 
+    // Are the points degenerate?
+    // This may not work in general because these are pre-transformed coordinates.
+    // Could instead check in the vertex function after transforming.
+    const float epsilon = 0.001;
+    if (simd_distance_squared(s.a, s.b) < epsilon && simd_distance_squared(s.a, s.c) < epsilon) {
+        return;
+    }
+
     // Are the points collinear?
     float3x3 M = { float3{s.a.x, s.a.y, 1}, float3{s.b.x, s.b.y, 1}, float3{s.c.x, s.c.y, 1} };
     if(fabsf(determinant(M)) < FLT_EPSILON) {
