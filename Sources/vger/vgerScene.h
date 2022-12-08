@@ -17,7 +17,7 @@ struct GPUVec {
     id<MTLBuffer> buffer;
     T* ptr = nullptr;
     size_t count = 0;
-    size_t capacity = 65536;
+    size_t capacity = 1024;
 
     GPUVec() { }
 
