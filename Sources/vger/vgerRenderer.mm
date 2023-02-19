@@ -109,6 +109,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     int offset = 0;
     for(int i=0;i<n;++i) {
 
+        assert(p->paint < scene.paints.count);
         int imageID = paints[p->paint].image;
 
         // Texture ID changed, render.
