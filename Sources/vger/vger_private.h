@@ -150,6 +150,11 @@ struct vger {
         return {idx};
     }
 
+    /// Ensure a paint index is valid.
+    auto checkPaint(vgerPaintIndex index) -> bool {
+        return index.index < scenes[currentScene].paints.count;
+    }
+
     CTLineRef createCTLine(const char* str);
     CTFrameRef createCTFrame(const char* str, int align, float breakRowWidth);
 

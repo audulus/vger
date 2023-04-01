@@ -185,6 +185,8 @@ vector_int2 vgerTextureSize(vgerContext vg, vgerImageIndex texID) {
 
 void vgerFillCircle(vgerContext vg, vector_float2 center, float radius, vgerPaintIndex paint) {
 
+    if(!vg->checkPaint(paint)) return;
+
     vgerPrim prim {
         .type = vgerCircle,
         .cvs = { center },
@@ -198,6 +200,8 @@ void vgerFillCircle(vgerContext vg, vector_float2 center, float radius, vgerPain
 }
 
 void vgerStrokeArc(vgerContext vg, vector_float2 center, float radius, float width, float rotation, float aperture, vgerPaintIndex paint) {
+
+    if(!vg->checkPaint(paint)) return;
 
     vgerPrim prim {
         .type = vgerArc,
@@ -213,6 +217,8 @@ void vgerStrokeArc(vgerContext vg, vector_float2 center, float radius, float wid
 
 void vgerFillRect(vgerContext vg, vector_float2 min, vector_float2 max, float radius, vgerPaintIndex paint) {
 
+    if(!vg->checkPaint(paint)) return;
+
     vgerPrim prim {
         .type = vgerRect,
         .radius = radius,
@@ -225,6 +231,8 @@ void vgerFillRect(vgerContext vg, vector_float2 min, vector_float2 max, float ra
 }
 
 void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float radius, float width, vgerPaintIndex paint) {
+
+    if(!vg->checkPaint(paint)) return;
 
     vgerPrim prim {
         .type = vgerRectStroke,
@@ -240,6 +248,8 @@ void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float 
 }
 
 void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPaintIndex paint) {
+
+    if(!vg->checkPaint(paint)) return;
 
     // Are the points degenerate?
     // This may not work in general because these are pre-transformed coordinates.
@@ -278,6 +288,8 @@ void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPain
 
 void vgerStrokeSegment(vgerContext vg, vector_float2 a, vector_float2 b, float width, vgerPaintIndex paint) {
 
+    if(!vg->checkPaint(paint)) return;
+
     vgerPrim prim {
         .type = vgerSegment,
         .width = width,
@@ -290,6 +302,8 @@ void vgerStrokeSegment(vgerContext vg, vector_float2 a, vector_float2 b, float w
 }
 
 void vgerStrokeWire(vgerContext vg, vector_float2 a, vector_float2 b, float width, vgerPaintIndex paint) {
+
+    if(!vg->checkPaint(paint)) return;
 
     vgerPrim prim {
         .type = vgerWire,
@@ -652,6 +666,10 @@ void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, flo
 }
 
 void vger::fill(vgerPaintIndex paint) {
+
+    if(!checkPaint(paint)) {
+        return;
+    }
 
     if(yScanner.segments.size() == 0) {
         return;
