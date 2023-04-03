@@ -68,7 +68,7 @@
 - (int) addRegion:(id<MTLTexture>)texture {
 
     [newTextures addObject:texture];
-    return regions.size() + newTextures.count;
+    return int(regions.size() + newTextures.count);
 
 }
 
@@ -87,7 +87,7 @@
             areaUsed += r.w*r.h;
         }
 
-        if(stbrp_pack_rects(&ctx, newRegions.data(), newRegions.size())) {
+        if(stbrp_pack_rects(&ctx, newRegions.data(), int(newRegions.size()))) {
 
             auto e = [buffer blitCommandEncoder];
             for(int i=0;i<newRegions.size();++i) {
