@@ -6,3 +6,4 @@
 #if !TARGET_OS_OSX
 @import MobileCoreServices;
 #endif
+@import UniformTypeIdentifiers;

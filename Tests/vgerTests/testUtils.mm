@@ -6,9 +6,10 @@
 #if !TARGET_OS_OSX
 #import <MobileCoreServices/MobileCoreServices.h>
 #endif
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 void writeCGImage(CGImageRef image, CFURLRef url) {
-    auto dest = CGImageDestinationCreateWithURL(url, kUTTypePNG, 1, nil);
+    auto dest = CGImageDestinationCreateWithURL(url, (CFStringRef) UTTypePNG.identifier, 1, nil);
     CGImageDestinationAddImage(dest, image, nil);
     assert(CGImageDestinationFinalize(dest));
     CFRelease(dest);
