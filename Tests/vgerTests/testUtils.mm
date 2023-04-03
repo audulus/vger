@@ -17,7 +17,7 @@ void releaseImageData(void * __nullable info,
     free((void*)data);
 }
 
-CGImageRef createImage(UInt8* data, int w, int h) {
+CGImageRef createImage(UInt8* data, NSUInteger w, NSUInteger h) {
 
     UInt8* newData = (UInt8*) malloc(4*w*h);
     memcpy(newData, data, 4*w*h);
@@ -46,8 +46,8 @@ CGImageRef createImage(UInt8* data, int w, int h) {
 
 CGImageRef createImage(id<MTLTexture> texture) {
 
-    int w = texture.width;
-    int h = texture.height;
+    auto w = texture.width;
+    auto h = texture.height;
 
     std::vector<UInt8> imageBytes(4*w*h, 0);
 
