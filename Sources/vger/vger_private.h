@@ -139,13 +139,13 @@ struct vger {
     }
 
     uint32_t addxform(const matrix_float3x3& M) {
-        auto idx = scenes[currentScene].xforms.count;
+        uint32_t idx = (uint32_t) scenes[currentScene].xforms.count;
         scenes[currentScene].xforms.append(M);
         return idx;
     }
 
     vgerPaintIndex addPaint(const vgerPaint& paint) {
-        uint32_t idx = scenes[currentScene].paints.count;
+        uint32_t idx = (uint32_t) scenes[currentScene].paints.count;
         scenes[currentScene].paints.append(paint);
         return {idx};
     }
