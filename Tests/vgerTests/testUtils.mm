@@ -3,9 +3,6 @@
 #include "testUtils.h"
 #include <vector>
 #import <ImageIO/ImageIO.h>
-#if !TARGET_OS_OSX
-#import <MobileCoreServices/MobileCoreServices.h>
-#endif
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 void writeCGImage(CGImageRef image, CFURLRef url) {
