@@ -822,7 +822,7 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, bool 
         [(glow ? glowRenderer : renderer) encodeTo:buf
                                               pass:pass
                                              scene:scene
-                                             count:count
+                                             count:int(count)
                                              layer:layer
                                           textures:textures
                                       glyphTexture:[glyphCache getAltas]
@@ -848,7 +848,7 @@ void vger::encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTextu
 
     [tileRenderer encodeTo:buf
                      scene:scenes[currentScene]
-                     count:scenes[currentScene].prims[currentLayer].count
+                     count:int(scenes[currentScene].prims[currentLayer].count)
                      layer:0
                   textures:textures
               glyphTexture:[glyphCache getAltas]
