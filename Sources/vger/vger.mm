@@ -993,10 +993,14 @@ vgerPaintIndex vgerLinearGradient(vgerContext vg,
 
 }
 
-vgerPaintIndex vgerImagePattern(vgerContext vg, float2 origin, float2 size, float angle,
+vgerPaintIndex vgerImagePattern(vgerContext vg,
+                                float2 origin,
+                                float2 size,
+                                float angle,
+                                bool flipY,
                                 vgerImageIndex image, float alpha) {
     assert(image.index < vg->textures.count);
-    return vg->addPaint(makeImagePattern(origin, size, angle, image, alpha));
+    return vg->addPaint(makeImagePattern(origin, size, angle, flipY, image, alpha));
 }
 
 vgerPaintIndex vgerGrid(vgerContext vg, vector_float2 origin, vector_float2 size,

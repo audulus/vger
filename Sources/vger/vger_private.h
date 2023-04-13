@@ -210,11 +210,13 @@ inline vgerPaint makeLinearGradient(float2 start,
 inline vgerPaint makeImagePattern(float2 origin,
                                   float2 size,
                                   float angle,
+                                  bool flipY,
                                   vgerImageIndex image,
                                   float alpha) {
 
     vgerPaint p;
     p.image = image.index;
+    p.flipY = flipY;
 
     float3x3 R = {
         float3{ cosf(angle), sinf(angle), 0 },

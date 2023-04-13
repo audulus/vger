@@ -23,6 +23,9 @@ struct vgerPaint {
     /// Image if we're texturing.
     int32_t image;
 
+    /// Flip Y coordinate?
+    bool flipY;
+
 };
 
 inline float4 applyPaint(const DEVICE vgerPaint& paint, float2 p) {
