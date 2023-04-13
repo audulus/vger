@@ -134,6 +134,10 @@ struct vger {
         scenes[currentScene].prims[currentLayer].append(prim);
     }
 
+    auto primCount() -> size_t {
+        return scenes[currentScene].prims[currentLayer].count;
+    }
+
     void addCV(float2 p) {
         scenes[currentScene].cvs.append(p);
     }

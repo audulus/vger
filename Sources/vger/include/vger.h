@@ -112,6 +112,11 @@ void vgerStrokeSegment(vgerContext, vector_float2 a, vector_float2 b, float widt
 
 void vgerStrokeWire(vgerContext, vector_float2 a, vector_float2 b, float width, vgerPaintIndex paint);
 
+/// Returns the number of primitives sent for rendering.
+///
+/// This can be useful if you want to impose a limit.
+size_t vgerPrimCount(vgerContext);
+
 #pragma mark - Text
 
 /// Render text.
