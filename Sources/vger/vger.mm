@@ -669,7 +669,7 @@ void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, flo
 
 }
 
-void vger::fill(vgerPaintIndex paint) {
+bool vger::fill(vgerPaintIndex paint) {
 
     if(!checkPaint(paint)) {
         return;
@@ -683,6 +683,8 @@ void vger::fill(vgerPaintIndex paint) {
 
     yScanner._init();
 
+    size_t fillPrimCount = 0;
+    constexpr size_t MaxFillPrims = 2048;
     while(yScanner.next()) {
 
         int n = yScanner.activeCount;
@@ -721,12 +723,18 @@ void vger::fill(vgerPaintIndex paint) {
         prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
 
         addPrim(prim);
+
+        // Bad fill.
+        if (++fillPrimCount >= MaxFillPrims) {
+            return false;
+        }
     }
 
     assert(yScanner.activeCount == 0);
 
     yScanner.segments.clear();
 
+    return true;
 }
 
 void vger::fillForTile(vgerPaintIndex paint) {
@@ -765,7 +773,10 @@ void vgerLineTo(vgerContext vg, vector_float2 b) {
 }
 
 void vgerQuadTo(vgerContext vg, float2 b, float2 c) {
-    vg->yScanner.segments.push_back({vg->pen, b, c});
+    constexpr size_t MaxSegments = 1024;
+    if (vg->yScanner.segments.size() < MaxSegments) {
+        vg->yScanner.segments.push_back({vg->pen, b, c});
+    }
     vg->pen = c;
 }
 
@@ -777,8 +788,8 @@ void vgerCubicApproxTo(vgerContext vg, float2 b, float2 c, float2 d) {
     vgerQuadTo(vg, q[4], q[5]);
 }
 
-void vgerFill(vgerContext vg, vgerPaintIndex paint) {
-    vg->fill(paint);
+bool vgerFill(vgerContext vg, vgerPaintIndex paint) {
+    return vg->fill(paint);
 }
 
 void vgerFillForTile(vgerContext vg, vgerPaintIndex paint) {

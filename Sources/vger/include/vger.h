@@ -146,7 +146,9 @@ void vgerQuadTo(vgerContext, vector_float2 b, vector_float2 c);
 void vgerCubicApproxTo(vgerContext vg, vector_float2 b, vector_float2 c, vector_float2 d);
 
 /// Fills the current path (and clears the path).
-void vgerFill(vgerContext, vgerPaintIndex paint);
+///
+/// Returns false if there were too many primitives to render the fill.
+bool vgerFill(vgerContext, vgerPaintIndex paint);
 
 /// Fills the current path (for experimental tile rendering).
 void vgerFillForTile(vgerContext vg, vgerPaintIndex paint);

@@ -164,7 +164,7 @@ struct vger {
 
     void begin(float windowWidth, float windowHeight, float devicePxRatio);
 
-    void fill(vgerPaintIndex paint);
+    bool fill(vgerPaintIndex paint);
 
     void fillForTile(vgerPaintIndex paint);
 
