@@ -256,7 +256,7 @@ static void SplitBezier(float t,
     auto sz = vgerTextureSize(vger, idx);
     XCTAssert(equal(sz, simd_int2(256)));
 
-    vgerFillRect(vger, float2{0,0}, float2{256,256}, 0.3, vgerImagePattern(vger, float2{0,0}, float2{256,256}, 0, idx, 1));
+    vgerFillRect(vger, float2{0,0}, float2{256,256}, 0.3, false, vgerImagePattern(vger, float2{0,0}, float2{256,256}, 0, idx, 1));
 
     auto commandBuffer = [queue commandBuffer];
 
@@ -579,7 +579,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     XCTAssertTrue(simd_length(c - float4{.5,.5,1,1}) < 0.001f);
     XCTAssertTrue(equal(applyPaint(p, float2{450,150}), float4{1,0,1,1}));
 
-    p = makeImagePattern(float2{10,10}, float2{10,10}, 0, {1}, 1.0);
+    p = makeImagePattern(float2{10,10}, float2{10,10}, 0, false, {1}, 1.0);
 
     auto v = p.xform * float3{10,10,1};
     XCTAssertTrue(equal(v, float3{0,0,1}));
