@@ -256,7 +256,7 @@ static void SplitBezier(float t,
     auto sz = vgerTextureSize(vger, idx);
     XCTAssert(equal(sz, simd_int2(256)));
 
-    vgerFillRect(vger, float2{0,0}, float2{256,256}, 0.3, false, vgerImagePattern(vger, float2{0,0}, float2{256,256}, 0, idx, 1));
+    vgerFillRect(vger, float2{0,0}, float2{256,256}, 0.3, vgerImagePattern(vger, float2{0,0}, float2{256,256}, 0, false, idx, 1));
 
     auto commandBuffer = [queue commandBuffer];
 
