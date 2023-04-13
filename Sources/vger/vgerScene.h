@@ -18,6 +18,7 @@ struct GPUVec {
     T* ptr = nullptr;
     size_t count = 0;
     size_t capacity = 1024;
+    static constexpr size_t MaxBufferSizeBytes = 1024 * 1024 * 256;
 
     GPUVec() { }
 
@@ -38,10 +39,13 @@ struct GPUVec {
 
     void append(const T& value) {
 
-        if(count >= capacity) {
+        if(count >= capacity && capacity*2*sizeof(T) <= MaxBufferSizeBytes) {
             allocate(buffer.device, capacity*2);
         }
-        ptr[count++] = value;
+
+        if(count < capacity) {
+            ptr[count++] = value;
+        }
     }
 
     void clear() {
