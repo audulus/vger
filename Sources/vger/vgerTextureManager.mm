@@ -8,7 +8,7 @@
 #define ATLAS_SIZE 2048
 
 @interface vgerTextureManager() {
-    id<MTLDevice> device;
+    id<MTLDevice> _device;
     MTLTextureDescriptor* atlasDesc;
     std::vector<stbrp_node> nodes;
     std::vector<stbrp_rect> regions;
@@ -23,7 +23,7 @@
 - (instancetype) initWithDevice:(id<MTLDevice>)device pixelFormat:(MTLPixelFormat)format {
     self = [super init];
     if (self) {
-        self->device = device;
+        _device = device;
         atlasDesc = [MTLTextureDescriptor
                             texture2DDescriptorWithPixelFormat:format
                             width:ATLAS_SIZE
@@ -56,7 +56,7 @@
 #else
     desc.storageMode = MTLStorageModeShared;
 #endif
-    auto tex = [device newTextureWithDescriptor:desc];
+    auto tex = [_device newTextureWithDescriptor:desc];
     assert(tex);
 
     [tex replaceRegion:MTLRegionMake2D(0, 0, width, height) mipmapLevel:0 withBytes:data bytesPerRow:bytesPerRow];
