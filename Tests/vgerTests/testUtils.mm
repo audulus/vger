@@ -84,7 +84,11 @@ void showTexture(id<MTLTexture> texture, NSString* name) {
     CGImageRef image = createImage(texture);
     writeCGImage(image, (__bridge CFURLRef)tmpURL);
 #if TARGET_OS_OSX
-    system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
+    // system([NSString stringWithFormat:@"open %@", tmpURL.path].UTF8String);
+    auto task = [[NSTask alloc] init];
+    task.launchPath = @"/usr/bin/open";
+    task.arguments = @[tmpURL.path];
+    [task launch];
 #endif
     CGImageRelease(image);
 
