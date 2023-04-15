@@ -317,7 +317,7 @@ void vgerStrokeWire(vgerContext vg, vector_float2 a, vector_float2 b, float widt
 }
 
 size_t vgerPrimCount(vgerContext vg) {
-    vg->primCount();
+    return vg->primCount();
 }
 
 static float averageScale(const float3x3& M)
