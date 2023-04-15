@@ -672,11 +672,11 @@ void vgerTextBoxBounds(vgerContext vg, const char* str, float breakRowWidth, flo
 bool vger::fill(vgerPaintIndex paint) {
 
     if(!checkPaint(paint)) {
-        return;
+        return false;
     }
 
     if(yScanner.segments.size() == 0) {
-        return;
+        return false;
     }
 
     auto xform = addxform(txStack.back());
