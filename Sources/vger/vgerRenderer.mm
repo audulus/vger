@@ -1,13 +1,12 @@
 // Copyright © 2021 Audulus LLC. All rights reserved.
 
 #import "vgerRenderer.h"
-#import "vgerBundleHelper.h"
 #import "paint.h"
 #import "prim.h"
 
 static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
-    auto bundle = [vgerBundleHelper moduleBundle];
+    auto bundle = SWIFTPM_MODULE_BUNDLE;
     assert(bundle);
 
     auto libraryURL = [bundle URLForResource:@"default" withExtension:@"metallib"];

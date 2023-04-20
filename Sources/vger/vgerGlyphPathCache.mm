@@ -1,16 +1,14 @@
 // Copyright © 2021 Audulus LLC. All rights reserved.
 
 #import "vgerGlyphPathCache.h"
-#import "vgerBundleHelper.h"
 #import "sdf.h"
 
 using namespace simd;
 
 vgerGlyphPathCache::vgerGlyphPathCache() {
     
-    auto bundle = [vgerBundleHelper moduleBundle];
+    auto bundle = SWIFTPM_MODULE_BUNDLE;
     assert(bundle);
-
     auto fontURL = [bundle URLForResource:@"Anodina-Regular" withExtension:@"ttf" subdirectory:@"fonts"];
 
     auto fd = CTFontManagerCreateFontDescriptorsFromURL( (__bridge CFURLRef) fontURL);

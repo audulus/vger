@@ -2,7 +2,6 @@
 
 #import "vgerGlyphCache.h"
 #import "vgerTextureManager.h"
-#import "vgerBundleHelper.h"
 #include <vector>
 
 @interface vgerGlyphCache() {
@@ -19,9 +18,8 @@
     if (self) {
         mgr = [[vgerTextureManager alloc] initWithDevice:device pixelFormat:MTLPixelFormatA8Unorm];
 
-        auto bundle = [vgerBundleHelper moduleBundle];
+        auto bundle = SWIFTPM_MODULE_BUNDLE;
         assert(bundle);
-
         auto fontURL = [bundle URLForResource:@"Anodina-Regular" withExtension:@"ttf" subdirectory:@"fonts"];
 
         auto fd = CTFontManagerCreateFontDescriptorsFromURL( (__bridge CFURLRef) fontURL);
