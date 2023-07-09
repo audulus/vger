@@ -1052,4 +1052,30 @@ static void printTileBuf(const Tile* tileBuf, const uint* tileLengthBuf) {
     vgerDelete(vger);
 }
 
+- (void) testPathRectangle {
+
+    auto vger = vgerNew(0);
+
+    auto w = 0.5f;
+    auto h = 50.0f;
+
+    vgerBegin(vger, 512, 512, 1.0);
+
+    vgerTranslate(vger, float2{256.0f, 256.0f});
+    vgerSave(vger);
+    vgerRotate(vger, M_PI / 6.0);
+    vgerMoveTo(vger, float2{-w,-h});
+    vgerLineTo(vger, float2{w,-h});
+    vgerLineTo(vger, float2{w,h});
+    vgerLineTo(vger, float2{-w,h});
+    vgerLineTo(vger, float2{-w,-h});
+    auto cyan = vgerColorPaint(vger, float4{0,1,1,1});
+    vgerFill(vger, cyan);
+    vgerRestore(vger);
+
+    [self render:vger name:@"square.png"];
+
+    vgerDelete(vger);
+}
+
 @end
