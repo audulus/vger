@@ -71,4 +71,15 @@ static void printBezierTest(float2 A, float2 B, float2 C) {
 
 }
 
+- (void) testBezierCollinear {
+
+    float2 a{0,0};
+    float2 b{1,0.001};
+    float2 c{2,0};
+
+    auto d = sdBezier(float2{1,1}, a, b, c);
+
+    XCTAssertEqualWithAccuracy(d, 1.0, 0.001);
+}
+
 @end
