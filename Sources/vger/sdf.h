@@ -80,7 +80,7 @@ inline float udBezier(float2 pos, float2 A, float2 B, float2 C )
     // Are the points collinear?
     auto M = float2x2{C-A, B-A};
     if (fabs(determinant(M)) < 0.01) {
-        return length(orth(C-A, pos-A));
+        return sdSegment(pos, A, C);
     }
 
     float2 a = B - A;
