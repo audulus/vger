@@ -131,6 +131,12 @@ inline float sdArc2(float2 p, float2 sca, float2 scb, float radius, float width)
                      abs(sdCircle(p, radius)) - width);
 }
 
+inline float sdLine(float2 p, float2 a, float2 b) {
+    auto d = length(orth(b-a, p-a));
+    auto M = float2x2{b-a, p-a};
+    return determinant(M) >= 0 ? d : -d;
+}
+
 // From https://www.shadertoy.com/view/4sySDK
 
 inline float2x2 inv(float2x2 M) {
