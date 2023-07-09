@@ -148,7 +148,13 @@ inline float2x2 inv(float2x2 M) {
 inline float sdBezier2(float2 uv, float2 p0, float2 p1, float2 p2){
 
     const float2x2 trf1 = float2x2{ float2{-1, 2}, float2{1, 2} };
-    float2x2 trf2 = inv(float2x2{p0-p1, p2-p1});
+    auto M = float2x2{p0-p1, p2-p1};
+
+    if (determinant(M) == 0.0) {
+        return sdLine(uv, p0, p2);
+    }
+
+    float2x2 trf2 = inv(M);
     float2x2 trf=trf1*trf2;
 
     uv-=p1;
