@@ -74,8 +74,15 @@ inline float dot2(float2 v) {
     return dot(v,v);
 }
 
+// Note: this distance isn't actually signed.
 inline float sdBezier(float2 pos, float2 A, float2 B, float2 C )
 {
+    // Are the points collinear?
+    auto M = float2x2{C-A, B-A};
+    if (fabs(determinant(M)) < 0.01) {
+        return length(orth(C-A, pos-A));
+    }
+
     float2 a = B - A;
     float2 b = A - 2.0*B + C;
     float2 c = a * 2.0;
