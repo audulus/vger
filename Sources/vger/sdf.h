@@ -74,8 +74,8 @@ inline float dot2(float2 v) {
     return dot(v,v);
 }
 
-// Note: this distance isn't actually signed.
-inline float sdBezier(float2 pos, float2 A, float2 B, float2 C )
+/// Unsigned distance to quadratic bezier curve.
+inline float udBezier(float2 pos, float2 A, float2 B, float2 C )
 {
     // Are the points collinear?
     auto M = float2x2{C-A, B-A};
@@ -206,7 +206,7 @@ inline float sdBezierApprox(float2 p, float2 A, float2 B, float2 C) {
     float2 v0 = normalize(B - A), v1 = normalize(C - A);
     float det = v0.x * v1.y - v1.x * v0.y;
     if(abs(det) < 0.01) {
-        return sdBezier(p, A, B, C);
+        return udBezier(p, A, B, C);
     }
 
     return length(get_distance_vector(A-p, B-p, C-p));
@@ -370,7 +370,7 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
                 }
 
                 if(!skip) {
-                    d = min(d, sdBezier(p, a, b, c));
+                    d = min(d, udBezier(p, a, b, c));
                 }
 
                 if(lineTest(p, a, c)) {
