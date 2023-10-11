@@ -872,12 +872,20 @@ void vger::encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTextu
 
 }
 
+static bool isValid(float x) {
+    return !(isnan(x) || isinf(x));
+}
+
 static bool isValid(float2 v) {
-    return !(isnan(v.x) || isnan(v.y) || isinf(v.x) || isinf(v.y));
+    return isValid(v.x) && isValid(v.y);
 }
 
 static bool isValid(float3 v) {
-    return !(isnan(v.x) || isnan(v.y) || isnan(v.z) || isinf(v.x) || isinf(v.y) || isinf(v.z));
+    return isValid(v.xy) && isValid(v.z);
+}
+
+static bool isValid(float4 v) {
+    return isValid(v.xyz) && isValid(v.w);
 }
 
 static bool isValid(matrix_float3x3 M) {
