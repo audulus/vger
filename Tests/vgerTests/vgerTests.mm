@@ -544,7 +544,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     vgerRestore(vger);
 
-    [self render:vger name:@"demo.png"];
+    [self checkRender:vger name:@"demo.png"];
 
     vgerDelete(vger);
 
