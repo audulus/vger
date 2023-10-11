@@ -179,7 +179,7 @@ static void SplitBezier(float t,
 
     vgerRestore(vger);
 
-    [self render:vger name:@"xform.png"];
+    [self checkRender:vger name:@"xform.png"];
 
     vgerDelete(vger);
 }
@@ -201,7 +201,7 @@ static void SplitBezier(float t,
 
     vgerRestore(vger);
 
-    [self render:vger name:@"rotate.png"];
+    [self checkRender:vger name:@"rotate.png"];
 
     vgerDelete(vger);
 }
