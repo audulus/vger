@@ -224,7 +224,7 @@ static void SplitBezier(float t,
 
     vgerRestore(vger);
 
-    [self render:vger name:@"rects.png"];
+    [self checkRender:vger name:@"rects.png"];
 
     vgerDelete(vger);
 }
