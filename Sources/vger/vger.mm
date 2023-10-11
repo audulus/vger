@@ -14,7 +14,6 @@
 #import "vgerRenderer.h"
 #import "vgerTextureManager.h"
 #import "vgerGlyphCache.h"
-#import "vgerTileRenderer.h"
 
 using namespace simd;
 #import "sdf.h"
@@ -737,33 +736,6 @@ bool vger::fill(vgerPaintIndex paint) {
     return true;
 }
 
-void vger::fillForTile(vgerPaintIndex paint) {
-
-    vgerPrim prim = {
-        .type = vgerPathFill,
-        .paint = paint.index,
-        .xform = addxform(txStack.back()),
-        .start = static_cast<uint32_t>(scenes[currentScene].cvs.count),
-        .count = static_cast<uint16_t>(yScanner.segments.size()),
-        .width = 0
-    };
-
-    for(auto seg : yScanner.segments) {
-        addCV(seg.cvs[0]);
-        addCV(seg.cvs[1]);
-        addCV(seg.cvs[2]);
-    }
-
-    auto bounds = sdPrimBounds(prim, (float2*) scenes[currentScene].cvs.ptr).inset(-10);
-    prim.quadBounds[0] = prim.texBounds[0] = bounds.min;
-    prim.quadBounds[1] = prim.texBounds[1] = bounds.max;
-
-    addPrim(prim);
-
-    yScanner.segments.clear();
-
-}
-
 void vgerMoveTo(vgerContext vg, float2 pt) {
     vg->pen = pt;
 }
@@ -790,10 +762,6 @@ void vgerCubicApproxTo(vgerContext vg, float2 b, float2 c, float2 d) {
 
 bool vgerFill(vgerContext vg, vgerPaintIndex paint) {
     return vg->fill(paint);
-}
-
-void vgerFillForTile(vgerContext vg, vgerPaintIndex paint) {
-    vg->fillForTile(paint);
 }
 
 void vgerEncode(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
@@ -848,28 +816,6 @@ void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, bool 
 
 void vgerEncodeGlowPass(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
     vg->encode(buf, pass, true);
-}
-
-void vgerEncodeTileRender(vgerContext vg, id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture) {
-    vg->encodeTileRender(buf, renderTexture);
-}
-
-void vger::encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture) {
-
-    // Create tile renderer on demand, since it uses a lot of RAM.
-    if(tileRenderer == nil) {
-        tileRenderer = [[vgerTileRenderer alloc] initWithDevice:device];
-    }
-
-    [tileRenderer encodeTo:buf
-                     scene:scenes[currentScene]
-                     count:int(scenes[currentScene].prims[currentLayer].count)
-                     layer:0
-                  textures:textures
-              glyphTexture:[glyphCache getAltas]
-             renderTexture:renderTexture
-                windowSize:windowSize];
-
 }
 
 static bool isValid(float x) {
@@ -987,10 +933,6 @@ void vgerSetLayer(vgerContext vg, int layer) {
 
 id<MTLTexture> vgerGetGlyphAtlas(vgerContext vg) {
     return [vg->glyphCache getAltas];
-}
-
-id<MTLTexture> vgerGetCoarseDebugTexture(vgerContext vg) {
-    return [vg->tileRenderer getDebugTexture];
 }
 
 vgerPaintIndex vgerColorPaint(vgerContext vg, float4 color) {

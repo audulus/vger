@@ -150,9 +150,6 @@ void vgerCubicApproxTo(vgerContext vg, vector_float2 b, vector_float2 c, vector_
 /// Returns false if there were too many primitives to render the fill.
 bool vgerFill(vgerContext, vgerPaintIndex paint);
 
-/// Fills the current path (for experimental tile rendering).
-void vgerFillForTile(vgerContext vg, vgerPaintIndex paint);
-
 #pragma mark - Transforms
 
 /// Translates current coordinate system.
@@ -196,9 +193,6 @@ void vgerEncode(vgerContext, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* 
 
 /// Encode drawing commands to a metal command buffer for the glow pass.
 void vgerEncodeGlowPass(vgerContext, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
-
-/// Experimental!
-void vgerEncodeTileRender(vgerContext vg, id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture);
 
 /// For debugging.
 id<MTLTexture> vgerGetGlyphAtlas(vgerContext);

@@ -12,7 +12,6 @@
 #include "paint.h"
 
 @class vgerRenderer;
-@class vgerTileRenderer;
 @class vgerGlyphCache;
 
 /// For caching the layout of strings.
@@ -64,9 +63,6 @@ struct vger {
     vgerRenderer* renderer;
 
     vgerRenderer* glowRenderer;
-
-    /// New experimental tile renderer.
-    vgerTileRenderer* tileRenderer;
 
     /// Transform matrix stack.
     std::vector<float3x3> txStack;
