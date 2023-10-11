@@ -258,10 +258,6 @@ static void SplitBezier(float t,
 
     vgerFillRect(vger, float2{0,0}, float2{256,256}, 0.3, vgerImagePattern(vger, float2{0,0}, float2{256,256}, 0, false, idx, 1));
 
-    auto commandBuffer = [queue commandBuffer];
-
-    vgerEncode(vger, commandBuffer, pass);
-
     [self render:vger name:@"texture.png"];
 
     vgerDelete(vger);
