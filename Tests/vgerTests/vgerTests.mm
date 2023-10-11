@@ -367,17 +367,20 @@ vector_float4 rand_color() {
 
         vgerEncode(vger, commandBuffer, pass);
 
-        // Sync texture on macOS
-        #if TARGET_OS_OSX
-        auto blitEncoder = [commandBuffer blitCommandEncoder];
-        [blitEncoder synchronizeResource:texture];
-        [blitEncoder endEncoding];
-        #endif
-
         [commandBuffer commit];
         [commandBuffer waitUntilCompleted];
 
     }];
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto commandBuffer = [queue commandBuffer];
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder endEncoding];
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+    #endif
 
     showTexture(texture, @"vger_bezier_perf.png");
 }
@@ -405,16 +408,19 @@ vector_float4 rand_color() {
         auto commandBuffer = [queue commandBuffer];
         vgerEncode(vger, commandBuffer, pass);
 
-        // Sync texture on macOS
-        #if TARGET_OS_OSX
-        auto blitEncoder = [commandBuffer blitCommandEncoder];
-        [blitEncoder synchronizeResource:texture];
-        [blitEncoder endEncoding];
-        #endif
-
         [commandBuffer commit];
         [commandBuffer waitUntilCompleted];
     }];
+
+    // Sync texture on macOS
+    #if TARGET_OS_OSX
+    auto commandBuffer = [queue commandBuffer];
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder endEncoding];
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+    #endif
 
     showTexture(texture, @"vger_bezier_split_perf.png");
 }
