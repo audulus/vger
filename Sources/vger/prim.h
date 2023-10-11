@@ -65,13 +65,13 @@ typedef struct {
     /// Glyph region index. (used internally)
     uint32_t glyph;
 
-    /// Index of transform applied to drawing region. (used internally)
+    /// Index of transform applied to drawing region.
     uint32_t xform;
 
-    /// Min and max coordinates of the quad we're rendering. (used internally)
+    /// Min and max coordinates of the quad we're rendering.
     vector_float2 quadBounds[2];
 
-    /// Min and max coordinates in texture space. (used internally)
+    /// Min and max coordinates in texture space.
     vector_float2 texBounds[2];
 
 } vgerPrim;
