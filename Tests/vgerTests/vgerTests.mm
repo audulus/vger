@@ -272,24 +272,7 @@ static void SplitBezier(float t,
     vgerText(vger, "This is a test.", float4{0,1,1,1}, VGER_ALIGN_LEFT);
     vgerRestore(vger);
 
-    auto commandBuffer = [queue commandBuffer];
-
-    vgerEncode(vger, commandBuffer, pass);
-    auto atlas = vgerGetGlyphAtlas(vger);
-
-    // Sync texture on macOS
-    #if TARGET_OS_OSX
-    auto blitEncoder = [commandBuffer blitCommandEncoder];
-    [blitEncoder synchronizeResource:texture];
-    [blitEncoder synchronizeResource:atlas];
-    [blitEncoder endEncoding];
-    #endif
-
-    [commandBuffer commit];
-    [commandBuffer waitUntilCompleted];
-
-    showTexture(atlas, @"glyph_atlas.png");
-    showTexture(texture, @"text.png");
+    [self checkRender:vger name:@"text.png"];
 
     vgerDelete(vger);
 
