@@ -65,7 +65,7 @@ struct vger {
     vgerRenderer* glowRenderer;
 
     /// Transform matrix stack.
-    std::vector<float3x3> txStack;
+    std::vector<float4x4> txStack;
 
     /// Number of buffers.
     int maxBuffers = 1;
@@ -138,7 +138,7 @@ struct vger {
         scenes[currentScene].cvs.append(p);
     }
 
-    uint32_t addxform(const matrix_float3x3& M) {
+    uint32_t addxform(const matrix_float4x4& M) {
         uint32_t idx = (uint32_t) scenes[currentScene].xforms.count;
         scenes[currentScene].xforms.append(M);
         return idx;

@@ -44,7 +44,7 @@ vger::vger(uint32_t flags) {
         scene.cvs = GPUVec<float2>(device);
         scene.cvs.buffer.label = [NSString stringWithFormat:@"cv buffer scene %d", i];
 
-        scene.xforms = GPUVec<float3x3>(device);
+        scene.xforms = GPUVec<float4x4>(device);
         scene.xforms.buffer.label = [NSString stringWithFormat:@"xform buffer scene %d", i];
 
         scene.paints = GPUVec<vgerPaint>(device);
@@ -52,7 +52,6 @@ vger::vger(uint32_t flags) {
 
         scenes[i] = scene;
     }
-    txStack.push_back(matrix_identity_float3x3);
 
     auto desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm width:1 height:1 mipmapped:NO];
     nullTexture = [device newTextureWithDescriptor:desc];
@@ -79,6 +78,15 @@ void vger::begin(float windowWidth, float windowHeight, float devicePxRatio) {
     windowSize = {windowWidth, windowHeight};
     this->devicePxRatio = devicePxRatio;
     computedGlyphBounds = false;
+
+    // Add view transform to matrix stack.
+    txStack.clear();
+    auto M = matrix_identity_float4x4;
+    M.columns[0].x = 2.0 / windowWidth;
+    M.columns[1].y = 2.0 / windowHeight;
+    M.columns[3].x = -1;
+    M.columns[3].y = -1;
+    txStack.push_back(M);
 
     // Prune the text cache.
     for(auto it = std::begin(textCache); it != std::end(textCache);) {
@@ -319,9 +327,9 @@ size_t vgerPrimCount(vgerContext vg) {
     return vg->primCount();
 }
 
-static float averageScale(const float3x3& M)
+static float averageScale(const float4x4& M, float2 windowSize)
 {
-    return 0.5f * (length(M.columns[0].xy) + length(M.columns[1].xy));
+    return 0.5f * (length(M.columns[0].xy) * windowSize.x/2 + length(M.columns[1].xy) * windowSize.y/2);
 }
 
 static float2 alignOffset(CTLineRef line, int align) {
@@ -501,7 +509,7 @@ void vger::renderText(const char* str, float4 color, int align) {
         
     } else {
 
-        auto scale = averageScale(txStack.back()) * devicePxRatio;
+        auto scale = averageScale(txStack.back(), windowSize) * devicePxRatio;
         auto key = TextLayoutKey{std::string(str), scale, align};
         
         if(renderCachedText(key, paint, xform)) {
@@ -592,7 +600,7 @@ void vger::renderTextBox(const char* str, float breakRowWidth, float4 color, int
     }
 
     auto paint = vgerColorPaint(this, color);
-    auto scale = averageScale(txStack.back()) * devicePxRatio;
+    auto scale = averageScale(txStack.back(), windowSize) * devicePxRatio;
     auto key = TextLayoutKey{std::string(str), scale, align, breakRowWidth};
     auto xform = addxform(txStack.back());
 
@@ -840,13 +848,20 @@ static bool isValid(matrix_float3x3 M) {
            isValid(M.columns[2]);
 }
 
+static bool isValid(matrix_float4x4 M) {
+    return isValid(M.columns[0]) &&
+           isValid(M.columns[1]) &&
+           isValid(M.columns[2]) &&
+           isValid(M.columns[3]);
+}
+
 void vgerTranslate(vgerContext vg, float2 t) {
     if(!isValid(t)) {
         fprintf(stderr, "vgerTranslate: bad translation: (%f, %f)\n", t.x, t.y);
         return;
     }
-    auto M = matrix_identity_float3x3;
-    M.columns[2] = vector3(t, 1);
+    auto M = matrix_identity_float4x4;
+    M.columns[3] = float4{t.x, t.y, 0, 1};
 
     assert(!vg->txStack.empty());
     auto A = vg->txStack.back();
@@ -865,7 +880,7 @@ void vgerScale(vgerContext vg, float2 s) {
         fprintf(stderr, "vgerScale: bad scale: (%f, %f)\n", s.x, s.y);
         return;
     }
-    auto M = matrix_identity_float3x3;
+    auto M = matrix_identity_float4x4;
     M.columns[0].x = s.x;
     M.columns[1].y = s.y;
 
@@ -881,7 +896,7 @@ void vgerScale(vgerContext vg, float2 s) {
 }
 
 void vgerRotate(vgerContext vg, float theta) {
-    auto M = matrix_identity_float3x3;
+    auto M = matrix_identity_float4x4;
     M.columns[0].x = cosf(theta);
     M.columns[0].y = sinf(theta);
     M.columns[1].x = - M.columns[0].y;
@@ -894,8 +909,9 @@ void vgerRotate(vgerContext vg, float theta) {
 /// Transforms a point according to the current transformation.
 float2 vgerTransform(vgerContext vg, float2 p) {
     auto& M = vg->txStack.back();
-    auto q = matrix_multiply(M, float3{p.x,p.y,1.0});
-    return {q.x/q.z, q.y/q.z};
+    auto q = matrix_multiply(M, float4{p.x,p.y,0.0,1.0});
+    return { (q.x/q.w + 1) * vg->windowSize.x / 2,
+             (q.y/q.w + 1) * vg->windowSize.y / 2};
 }
 
 simd_float3x2 vgerCurrentTransform(vgerContext vg) {

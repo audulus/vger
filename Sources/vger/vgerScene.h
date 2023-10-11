@@ -56,7 +56,7 @@ struct GPUVec {
 struct vgerScene {
     GPUVec<vgerPrim>  prims[VGER_MAX_LAYERS];
     GPUVec<float2>    cvs;
-    GPUVec<float3x3>  xforms;
+    GPUVec<float4x4>  xforms;
     GPUVec<vgerPaint> paints;
 
     void clear() {

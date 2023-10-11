@@ -58,7 +58,7 @@ kernel void vger_prune(uint gid [[thread_position_in_grid]],
 vertex VertexOut vger_vertex(uint vid [[vertex_id]],
                              uint iid [[instance_id]],
                              const device vgerPrim* prims,
-                             const device float3x3* xforms,
+                             const device float4x4* xforms,
                              constant float2& viewSize) {
     
     device auto& prim = prims[iid];
@@ -67,13 +67,11 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
     out.primIndex = iid;
     out.t = float2(prim.texBounds[vid & 1].x, prim.texBounds[vid >> 1].y);
 
-    auto q = xforms[prim.xform] * float3(float2(prim.quadBounds[vid & 1].x,
-                                                prim.quadBounds[vid >> 1].y),
-                                         1.0);
+    out.position = xforms[prim.xform] * float4(prim.quadBounds[vid & 1].x,
+                                               prim.quadBounds[vid >> 1].y,
+                                               0.0,
+                                               1.0);
 
-    auto p = float2{q.x/q.z, q.y/q.z};
-    out.position = float4(2.0 * p / viewSize - 1.0, 0, 1);
-    
     return out;
 }
 
