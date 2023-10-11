@@ -65,13 +65,13 @@ vertex VertexOut vger_vertex(uint vid [[vertex_id]],
     
     VertexOut out;
     out.primIndex = iid;
+    out.t = float2(prim.texBounds[vid & 1].x, prim.texBounds[vid >> 1].y);
 
     auto q = xforms[prim.xform] * float3(float2(prim.quadBounds[vid & 1].x,
                                                 prim.quadBounds[vid >> 1].y),
                                          1.0);
 
     auto p = float2{q.x/q.z, q.y/q.z};
-    out.t = float2(prim.texBounds[vid & 1].x, prim.texBounds[vid >> 1].y);
     out.position = float4(2.0 * p / viewSize - 1.0, 0, 1);
     
     return out;
