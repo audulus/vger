@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param texture texture to sample for textured prims
 - (void) encodeTo:(id<MTLCommandBuffer>) buffer
              pass:(MTLRenderPassDescriptor*) pass
-            scene:(vgerScene) scene
+            scene:(const vgerScene&) scene
             count:(int)n
             layer:(int)layer
          textures:(NSArray<id<MTLTexture>>*)textures

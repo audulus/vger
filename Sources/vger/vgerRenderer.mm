@@ -66,7 +66,7 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
 - (void) encodeTo:(id<MTLCommandBuffer>) buffer
              pass:(MTLRenderPassDescriptor*) pass
-            scene:(vgerScene) scene
+            scene:(const vgerScene&) scene
             count:(int)n
             layer:(int)layer
          textures:(NSArray<id<MTLTexture>>*)textures
