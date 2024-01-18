@@ -725,6 +725,7 @@ bool vger::fill(vgerPaintIndex paint) {
 
         // Bad fill.
         if (++fillPrimCount >= MaxFillPrims) {
+            yScanner = vgerPathScanner();
             return false;
         }
     }
