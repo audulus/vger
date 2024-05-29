@@ -1,7 +1,6 @@
 // Copyright © 2021 Audulus LLC. All rights reserved.
 
-#ifndef prim_h
-#define prim_h
+#pragma once
 
 /// VGER supports simple primitive types.
 typedef enum {
@@ -75,5 +74,3 @@ typedef struct {
     vector_float2 texBounds[2];
 
 } vgerPrim;
-
-#endif /* prim_h */

@@ -1,7 +1,6 @@
 //  Copyright © 2021 Audulus LLC. All rights reserved.
 
-#ifndef vger_private_h
-#define vger_private_h
+#pragma once
 
 #include <string>
 #include <vector>
@@ -237,5 +236,3 @@ inline vgerPaint makeImagePattern(float2 origin,
 
     return p;
 }
-
-#endif /* vger_private_h */

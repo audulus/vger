@@ -1,7 +1,6 @@
 // Copyright © 2021 Audulus LLC. All rights reserved.
 
-#ifndef bezier_h
-#define bezier_h
+#pragma once
 
 #include <simd/simd.h>
 using namespace simd;
@@ -20,5 +19,3 @@ void approx_cubic(float2 b[4], float2 q[6]) {
     q[2] = q[3] = simd_mix(q[1], q[4], 0.5);
 
 }
-
-#endif /* bezier_h */

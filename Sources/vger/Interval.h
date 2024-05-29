@@ -1,7 +1,6 @@
 // Copyright © 2021 Audulus LLC. All rights reserved.
 
-#ifndef Interval_h
-#define Interval_h
+#pragma once
 
 struct Interval {
 
@@ -20,4 +19,3 @@ struct Interval {
 
 };
 
-#endif /* Interval_h */

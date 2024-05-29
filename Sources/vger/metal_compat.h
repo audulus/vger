@@ -1,7 +1,6 @@
 //  Copyright © 2021 Audulus LLC. All rights reserved.
 
-#ifndef metal_compat_h
-#define metal_compat_h
+#pragma once
 
 #ifdef __METAL_VERSION__
 #define DEVICE device
@@ -43,5 +42,3 @@ inline float2 mix(float2 a, float2 b, float t) {
 }
 
 #endif
-
-#endif /* metal_compat_h */

@@ -1,7 +1,6 @@
 //  Copyright © 2021 Audulus LLC. All rights reserved.
 
-#ifndef paint_h
-#define paint_h
+#pragma once
 
 #include "metal_compat.h"
 
@@ -39,5 +38,3 @@ inline float4 applyPaint(const DEVICE vgerPaint& paint, float2 p) {
 #endif
 
 }
-
-#endif /* paint_h */

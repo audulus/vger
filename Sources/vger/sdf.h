@@ -1,7 +1,6 @@
 // Copyright © 2021 Audulus LLC. All rights reserved.
 
-#ifndef sdf_h
-#define sdf_h
+#pragma once
 
 #include "metal_compat.h"
 #include "prim.h"
@@ -491,5 +490,3 @@ inline bool bezierTest(float2 p, float2 A, float2 B, float2 C) {
     return u*u < v;
 
 }
-
-#endif /* sdf_h */
