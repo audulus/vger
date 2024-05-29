@@ -486,26 +486,68 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     auto vger = vgerNew(0);
 
-    vgerBegin(vger, 512, 512, 1.0);
+    vgerBegin(vger, 800, 800, 1.0);
+
+    auto gradient = vgerLinearGradient(vger, float2{50,0}, float2{100,50}, cyan, magenta, 0);
 
     vgerSave(vger);
 
-    vgerStrokeBezier(vger, {{50,450}, {100,450}, {100,500}}, 2.0, vgerLinearGradient(vger, float2{50,450}, float2{100,450}, cyan, magenta, 0));
-    textAt(vger, 150, 450, "Quadratic Bezier stroke");
+    {
+        vgerSave(vger);
+        vgerTranslate(vger, float2{0, 600});
+        vgerStrokeBezier(vger, {{50,0}, {100,0}, {100,50}}, 2.0, gradient);
+        textAt(vger, 150, 0, "Quadratic Bezier stroke");
+        vgerRestore(vger);
+    }
 
-    vgerFillRect(vger, float2{50,350}, float2{100,400}, 10, vgerLinearGradient(vger, float2{50,350}, float2{100,400}, cyan, magenta, 0));
-    textAt(vger, 150, 350, "Rounded rectangle");
+    {
+        vgerSave(vger);
+        vgerTranslate(vger, float2{0, 500});
+        vgerFillRect(vger, float2{50,0}, float2{100,50}, 10, gradient);
+        textAt(vger, 150, 0, "Rounded rectangle");
+        vgerRestore(vger);
+    }
 
-    vgerFillCircle(vger, float2{75, 275}, 25, vgerLinearGradient(vger, float2{50,250}, float2{100,300}, cyan, magenta, 0));
-    textAt(vger, 150, 250, "Circle");
+    {
+        vgerSave(vger);
+        vgerTranslate(vger, float2{0, 400});
+        vgerFillCircle(vger, float2{75, 25}, 25, gradient);
+        textAt(vger, 150, 0, "Circle");
+        vgerRestore(vger);
+    }
 
-    vgerStrokeSegment(vger, float2{50,150}, float2{100,200}, 2.0, vgerLinearGradient(vger, float2{50,150}, float2{100,200}, cyan, magenta, 0));
-    textAt(vger, 150, 150, "Line segment");
+    {
+        vgerSave(vger);
+        vgerTranslate(vger, float2{0, 300});
+        vgerStrokeSegment(vger, float2{50,0}, float2{100,50}, 2.0, gradient);
+        textAt(vger, 150, 0, "Line segment");
+        vgerRestore(vger);
+    }
 
-    float theta = 0;      // orientation
-    float ap = .5 * M_PI; // aperture size
-    vgerStrokeArc(vger, float2{75,75}, 25, 2.0, theta, ap, vgerLinearGradient(vger, float2{50,50}, float2{100,100}, cyan, magenta, 0));
-    textAt(vger, 150, 050, "Arc");
+    {
+        vgerSave(vger);
+        vgerTranslate(vger, float2{0, 200});
+        float theta = 0;      // orientation
+        float ap = .5 * M_PI; // aperture size
+        vgerStrokeArc(vger, float2{75,25}, 25, 2.0, theta, ap, gradient);
+        textAt(vger, 150, 0, "Arc");
+        vgerRestore(vger);
+    }
+
+    {
+        vgerSave(vger);
+        vgerTranslate(vger, float2{50, 100});
+        float2 sz {50, 50};
+        auto start = sz * rand2();
+        vgerMoveTo(vger, start);
+        for(int i=0;i<3;++i) {
+            vgerQuadTo(vger, sz * rand2(), sz * rand2());
+        }
+        vgerQuadTo(vger, sz * rand2(), start);
+        vgerFill(vger, vgerLinearGradient(vger, float2{0,0}, float2{50,50}, cyan, magenta, 0));
+        textAt(vger, 100, 0, "Complex Path Fill");
+        vgerRestore(vger);
+    }
 
     vgerRestore(vger);
 
