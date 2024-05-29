@@ -79,7 +79,7 @@ public struct VgerView: UIViewRepresentable {
 struct VgerView_Previews: PreviewProvider {
     static var previews: some View {
         VgerView(renderCallback: { vger, _ in
-            vgerText(vger, "hello world", SIMD4<Float>(repeating: 1), 0)
+            vgerText(vger, "hello world", .init(repeating: 1), 0)
         })
     }
 }
