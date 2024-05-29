@@ -1,7 +1,6 @@
 // Copyright © 2021 Audulus LLC. All rights reserved.
 
-#ifndef vgerGlyphPathCache_hpp
-#define vgerGlyphPathCache_hpp
+#pragma once
 
 #include "vger.h"
 #include "vgerPathScanner.h"
@@ -29,5 +28,3 @@ struct vgerGlyphPathCache {
     
     Info& getInfo(CGGlyph);
 };
-
-#endif /* vgerGlyphPathCache_hpp */

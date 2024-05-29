@@ -1,7 +1,6 @@
 // Copyright © 2021 Audulus LLC. All rights reserved.
 
-#ifndef vgerPathScanner_h
-#define vgerPathScanner_h
+#pragma once
 
 #include <simd/simd.h>
 #include <vector>
@@ -56,5 +55,3 @@ struct vgerPathScanner {
     bool next();
 
 };
-
-#endif /* vgerPathScanner_h */

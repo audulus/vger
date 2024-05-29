@@ -1,7 +1,6 @@
 //  Copyright © 2021 Audulus LLC. All rights reserved.
 
-#ifndef scene_h
-#define scene_h
+#pragma once
 
 #import <Metal/Metal.h>
 #define VGER_MAX_LAYERS 4
@@ -68,5 +67,3 @@ struct vgerScene {
         paints.clear();
     }
 };
-
-#endif /* scene_h */
