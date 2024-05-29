@@ -49,9 +49,6 @@ class Renderer: NSObject, MTKViewDelegate {
         renderCallback?(vg!, size)
 
         if let renderPassDescriptor = view.currentRenderPassDescriptor, let currentDrawable = view.currentDrawable {
-
-            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1)
-
             vgerEncode(vg, commandBuffer, renderPassDescriptor)
             commandBuffer.present(currentDrawable)
         }
