@@ -41,4 +41,12 @@ inline float2 mix(float2 a, float2 b, float t) {
     return (1-t)*a + t*b;
 }
 
+inline float3 mix(float3 a, float3 b, float t) {
+    return (1-t)*a + t*b;
+}
+
+inline float4 mix(float4 a, float4 b, float t) {
+    return (1-t)*a + t*b;
+}
+
 #endif
