@@ -185,6 +185,7 @@ inline vgerPaint makeLinearGradient(float2 start,
                                     float glow) {
     
     vgerPaint p;
+    p.type = vgerPaintTypeLinearGradient;
 
     // Calculate transform aligned to the line
     float2 d = end - start;
@@ -206,6 +207,32 @@ inline vgerPaint makeLinearGradient(float2 start,
     return p;
 }
 
+inline vgerPaint makeRadialGradient(float2 center,
+                                    float  innerRadius,
+                                    float  outerRadius,
+                                    float4 innerColor,
+                                    float4 outerColor,
+                                    float glow) {
+
+    vgerPaint p;
+    p.type = vgerPaintTypeRadialGradient;
+
+    p.xform = inverse(float3x3{
+        float3{1, 0, 0},
+        float3{0, 1, 0},
+        float3{center.x, center.y, 1}
+    });
+
+    p.innerRadius = innerRadius;
+    p.outerRadius = outerRadius;
+    p.innerColor = innerColor;
+    p.outerColor = outerColor;
+    p.image = -1;
+    p.glow = glow;
+
+    return p;
+}
+
 inline vgerPaint makeImagePattern(float2 origin,
                                   float2 size,
                                   float angle,
@@ -214,6 +241,7 @@ inline vgerPaint makeImagePattern(float2 origin,
                                   float alpha) {
 
     vgerPaint p;
+    p.type  = vgerPaintTypeImagePattern;
     p.image = image.index;
     p.flipY = flipY;
 

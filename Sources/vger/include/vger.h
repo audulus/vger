@@ -214,6 +214,15 @@ vgerPaintIndex vgerLinearGradient(vgerContext vg,
                                   vector_float4 outerColor,
                                   float glow);
 
+/// Create a paint for a linear gradient. Returns paint index. Paints are cleared each frame.
+vgerPaintIndex vgerRadialGradient(vgerContext vg,
+                                  vector_float2 center,
+                                  float         innerRadius,
+                                  float         outerRadius,
+                                  vector_float4 innerColor,
+                                  vector_float4 outerColor,
+                                  float glow);
+
 /// Create a paint using a texture image. Returns paint index. Paints are cleared each frame.
 vgerPaintIndex vgerImagePattern(vgerContext vg,
                                 vector_float2 origin,

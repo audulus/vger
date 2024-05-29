@@ -117,7 +117,7 @@ static void SplitBezier(float t,
 }
 
 - (void) testSizes {
-    XCTAssertEqual(sizeof(vgerPaint), 96);
+    XCTAssertEqual(sizeof(vgerPaint), 128);
     XCTAssertEqual(sizeof(vgerPrim), 96);
 }
 
@@ -137,6 +137,7 @@ static void SplitBezier(float t,
     vgerFillCircle(vg, float2{256, 256}, 40, cyan);
     vgerStrokeBezier(vg, {{256,256}, {256,384}, {384,384}}, 1, white);
     vgerFillRect(vg, float2{400,100}, float2{450,150}, 10, vgerLinearGradient(vg, float2{400,100}, float2{450, 150}, float4{0,1,1,1}, float4{1,0,1,1}, 0));
+    vgerFillRect(vg, float2{400,200}, float2{450,250}, 10, vgerRadialGradient(vg, float2{425,225}, 10, 40, float4{0,1,1,1}, float4{1,0,1,1}, 0));
     vgerStrokeArc(vg, float2{100,400}, 30, 3, theta, ap, white);
     vgerStrokeSegment(vg, float2{100,100}, float2{200,200}, 10, magenta);
     vgerStrokeRect(vg, float2{400,100}, float2{450,150}, 10, 2.0, magenta);
@@ -552,6 +553,24 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
     v = p.xform * float3{20,20,1};
     XCTAssertTrue(equal(v, float3{1,1,1}));
+
+    p = makeRadialGradient(float2(0), 0, 1, float4(0), float4(1), 0);
+
+    XCTAssertTrue(equal(applyPaint(p, float2{0,0}), float4(0)));
+    XCTAssertTrue(equal(applyPaint(p, float2{1,0}), float4(1)));
+    XCTAssertTrue(equal(applyPaint(p, float2{0,1}), float4(1)));
+    XCTAssertTrue(equal(applyPaint(p, float2{-1,0}), float4(1)));
+    XCTAssertTrue(equal(applyPaint(p, float2{0,-1}), float4(1)));
+    XCTAssertTrue(equal(applyPaint(p, float2{1,1}), float4(1)));
+
+    p = makeRadialGradient(float2{1,0}, 0, 1, float4(0), float4(1), 0);
+    XCTAssertTrue(equal(applyPaint(p, float2{1,0}), float4(0)));
+    XCTAssertTrue(equal(applyPaint(p, float2{1,1}), float4(1)));
+
+    p = makeRadialGradient(float2{425,225}, 10, 40, float4{0,1,1,1}, float4{1,0,1,1}, 0);
+
+    c = applyPaint(p, float2{425,225});
+    XCTAssertTrue(equal(c, float4{0,1,1,1}));
 
 }
 

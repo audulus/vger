@@ -939,6 +939,7 @@ id<MTLTexture> vgerGetGlyphAtlas(vgerContext vg) {
 vgerPaintIndex vgerColorPaint(vgerContext vg, float4 color) {
 
     vgerPaint p;
+    p.type = vgerPaintTypeLinearGradient;
     p.xform = matrix_identity_float3x3;
     p.innerColor = color;
     p.outerColor = color;
@@ -957,6 +958,16 @@ vgerPaintIndex vgerLinearGradient(vgerContext vg,
 
     return vg->addPaint(makeLinearGradient(start, end, innerColor, outerColor, glow));
 
+}
+
+vgerPaintIndex vgerRadialGradient(vgerContext vg,
+                                  vector_float2 center,
+                                  float         innerRadius,
+                                  float         outerRadius,
+                                  vector_float4 innerColor,
+                                  vector_float4 outerColor,
+                                  float glow) {
+    return vg->addPaint(makeRadialGradient(center, innerRadius, outerRadius, innerColor, outerColor, glow));
 }
 
 vgerPaintIndex vgerImagePattern(vgerContext vg,

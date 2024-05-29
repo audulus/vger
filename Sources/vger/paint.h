@@ -4,7 +4,15 @@
 
 #include "metal_compat.h"
 
+enum vgerPaintType {
+    vgerPaintTypeLinearGradient,
+    vgerPaintTypeRadialGradient,
+    vgerPaintTypeImagePattern,
+};
+
 struct vgerPaint {
+
+    vgerPaintType type;
 
 #ifdef __METAL_VERSION__
     float3x3 xform;
@@ -15,6 +23,12 @@ struct vgerPaint {
     float4 innerColor;
 
     float4 outerColor;
+
+    /// Inner radius for radial gradients.
+    float innerRadius;
+
+    /// Inner radius for radial gradients.
+    float outerRadius;
 
     /// Render into the glow layer?
     float glow;
@@ -29,12 +43,19 @@ struct vgerPaint {
 
 inline float4 applyPaint(const DEVICE vgerPaint& paint, float2 p) {
 
-    float d = clamp((paint.xform * float3{p.x, p.y, 1.0}).x, 0.0, 1.0);
-
-#ifdef __METAL_VERSION__
-    return mix(paint.innerColor, paint.outerColor, d);
-#else
-    return simd_mix(paint.innerColor, paint.outerColor, d);
-#endif
+    switch (paint.type) {
+        case vgerPaintTypeLinearGradient:
+        {
+            float d = clamp((paint.xform * float3{p.x, p.y, 1.0}).x, 0.0, 1.0);
+            return mix(paint.innerColor, paint.outerColor, d);
+        }
+        case vgerPaintTypeRadialGradient:
+        {
+            float d = clamp(length( (paint.xform * float3{p.x, p.y, 1.0}).xy), paint.innerRadius, paint.outerRadius);
+            return mix(paint.innerColor, paint.outerColor, (d-paint.innerRadius) / (paint.outerRadius - paint.innerRadius));
+        }
+        default:
+            return 0;
+    }
 
 }
