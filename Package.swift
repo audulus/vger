@@ -12,5 +12,5 @@ let package = Package(
         .target(name: "vgerSwift", dependencies: ["vger"]),
         .testTarget(name: "vgerTests", dependencies: ["vger", "MetalNanoVG"], resources: [.copy("images")]),
     ],
-    cxxLanguageStandard: .cxx14
+    cxxLanguageStandard: .cxx20
 )
