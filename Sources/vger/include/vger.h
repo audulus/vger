@@ -63,8 +63,10 @@ enum vgerCreateFlags {
     VGER_TRIPLE_BUFFER = 1 << 1,
 };
 
+#ifdef __OBJC__
 /// Create a new state object.
-vgerContext vgerNew(uint32_t flags);
+vgerContext vgerNew(uint32_t flags, MTLPixelFormat pixelFormat);
+#endif
 
 /// Deallocate state object.
 void vgerDelete(vgerContext);

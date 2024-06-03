@@ -123,7 +123,7 @@ struct vger {
     /// Have we already computed glyph bounds?
     bool computedGlyphBounds = false;
 
-    vger(uint32_t flags);
+    vger(uint32_t flags, MTLPixelFormat pixelFormat);
 
     void addPrim(const vgerPrim& prim) {
         scenes[currentScene].prims[currentLayer].append(prim);

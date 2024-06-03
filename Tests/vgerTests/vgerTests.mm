@@ -126,7 +126,7 @@ static void SplitBezier(float t,
     float theta = 0;
     float ap = .5 * M_PI;
 
-    auto vg = vgerNew(0);
+    auto vg = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     vgerBegin(vg, 512, 512, 1.0);
 
@@ -161,7 +161,7 @@ static void SplitBezier(float t,
 
 - (void) testTransformStack {
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -185,7 +185,7 @@ static void SplitBezier(float t,
 
 - (void) testRotate {
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -207,7 +207,7 @@ static void SplitBezier(float t,
 
 - (void) testRects {
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
     assert(vger);
 
     vgerBegin(vger, 512, 512, 1.0);
@@ -245,7 +245,7 @@ static void SplitBezier(float t,
 
 - (void) testRenderTexture {
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -264,7 +264,7 @@ static void SplitBezier(float t,
 
 - (void) testText {
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -281,7 +281,7 @@ static void SplitBezier(float t,
 
 - (void) testScaleText {
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -316,7 +316,7 @@ vector_float4 rand_color() {
 
     int N = 10000;
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     [self measureBlock:^{
 
@@ -352,7 +352,7 @@ vector_float4 rand_color() {
 
 - (void) testBezierPerfSplit {
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     [self measureBlock:^{
 
@@ -484,7 +484,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     auto cyan = float4{0,1,1,1};
     auto magenta = float4{1,0,1,1};
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     vgerBegin(vger, 800, 800, 1.0);
 
@@ -618,7 +618,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
 - (void) testTextAlgin {
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -652,7 +652,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     int w = 512, h = 512;
     float2 sz = {float(w),float(h)};
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     vgerBegin(vger, w, h, 1.0);
 
@@ -676,7 +676,7 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
     int w = 512, h = 512;
     float2 sz = {float(w),float(h)};
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     vgerBegin(vger, w, h, 1.0);
 
@@ -708,7 +708,7 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
     int w = 512, h = 512;
     float2 sz = {float(w),float(h)};
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     vgerBegin(vger, w, h, 1.0);
 
@@ -728,7 +728,7 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
 
 - (void) testTextBox {
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -762,7 +762,7 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
 
     printf("size: %f x %f\n", image->width, image->height);
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     vgerBegin(vger, 512, 512, 1.0);
 
@@ -809,7 +809,7 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
 
     printf("size: %f x %f\n", image->width, image->height);
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     [self measureBlock:^{
 
@@ -878,7 +878,7 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
 
 - (void) testLayers {
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
     vgerSetLayerCount(vger, 2);
 
     vgerBegin(vger, 512, 512, 1.0);
@@ -902,7 +902,7 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
 
 - (void) testPathRectangle {
 
-    auto vger = vgerNew(0);
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
 
     auto w = 0.5f;
     auto h = 50.0f;

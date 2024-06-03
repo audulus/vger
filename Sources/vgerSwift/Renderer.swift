@@ -6,7 +6,7 @@ import vger
 
 class Renderer: NSObject, MTKViewDelegate {
 
-    var vg = vgerNew(0)
+    var vg = vgerNew(0, .bgra8Unorm)
     var device: MTLDevice!
     var queue: MTLCommandQueue!
     var renderCallback : ((vgerContext, CGSize) -> Void)?
