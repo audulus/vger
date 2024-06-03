@@ -28,6 +28,9 @@ struct TextLayoutKey {
     float size;
     int align;
     float breakRowWidth = -1;
+
+    friend bool operator==(const TextLayoutKey&, const TextLayoutKey&) = default;
+    friend bool operator!=(const TextLayoutKey&, const TextLayoutKey&) = default;
 };
 
 inline void hash_combine(size_t& seed) { }
@@ -40,9 +43,6 @@ inline void hash_combine(size_t& seed, const T& v, Rest... rest) {
 }
 
 #define MAKE_HASHABLE(Type, ...) \
-inline auto __tie(const Type& t) { return std::tie(__VA_ARGS__); }                              \
-inline bool operator==(const Type& lhs, const Type& rhs) { return __tie(lhs) == __tie(rhs); } \
-inline bool operator!=(const Type& lhs, const Type& rhs) { return __tie(lhs) != __tie(rhs); } \
 namespace std {\
     template<> struct hash<Type> {\
         size_t operator()(const Type &t) const {\
