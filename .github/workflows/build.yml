@@ -26,10 +26,3 @@ jobs:
           cd Demo
           xcodebuild -scheme "VgerDemo (macOS)" -destination 'platform=OS X,arch=x86_64' clean build | xcpretty
           
-  swift-build:
-    runs-on: macos-latest
-    steps:
-      - name: Check out vger
-        uses: actions/checkout@v4.1.1
-      - name: Build vger 
-        run: swift build
