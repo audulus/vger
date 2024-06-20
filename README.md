@@ -12,9 +12,9 @@ vger is a vector graphics renderer which renders a limited set of primitives, bu
 
 Each primitive can be filled with a solid color, gradient, or texture. vger renders primitives as instanced quads, with most of the calculations done in the fragment shader.
 
-Here's an early screenshot from vger in use for Audulus:
+Here's a screenshot of vger rendering the Audulus UI:
 
-<img src="bootstrap.png">
+<img src="screenshot.png">
 
 Here's it rendering that svg tiger (the cubic curves are converted to quadratic by a lousy method, and I've omitted the strokes):
 
