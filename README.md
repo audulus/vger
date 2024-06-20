@@ -6,7 +6,7 @@
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Faudulus%2Fvger%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/audulus/vger)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Faudulus%2Fvger%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/audulus/vger)
 
-vger is a vector graphics renderer which renders a limited set of primitives, but does so almost entirely on the GPU. Works on iOS and macOS. API is plain C. Used to render [Audulus](https://audulus.com) Rust port is [here](https://github.com/audulus/vger-rs).
+vger is a vector graphics renderer which renders a limited set of primitives, but does so almost entirely on the GPU. Works on iOS and macOS. API is plain C. Used to render [Audulus](https://audulus.com). Rust port is [here](https://github.com/audulus/vger-rs).
 
 <img src="demo.png" alt="demo" width="300" height="450">
 
