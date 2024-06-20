@@ -3,6 +3,8 @@
 ![build status](https://github.com/audulus/vger/actions/workflows/build.yml/badge.svg)
 <img src="https://img.shields.io/badge/SPM-5.3-blue.svg?style=flat"
      alt="Swift Package Manager (SPM) compatible" />
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Faudulus%2Fvger%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/audulus/vger)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Faudulus%2Fvger%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/audulus/vger)
 
 vger is a vector graphics renderer which renders a limited set of primitives, but does so almost entirely on the GPU. Works on iOS and macOS. API is plain C. Rust port is [here](https://github.com/audulus/vger-rs).
 
