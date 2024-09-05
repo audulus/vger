@@ -24,7 +24,7 @@ Here's it rendering that svg tiger (the cubic curves are converted to quadratic 
 
 I was previously using nanovg for Audulus, which was consuming too much CPU for the immediate-mode UI. nanovg is certainly more full featured, but for Audulus, vger maintains 120fps while nanovg falls to 30fps on my 120Hz iPad because of CPU-side path tessellation, and other overhead. vger renders analytically without tessellation, leaning heavily on the fragment shader.
 
-vger isn't cross-platform (just iOS and macOS), but the API is simple enough that it could be ported fairly easily. If Audulus goes cross-platform again, I will port vger to vulkan or wgpu.
+If you're interested in non-apple platforms, check out [the rust port](https://github.com/audulus/vger-rs).
 
 ## How it works
 
