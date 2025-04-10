@@ -1,7 +1,6 @@
 // Copyright © 2021 Audulus LLC. All rights reserved.
 
 #import "vgerTextureManager.h"
-#define STB_RECT_PACK_IMPLEMENTATION 1
 #include "stb_rect_pack.h"
 #include <vector>
 
