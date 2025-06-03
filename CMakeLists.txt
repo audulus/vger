@@ -36,7 +36,7 @@ add_custom_command(
 # Step 3: Convert .metallib to C array
 add_custom_command(
     OUTPUT ${METALLIB_OBJ}
-    COMMAND xxd -i ${METALLIB_FILE} > ${METALLIB_OBJ}
+    COMMAND xxd -i -n vger_metallib ${METALLIB_FILE} > ${METALLIB_OBJ}
     DEPENDS ${METALLIB_FILE}
     COMMENT "Embedding metallib into C++ source"
 )
