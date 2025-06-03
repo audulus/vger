@@ -4,6 +4,7 @@
 #import "paint.h"
 #import "prim.h"
 
+#ifdef SWIFTPM_MODULE_BUNDLE
 static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
 
     auto bundle = SWIFTPM_MODULE_BUNDLE;
@@ -20,6 +21,22 @@ static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
     assert(lib);
     return lib;
 }
+#else
+extern unsigned char vger_metallib[];
+extern unsigned int vger_metallib_len;
+static id<MTLLibrary> GetMetalLibrary(id<MTLDevice> device) {
+
+    NSData *data = [NSData dataWithBytes:vger_metallib length:vger_metallib_len];
+    NSError *error = nil;
+    auto library = [device newLibraryWithData:data error:&error];
+    if(error) {
+        NSLog(@"error creating metal library: %@", lib);
+    }
+
+    assert(lib);
+    return library;
+}
+#endif
 
 @interface vgerRenderer() {
     id<MTLRenderPipelineState> pipeline;
