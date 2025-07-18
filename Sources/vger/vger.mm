@@ -250,6 +250,30 @@ void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPain
 
     if(!vg->checkPaint(paint)) return;
 
+#if 0
+    // Improve quality of beziers by rendering as fills.
+
+    // 90 degrees CCW
+    float2x2 rot90{
+        float2{0, 1},
+        float2{-1, 0}
+    };
+
+    // Tangents.
+    float2 d0 = rot90 * width * normalize(s.b - s.a);
+    float2 d1 = rot90 * width * normalize(s.c - s.a);
+    float2 d2 = rot90 * width * normalize(s.c - s.b);
+
+    vgerMoveTo(vg, s.a - d0);
+    vgerQuadTo(vg, s.b - d1, s.c - d2);
+    vgerLineTo(vg, s.c + d2);
+    vgerQuadTo(vg, s.b + d1, s.a + d0);
+    vgerLineTo(vg, s.a - d0);
+    vgerFill(vg, paint);
+#endif
+
+#if 1
+
     // Are the points degenerate?
     // This may not work in general because these are pre-transformed coordinates.
     // Could instead check in the vertex function after transforming.
@@ -283,6 +307,7 @@ void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPain
 
         vg->addPrim(prim);
     }
+#endif
 }
 
 void vgerStrokeSegment(vgerContext vg, vector_float2 a, vector_float2 b, float width, vgerPaintIndex paint) {
