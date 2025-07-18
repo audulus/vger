@@ -118,6 +118,59 @@ inline float udBezier(float2 pos, float2 A, float2 B, float2 C )
     return sqrt( res );
 }
 
+inline float3 solveCubic(float a, float b, float c)
+{
+    float p = b - a*a / 3.0, p3 = p*p*p;
+    float q = a * (2.0*a*a - 9.0*b) / 27.0 + c;
+    float d = q*q + 4.0*p3 / 27.0;
+    float offset = -a / 3.0;
+    if(d >= 0.0) {
+        float z = sqrt(d);
+        float2 x = (float2{z, -z} - q) / 2.0;
+        float2 uv = sign(x)*pow(abs(x), float2(1.0/3.0));
+        return float3(offset + uv.x + uv.y);
+    }
+    float v = acos(-sqrt(-27.0 / p3) * q / 2.0) / 3.0;
+    float m = cos(v), n = sin(v)*1.732050808;
+    return float3{m + m, -n - m, n - m} * sqrt(-p / 3.0) + offset;
+}
+
+inline float sdBezier(float2 A, float2 B, float2 C, float2 p)
+{
+    // Offset to avoid degeneracy when B == midpoint(A, C)
+    B = mix(B + float2(1e-4), B, step(float2(1e-6f), abs(B * 2.0 - A - C)));
+
+    float2 a = B - A;
+    float2 b = A - 2.0 * B + C;
+    float2 c = 2.0 * a;
+    float2 d = A - p;
+
+    float3 k = float3{3.0f * dot(a, b),
+        2.0f * dot(a, a) + dot(d, b),
+        dot(d, a)} / dot(b, b);
+
+    float3 t = clamp(solveCubic(k.x, k.y, k.z), 0.0, 1.0);
+
+    float minDist = 1e10;
+    float bestT = 0.0;
+    for (int i = 0; i < 3; ++i) {
+        float ti = i == 0 ? t.x : (i == 1 ? t.y : t.z);
+        float2 qi = A + (c + b * ti) * ti; // Evaluate position on curve
+        float di = length(qi - p);
+        if (di < minDist) {
+            minDist = di;
+            bestT = ti;
+        }
+    }
+
+    // Evaluate curve and tangent at bestT
+    float2 pos = A + (c + b * bestT) * bestT;
+    float2 tangent = normalize(2.0 * mix(B - A, C - B, bestT));
+    float2 diff = normalize(pos - p);
+
+    return minDist * sign(tangent.x * diff.y - tangent.y * diff.x);
+}
+
 inline float sdSubtract(float d1, float d2)
 {
     return max(-d1, d2);
