@@ -100,6 +100,16 @@ static void printBezierTest(float2 A, float2 B, float2 C) {
     XCTAssertEqualWithAccuracy(d, 1.0, 0.001);
 }
 
+static void printSdBezier(float2 A, float2 B, float2 C) {
+    for(float y=1; y>=-1; y-=.1) {
+        for(float x=-1; x<3; x+=.1) {
+            putchar( sdBezier(float2{x,y}, A, B, C) < 0 ? '*' : ' ');
+        }
+        putchar('\n');
+    }
+}
+
+
 - (void) testSdBezier {
 
     float2 a{0,0};
@@ -109,6 +119,15 @@ static void printBezierTest(float2 A, float2 B, float2 C) {
     XCTAssertEqualWithAccuracy(sdBezier(float2{0,0}, a, b, c), 0.0, 0.001);
     XCTAssertEqualWithAccuracy(sdBezier(float2{1,0}, a, b, c), 0.5, 0.001);
     XCTAssertEqualWithAccuracy(sdBezier(float2{1,1}, a, b, c), -0.5, 0.001);
+
+    printf("\n\n");
+    printSdBezier(a, b, c);
+
+    printf("\n\n");
+    printSdBezier(c, b, a);
+
+    printf("\n\n");
+    printSdBezier(a, float2{1, -1}, c);
 }
 
 @end
