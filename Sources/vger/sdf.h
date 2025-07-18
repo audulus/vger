@@ -539,13 +539,18 @@ inline bool bezierTest(float2 p, float2 A, float2 B, float2 C) {
     // Try to be consistent with lineTest so we don't
     // double-flip the inside/outside in edge cases.
     if (side(B, A, C)) {
-        if(s <= 0 or t < 0 or (1-s-t) < 0) {
-            return false; // outside triangle
+        if(!side(p, A, C)) {
+            return false;
         }
     } else {
-        if(s < 0 or t < 0 or (1-s-t) < 0) {
-            return false; // outside triangle
+        if(side(p, A, C)) {
+            return false;
         }
+    }
+
+    // Are we outside edge (A, B) or (B, C)?
+    if(s < 0 or (1-s-t) < 0) {
+        return false; // outside triangle
     }
 
     // Transform to canonical coordinte space.
