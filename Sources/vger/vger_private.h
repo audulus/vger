@@ -123,6 +123,9 @@ struct vger {
     /// Have we already computed glyph bounds?
     bool computedGlyphBounds = false;
 
+    /// Used in vgerTextBounds.
+    std::vector<CGPoint> origins;
+
     vger(uint32_t flags, MTLPixelFormat pixelFormat);
 
     void addPrim(const vgerPrim& prim) {
