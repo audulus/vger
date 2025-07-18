@@ -30,8 +30,8 @@
     float2 i{1,0};
     float2 j{0,1};
 
-    XCTAssertEqual(lineTest(0, i-j, i+j), 1);
-    XCTAssertEqual(lineTest(2*j, i-j, i+j), 0);
+    XCTAssertTrue(lineTest(0, i-j, i+j));
+    XCTAssertFalse(lineTest(2*j, i-j, i+j));
 
     XCTAssertFalse(lineTest( float2{13.5, 13.5}, float2{60.0, 60.0}, float2{35.0, 35.0} )); // XXX: GPU seems to return true
     XCTAssertFalse(lineTest( float2{36.5, 36.5}, float2{60.0, 60.0}, float2{35.0, 35.0} ));
