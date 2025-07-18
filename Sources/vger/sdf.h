@@ -409,31 +409,29 @@ inline float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float
                 auto b = cvs[j+1];
                 auto c = cvs[j+2];
 
-                bool skip = false;
+                bool close = true;
                 auto xmax = p.x + filterWidth;
                 auto xmin = p.x - filterWidth;
 
                 // If the hull is far enough away, don't bother with
                 // a sdf.
                 if(a.x > xmax and b.x > xmax and c.x > xmax) {
-                    skip = true;
+                    close = false;
                 } else if(a.x < xmin and b.x < xmin and c.x < xmin) {
-                    skip = true;
+                    close = false;
                 }
 
-                if(!skip) {
+                if(close) {
                     d = min(d, udBezier(p, a, b, c));
+
+                    // Flip if inside area between curve and line.
+                    if(bezierTest(p, a, b, c)) {
+                        s = -s;
+                    }
                 }
 
                 if(lineTest(p, a, c)) {
                     s = -s;
-                }
-
-                // Flip if inside area between curve and line.
-                if(!skip) {
-                    if(bezierTest(p, a, b, c)) {
-                        s = -s;
-                    }
                 }
 
             }
