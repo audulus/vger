@@ -51,7 +51,10 @@ struct vgerPathScanner {
 
     void _init();
     void begin(vector_float2* cvs, int count);
+
+    // In case we want to render glphs with paths.
     void begin(CGPathRef path);
+    
     bool next();
 
 };
