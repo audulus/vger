@@ -109,6 +109,17 @@ static void printSdBezier(float2 A, float2 B, float2 C) {
     }
 }
 
+static void checkSdBezier(float2 A, float2 B, float2 C) {
+    for(float y=1; y>=-1; y-=.1) {
+        for(float x=-1; x<3; x+=.1) {
+            float2 xy{x, y};
+            XCTAssertEqualWithAccuracy(
+                                       abs(sdBezier(xy, A, B, C)),
+                                       udBezier(xy, A, B, C),
+                                       0.001);
+        }
+    }
+}
 
 - (void) testSdBezier {
 
@@ -128,6 +139,10 @@ static void printSdBezier(float2 A, float2 B, float2 C) {
 
     printf("\n\n");
     printSdBezier(a, float2{1, -1}, c);
+
+    checkSdBezier(a, b, c);
+    checkSdBezier(c, b, a);
+    checkSdBezier(a, float2{1, -1}, c);
 }
 
 @end
