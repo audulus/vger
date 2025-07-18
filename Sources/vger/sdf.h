@@ -505,11 +505,7 @@ inline float2 bezier(float2 A, float2 B, float2 C, float t) {
     return (1 - t) * (1 - t) * A + 2 * (1 - t) * t * B + t * t * C;
 }
 
-inline bool lineTest(float2 p, float2 A, float2 B) {
-
-    int cs = (A.y < p.y) * 2 + (B.y < p.y);
-
-    if(cs == 0 or cs == 3) return false; // trivial reject
+inline bool side(float2 p, float2 A, float2 B) {
 
     auto v = B - A;
 
@@ -517,6 +513,15 @@ inline bool lineTest(float2 p, float2 A, float2 B) {
     float t = (p.y-A.y)/v.y;
 
     return (A.x + t*v.x) > p.x;
+}
+
+inline bool lineTest(float2 p, float2 A, float2 B) {
+
+    int cs = (A.y < p.y) * 2 + (B.y < p.y);
+
+    if(cs == 0 or cs == 3) return false; // trivial reject
+
+    return side(p, A, B);
 
 }
 
@@ -530,8 +535,17 @@ inline bool bezierTest(float2 p, float2 A, float2 B, float2 C) {
     float s = (v2.x * v1.y - v1.x * v2.y) / det;
     float t = (v0.x * v2.y - v2.x * v0.y) / det;
 
-    if(s < 0 or t < 0 or (1-s-t) < 0) {
-        return false; // outside triangle
+    // Concave or convex?
+    // Try to be consistent with lineTest so we don't
+    // double-flip the inside/outside in edge cases.
+    if (side(B, A, C)) {
+        if(s <= 0 or t < 0 or (1-s-t) < 0) {
+            return false; // outside triangle
+        }
+    } else {
+        if(s < 0 or t < 0 or (1-s-t) < 0) {
+            return false; // outside triangle
+        }
     }
 
     // Transform to canonical coordinte space.

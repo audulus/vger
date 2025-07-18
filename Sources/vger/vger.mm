@@ -250,7 +250,7 @@ void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPain
 
     if(!vg->checkPaint(paint)) return;
 
-#if 0
+#if 1
     // Improve quality of beziers by rendering as fills.
 
     // 90 degrees CCW
@@ -272,7 +272,7 @@ void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPain
     vgerFill(vg, paint);
 #endif
 
-#if 1
+#if 0
 
     // Are the points degenerate?
     // This may not work in general because these are pre-transformed coordinates.
