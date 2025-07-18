@@ -697,7 +697,7 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
     float step = 2*M_PI/float(n);
     float2 start = center + radius * float2{1,0};
     vgerMoveTo(vger, start);
-    for(float i=1;i<n;++i) {
+    for(float i=0;i<n;++i) {
         vgerQuadTo(vger, center+radius*circle((i+.5)*step), center+radius*circle((i+1)*step));
     }
 
