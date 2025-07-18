@@ -135,7 +135,7 @@ inline float3 solveCubic(float a, float b, float c)
     return float3{m + m, -n - m, n - m} * sqrt(-p / 3.0) + offset;
 }
 
-inline float sdBezier(float2 A, float2 B, float2 C, float2 p)
+inline float sdBezier(float2 p, float2 A, float2 B, float2 C)
 {
     // Offset to avoid degeneracy when B == midpoint(A, C)
     B = mix(B + float2(1e-4), B, step(float2(1e-6f), abs(B * 2.0 - A - C)));

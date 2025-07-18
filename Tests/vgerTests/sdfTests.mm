@@ -106,9 +106,9 @@ static void printBezierTest(float2 A, float2 B, float2 C) {
     float2 b{1,1};
     float2 c{2,0};
 
-    XCTAssertEqualWithAccuracy(sdBezier(a, b, c, float2{0,0}), 0.0, 0.001);
-    XCTAssertEqualWithAccuracy(sdBezier(a, b, c, float2{1,0}), 0.5, 0.001);
-    XCTAssertEqualWithAccuracy(sdBezier(a, b, c, float2{1,1}), -0.5, 0.001);
+    XCTAssertEqualWithAccuracy(sdBezier(float2{0,0}, a, b, c), 0.0, 0.001);
+    XCTAssertEqualWithAccuracy(sdBezier(float2{1,0}, a, b, c), 0.5, 0.001);
+    XCTAssertEqualWithAccuracy(sdBezier(float2{1,1}, a, b, c), -0.5, 0.001);
 }
 
 @end
