@@ -15,6 +15,85 @@ struct VertexOut {
     int primIndex;
 };
 
+float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p, float filterWidth = 0) {
+    float d = FLT_MAX;
+    float s = 1;
+    switch(prim.type) {
+        case vgerBezier:
+            d = sdBezierApprox(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]) - prim.width;
+            break;
+        case vgerCircle:
+            d = sdCircle(p - prim.cvs[0], prim.radius);
+            break;
+        case vgerArc:
+            d = sdArc2(p - prim.cvs[0], prim.cvs[1], prim.cvs[2], prim.radius, prim.width/2);
+            break;
+        case vgerRect:
+        case vgerGlyph: {
+            auto center = .5*(prim.cvs[1] + prim.cvs[0]);
+            auto size = prim.cvs[1] - prim.cvs[0];
+            d = sdBox(p - center, .5*size, prim.radius);
+        }
+            break;
+        case vgerRectStroke: {
+            auto center = .5*(prim.cvs[1] + prim.cvs[0]);
+            auto size = prim.cvs[1] - prim.cvs[0];
+            d = abs(sdBox(p - center, .5*size, prim.radius)) - prim.width/2;
+        }
+            break;
+        case vgerSegment:
+            d = sdSegment2(p, prim.cvs[0], prim.cvs[1], prim.width);
+            break;
+        case vgerCurve:
+            for(int i=0; i<prim.count; i++) {
+                int j = prim.start + 3*i;
+                d = min(d, sdBezierApprox(p, cvs[j], cvs[j+1], cvs[j+2]));
+            }
+            break;
+        case vgerWire:
+            d = sdWire(p, prim.cvs[0], prim.cvs[1]);
+            break;
+        case vgerPathFill:
+            for(int i=0; i<prim.count; i++) {
+                int j = prim.start + 3*i;
+                auto a = cvs[j];
+                auto b = cvs[j+1];
+                auto c = cvs[j+2];
+
+                bool close = true;
+                auto xmax = p.x + filterWidth;
+                auto xmin = p.x - filterWidth;
+
+                // If the hull is far enough away, don't bother with
+                // a sdf.
+                if(a.x > xmax and b.x > xmax and c.x > xmax) {
+                    close = false;
+                } else if(a.x < xmin and b.x < xmin and c.x < xmin) {
+                    close = false;
+                }
+
+                if(close) {
+                    d = min(d, udBezier(p, a, b, c));
+
+                    // Flip if inside area between curve and line.
+                    if(bezierTest(p, a, b, c)) {
+                        s = -s;
+                    }
+                }
+
+                if(lineTest(p, a, c)) {
+                    s = -s;
+                }
+
+            }
+            d *= s;
+            break;
+        default:
+            break;
+    }
+    return d;
+}
+
 /// Calculates bounds for prims.
 kernel void vger_bounds(uint gid [[thread_position_in_grid]],
                         device vgerPrim* prims,
