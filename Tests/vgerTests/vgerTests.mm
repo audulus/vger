@@ -143,6 +143,7 @@ static void SplitBezier(float t,
     vgerStrokeRect(vg, float2{400,100}, float2{450,150}, 10, 2.0, magenta);
     vgerStrokeWire(vg, float2{200,100}, float2{300,200}, 3, white);
 
+    // Basic stroke test.
     vgerSave(vg);
     vgerScale(vg, float2{100, 100});
     float2 cvs2[] = {0, {1,0}, {1,1}, {0,1}, {0, 2}, {0,1} };
@@ -150,6 +151,17 @@ static void SplitBezier(float t,
     vgerQuadTo(vg, cvs2[1], cvs2[2]);
     vgerQuadTo(vg, cvs2[3], cvs2[4]);
     vgerQuadTo(vg, cvs2[5], cvs2[0]);
+    vgerFill(vg, white);
+    vgerRestore(vg);
+
+    // Stroke test with quadratic bezier with start and end
+    // cvs at the same y.
+    vgerSave(vg);
+    vgerTranslate(vg, float2{20, 200});
+    vgerScale(vg, float2{100, 100});
+    vgerMoveTo(vg, float2{0,0});
+    vgerLineTo(vg, float2{1,0});
+    vgerQuadTo(vg, float2{.5, .5}, float2{0,0});
     vgerFill(vg, white);
     vgerRestore(vg);
 
