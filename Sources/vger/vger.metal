@@ -15,7 +15,7 @@ struct VertexOut {
     int primIndex;
 };
 
-float udBezierApprox(float2 p, float2 A, float2 B, float2 C) {
+float udBezierApproxGrad(float2 p, float2 A, float2 B, float2 C) {
 
     // Compute barycentric coordinates of p.
     // p = s * A + t * B + (1-s-t) * C
@@ -78,7 +78,7 @@ float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p, fl
                 auto b = cvs[j+1];
                 auto c = cvs[j+2];
 
-                d = min(d, udBezierApprox(p, a, b, c));
+                d = min(d, udBezierApproxGrad(p, a, b, c));
 
                 // Flip if inside area between curve and line.
                 if(bezierTest(p, a, b, c)) {
