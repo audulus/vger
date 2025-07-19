@@ -20,7 +20,7 @@ float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p, fl
     float s = 1;
     switch(prim.type) {
         case vgerBezier:
-            d = sdBezierApprox(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]) - prim.width;
+            d = udBezierApprox(p, prim.cvs[0], prim.cvs[1], prim.cvs[2]) - prim.width;
             break;
         case vgerCircle:
             d = sdCircle(p - prim.cvs[0], prim.radius);
@@ -47,7 +47,7 @@ float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p, fl
         case vgerCurve:
             for(int i=0; i<prim.count; i++) {
                 int j = prim.start + 3*i;
-                d = min(d, sdBezierApprox(p, cvs[j], cvs[j+1], cvs[j+2]));
+                d = min(d, udBezierApprox(p, cvs[j], cvs[j+1], cvs[j+2]));
             }
             break;
         case vgerWire:

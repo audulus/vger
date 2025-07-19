@@ -253,7 +253,7 @@ inline float2 get_distance_vector(float2 b0, float2 b1, float2 b2) {
     
 }
 
-inline float sdBezierApprox(float2 p, float2 A, float2 B, float2 C) {
+inline float udBezierApprox(float2 p, float2 A, float2 B, float2 C) {
 
     float2 v0 = normalize(B - A), v1 = normalize(C - A);
     float det = v0.x * v1.y - v1.x * v0.y;
