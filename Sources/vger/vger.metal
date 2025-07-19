@@ -113,27 +113,6 @@ kernel void vger_bounds(uint gid [[thread_position_in_grid]],
     }
 }
 
-/// Removes a prim if its texture region is outside the rendered geometry.
-kernel void vger_prune(uint gid [[thread_position_in_grid]],
-                       device vgerPrim* prims,
-                       const device float2* cvs,
-                       constant uint& primCount) {
-
-    if(gid < primCount) {
-        device auto& prim = prims[gid];
-
-        auto center = 0.5 * (prim.texBounds[0] + prim.texBounds[1]);
-        auto tile_size = prim.texBounds[1] - prim.texBounds[0];
-
-        if(sdPrim(prim, cvs, center) > max(tile_size.x, tile_size.y) * 0.5 * SQRT_2) {
-            float2 big = {FLT_MAX, FLT_MAX};
-            prim.quadBounds[0] = big;
-            prim.quadBounds[1] = big;
-        }
-
-    }
-}
-
 vertex VertexOut vger_vertex(uint vid [[vertex_id]],
                              uint iid [[instance_id]],
                              const device vgerPrim* prims,
