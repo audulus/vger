@@ -15,6 +15,24 @@ struct VertexOut {
     int primIndex;
 };
 
+float udBezierApprox(float2 p, float2 A, float2 B, float2 C) {
+
+    // Compute barycentric coordinates of p.
+    // p = s * A + t * B + (1-s-t) * C
+    float2 v0 = B - A, v1 = C - A, v2 = p - A;
+    float det = v0.x * v1.y - v1.x * v0.y;
+    float s = (v2.x * v1.y - v1.x * v2.y) / det;
+    float t = (v0.x * v2.y - v2.x * v0.y) / det;
+
+    // Transform to canonical coordinte space.
+    float u = s * .5 + t;
+    float v = t;
+
+    float g = u*u - v;
+
+    return abs(g / length(float2(dfdx(g), dfdy(g))));
+}
+
 float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p, float filterWidth = 0) {
     float d = FLT_MAX;
     float s = 1;
@@ -60,25 +78,11 @@ float sdPrim(const DEVICE vgerPrim& prim, const DEVICE float2* cvs, float2 p, fl
                 auto b = cvs[j+1];
                 auto c = cvs[j+2];
 
-                bool close = true;
-                auto xmax = p.x + filterWidth;
-                auto xmin = p.x - filterWidth;
+                d = min(d, udBezierApprox(p, a, b, c));
 
-                // If the hull is far enough away, don't bother with
-                // a sdf.
-                if(a.x > xmax and b.x > xmax and c.x > xmax) {
-                    close = false;
-                } else if(a.x < xmin and b.x < xmin and c.x < xmin) {
-                    close = false;
-                }
-
-                if(close) {
-                    d = min(d, udBezier(p, a, b, c));
-
-                    // Flip if inside area between curve and line.
-                    if(bezierTest(p, a, b, c)) {
-                        s = -s;
-                    }
+                // Flip if inside area between curve and line.
+                if(bezierTest(p, a, b, c)) {
+                    s = -s;
                 }
 
                 if(lineTest(p, a, c)) {
