@@ -264,6 +264,11 @@ void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPain
     float2 d1 = rot90 * width * normalize(s.c - s.a);
     float2 d2 = rot90 * width * normalize(s.c - s.b);
 
+    // Don't render degenerate curves.
+    if (any(isnan(d0)) || any(isnan(d1)) || any(isnan(d2))) {
+        return;
+    }
+
     vgerMoveTo(vg, s.a - d0);
     vgerQuadTo(vg, s.b - d1, s.c - d2);
     vgerLineTo(vg, s.c + d2);
