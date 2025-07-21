@@ -270,9 +270,8 @@ void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPain
     vgerQuadTo(vg, s.b + d1, s.a + d0);
     vgerLineTo(vg, s.a - d0);
     vgerFill(vg, paint);
-#endif
 
-#if 0
+#else
 
     // Are the points degenerate?
     // This may not work in general because these are pre-transformed coordinates.
