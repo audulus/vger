@@ -293,18 +293,18 @@ void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPain
     };
     
     // First, subdivide the curve if needed
-    std::vector<vgerBezierSegment> segments;
-    subdivideBezierForStroke(s, width, segments);
+    vg->segments.clear();
+    subdivideBezierForStroke(s, width, vg->segments);
 
     // If no valid segments, don't render
-    if (segments.empty()) {
+    if (vg->segments.empty()) {
         return;
     }
     
     // Generate a single closed path from all segments
     std::vector<float2> top_points, bottom_points;
     
-    for (const auto& seg : segments) {
+    for (const auto& seg : vg->segments) {
         // Calculate tangent vectors for this segment
         float2 d0 = rot90 * width * normalize(seg.b - seg.a);
         float2 d1 = rot90 * width * normalize(seg.c - seg.a);  

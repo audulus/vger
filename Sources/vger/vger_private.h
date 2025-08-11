@@ -126,6 +126,9 @@ struct vger {
     /// Used in vgerTextBounds.
     std::vector<CGPoint> origins;
 
+    /// Used in vgerStrokeBezier.
+    std::vector<vgerBezierSegment> segments;
+
     vger(uint32_t flags, MTLPixelFormat pixelFormat);
 
     void addPrim(const vgerPrim& prim) {
