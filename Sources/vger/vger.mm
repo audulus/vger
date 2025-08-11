@@ -302,7 +302,8 @@ void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPain
     }
     
     // Generate a single closed path from all segments
-    std::vector<float2> top_points, bottom_points;
+    vg->top_points.clear();
+    vg->bottom_points.clear();
     
     for (const auto& seg : vg->segments) {
         // Calculate tangent vectors for this segment
@@ -323,42 +324,42 @@ void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPain
         }
         
         // Add points for top edge of stroke (left side as we trace the curve)
-        if (top_points.empty()) {
-            top_points.push_back(seg.a - d0);  // Start point
+        if (vg->top_points.empty()) {
+            vg->top_points.push_back(seg.a - d0);  // Start point
         }
-        top_points.push_back(seg.b - d1);      // Control point
-        top_points.push_back(seg.c - d2);      // End point
+        vg->top_points.push_back(seg.b - d1);      // Control point
+        vg->top_points.push_back(seg.c - d2);      // End point
         
         // Add points for bottom edge of stroke (right side, will be traced in reverse)
-        if (bottom_points.empty()) {
-            bottom_points.push_back(seg.a + d0);  // Start point
+        if (vg->bottom_points.empty()) {
+            vg->bottom_points.push_back(seg.a + d0);  // Start point
         }
-        bottom_points.push_back(seg.b + d1);      // Control point  
-        bottom_points.push_back(seg.c + d2);      // End point
+        vg->bottom_points.push_back(seg.b + d1);      // Control point  
+        vg->bottom_points.push_back(seg.c + d2);      // End point
     }
     
     // Create single closed path by tracing top edge forward, then bottom edge backward
-    vgerMoveTo(vg, top_points[0]);
+    vgerMoveTo(vg, vg->top_points[0]);
     
     // Trace top edge with quadratic bezier segments
-    for (size_t i = 1; i < top_points.size(); i += 2) {
-        if (i + 1 < top_points.size()) {
-            vgerQuadTo(vg, top_points[i], top_points[i + 1]);
+    for (size_t i = 1; i < vg->top_points.size(); i += 2) {
+        if (i + 1 < vg->top_points.size()) {
+            vgerQuadTo(vg, vg->top_points[i], vg->top_points[i + 1]);
         }
     }
     
     // Connect to bottom edge
-    vgerLineTo(vg, bottom_points.back());
+    vgerLineTo(vg, vg->bottom_points.back());
     
     // Trace bottom edge in reverse with quadratic bezier segments
-    for (int i = (int)bottom_points.size() - 2; i >= 1; i -= 2) {
+    for (int i = (int)vg->bottom_points.size() - 2; i >= 1; i -= 2) {
         if (i - 1 >= 0) {
-            vgerQuadTo(vg, bottom_points[i], bottom_points[i - 1]);
+            vgerQuadTo(vg, vg->bottom_points[i], vg->bottom_points[i - 1]);
         }
     }
     
     // Close the path
-    vgerLineTo(vg, top_points[0]);
+    vgerLineTo(vg, vg->top_points[0]);
     vgerFill(vg, paint);
 
 #else

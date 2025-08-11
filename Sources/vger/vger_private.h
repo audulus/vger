@@ -129,6 +129,9 @@ struct vger {
     /// Used in vgerStrokeBezier.
     std::vector<vgerBezierSegment> segments;
 
+    /// Used in vgerStrokeBezier.
+    std::vector<float2> top_points, bottom_points;
+
     vger(uint32_t flags, MTLPixelFormat pixelFormat);
 
     void addPrim(const vgerPrim& prim) {
