@@ -246,34 +246,119 @@ void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float 
 
 }
 
+// Helper function to subdivide a bezier curve and collect segments
+static void subdivideBezierForStroke(vgerBezierSegment s, float width, std::vector<vgerBezierSegment>& segments) {
+    const float min_length = 0.001f;
+    
+    // Check if this curve needs subdivision
+    float2 chord = s.c - s.a;
+    float chord_length = simd_length(chord);
+    
+    if (chord_length < min_length) {
+        return; // Skip degenerate curves
+    }
+    
+    // Calculate curve deviation from its chord
+    float2 mid_point = 0.25f * s.a + 0.5f * s.b + 0.25f * s.c; // Approximate curve midpoint
+    float2 chord_mid = 0.5f * (s.a + s.c);
+    float deviation = simd_length(mid_point - chord_mid);
+    
+    // Subdivide if deviation is too high relative to stroke width
+    if (deviation > width * 1.5f && chord_length > width * 2.0f) {
+        // Subdivide using De Casteljau's algorithm
+        float2 ab = 0.5f * (s.a + s.b);
+        float2 bc = 0.5f * (s.b + s.c);
+        float2 mid = 0.5f * (ab + bc);
+        
+        // Recursively subdivide both halves
+        subdivideBezierForStroke({s.a, ab, mid}, width, segments);
+        subdivideBezierForStroke({mid, bc, s.c}, width, segments);
+    } else {
+        // Curve is acceptable, add to segments
+        segments.push_back(s);
+    }
+}
+
 void vgerStrokeBezier(vgerContext vg, vgerBezierSegment s, float width, vgerPaintIndex paint) {
 
     if(!vg->checkPaint(paint)) return;
 
 #if 1
-    // Improve quality of beziers by rendering as fills.
-
-    // 90 degrees CCW
+    // Improved bezier stroke rendering: subdivide first, then create single path
+    
+    // 90 degrees CCW rotation matrix
     float2x2 rot90{
         float2{0, 1},
         float2{-1, 0}
     };
+    
+    // First, subdivide the curve if needed
+    std::vector<vgerBezierSegment> segments;
+    subdivideBezierForStroke(s, width, segments);
 
-    // Tangents.
-    float2 d0 = rot90 * width * normalize(s.b - s.a);
-    float2 d1 = rot90 * width * normalize(s.c - s.a);
-    float2 d2 = rot90 * width * normalize(s.c - s.b);
-
-    // Don't render degenerate curves.
-    if (any(isnan(d0)) || any(isnan(d1)) || any(isnan(d2))) {
+    // If no valid segments, don't render
+    if (segments.empty()) {
         return;
     }
-
-    vgerMoveTo(vg, s.a - d0);
-    vgerQuadTo(vg, s.b - d1, s.c - d2);
-    vgerLineTo(vg, s.c + d2);
-    vgerQuadTo(vg, s.b + d1, s.a + d0);
-    vgerLineTo(vg, s.a - d0);
+    
+    // Generate a single closed path from all segments
+    std::vector<float2> top_points, bottom_points;
+    
+    for (const auto& seg : segments) {
+        // Calculate tangent vectors for this segment
+        float2 d0 = rot90 * width * normalize(seg.b - seg.a);
+        float2 d1 = rot90 * width * normalize(seg.c - seg.a);  
+        float2 d2 = rot90 * width * normalize(seg.c - seg.b);
+        
+        // Handle degenerate cases
+        if (any(isnan(d0)) || any(isnan(d1)) || any(isnan(d2))) {
+            float2 chord = seg.c - seg.a;
+            float chord_length = simd_length(chord);
+            if (chord_length < 0.001f) continue;
+            
+            float2 chord_normal = rot90 * normalize(chord) * width;
+            d0 = chord_normal;
+            d1 = chord_normal;
+            d2 = chord_normal;
+        }
+        
+        // Add points for top edge of stroke (left side as we trace the curve)
+        if (top_points.empty()) {
+            top_points.push_back(seg.a - d0);  // Start point
+        }
+        top_points.push_back(seg.b - d1);      // Control point
+        top_points.push_back(seg.c - d2);      // End point
+        
+        // Add points for bottom edge of stroke (right side, will be traced in reverse)
+        if (bottom_points.empty()) {
+            bottom_points.push_back(seg.a + d0);  // Start point
+        }
+        bottom_points.push_back(seg.b + d1);      // Control point  
+        bottom_points.push_back(seg.c + d2);      // End point
+    }
+    
+    // Create single closed path by tracing top edge forward, then bottom edge backward
+    vgerMoveTo(vg, top_points[0]);
+    
+    // Trace top edge with quadratic bezier segments
+    for (size_t i = 1; i < top_points.size(); i += 2) {
+        if (i + 1 < top_points.size()) {
+            vgerQuadTo(vg, top_points[i], top_points[i + 1]);
+        }
+    }
+    
+    // Connect to bottom edge
+    vgerLineTo(vg, bottom_points.back());
+    
+    // Trace bottom edge in reverse with quadratic bezier segments
+    for (int i = (int)bottom_points.size() - 2; i >= 1; i -= 2) {
+        if (i - 1 >= 0) {
+            vgerQuadTo(vg, bottom_points[i], bottom_points[i - 1]);
+        }
+    }
+    
+    // Close the path
+    vgerLineTo(vg, top_points[0]);
     vgerFill(vg, paint);
 
 #else
