@@ -939,4 +939,36 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
     vgerDelete(vger);
 }
 
+- (void) testHighCurvatureBezierStroke {
+    
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
+    
+    vgerBegin(vger, 512, 512, 1.0);
+    
+    auto red = vgerColorPaint(vger, float4{1,0,0,1});
+    auto green = vgerColorPaint(vger, float4{0,1,0,1});
+    auto blue = vgerColorPaint(vger, float4{0,0,1,1});
+    auto cyan = vgerColorPaint(vger, float4{0,1,1,1});
+    auto magenta = vgerColorPaint(vger, float4{1,0,1,1});
+    auto yellow = vgerColorPaint(vger, float4{1,1,0,1});
+    auto white = vgerColorPaint(vger, float4{1,1,1,1});
+    
+    vgerStrokeBezier(vger, {{100, 200}, {120, 100}, {140, 200}}, 10, red);
+    
+    vgerStrokeBezier(vger, {{200, 200}, {201, 150}, {202, 200}}, 8, green);
+    
+    vgerStrokeBezier(vger, {{300, 200}, {305, 120}, {310, 200}}, 12, blue);
+    
+    vgerStrokeBezier(vger, {{100, 350}, {150, 250}, {200, 350}}, 6, cyan);
+    
+    vgerStrokeBezier(vger, {{300, 350}, {350, 280}, {320, 380}}, 8, magenta);
+    
+    vgerFillCircle(vger, float2{450, 200}, 5, yellow);  // Small filled circles for reference
+    vgerFillCircle(vger, float2{450, 350}, 4, white);
+    
+    [self render:vger name:@"high_curvature_bezier_strokes.png"];
+    
+    vgerDelete(vger);
+}
+
 @end
