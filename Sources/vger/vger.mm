@@ -124,10 +124,13 @@ vgerImageIndex vgerCreateImage(vgerContext vg, const char* filename) {
 
 vgerImageIndex vgerCreateImageMem(vgerContext vg, const uint8_t* data, size_t size) {
 
-    assert(data);
+    if (data == nullptr) {
+        NSLog(@"vgerCreateImageMem: data is null");
+        return {0};
+    }
 
     if(size == 0) {
-        NSLog(@"Error: image data is empty");
+        NSLog(@"vgerCreateImageMem: image data is empty");
         return {0};
     }
 
@@ -137,7 +140,7 @@ vgerImageIndex vgerCreateImageMem(vgerContext vg, const uint8_t* data, size_t si
     auto tex = [vg->textureLoader newTextureWithData:nsdata options:nil error:&error];
 
     if(error) {
-        NSLog(@"error loading texture: %@", error);
+        NSLog(@"vgerCreateImageMem: error loading texture: %@", error);
         return {0};
     }
 
@@ -145,7 +148,11 @@ vgerImageIndex vgerCreateImageMem(vgerContext vg, const uint8_t* data, size_t si
 }
 
 vgerImageIndex vgerAddTexture(vgerContext vg, const uint8_t* data, int width, int height) {
-    assert(data);
+
+    if (data == nullptr) {
+        NSLog(@"vgerAddTexture: data is null");
+        return {0};
+    }
 
     auto desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm width:width height:height mipmapped:NO];
     desc.usage = MTLTextureUsageShaderRead;
