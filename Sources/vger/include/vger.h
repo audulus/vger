@@ -152,6 +152,11 @@ void vgerCubicApproxTo(vgerContext vg, vector_float2 b, vector_float2 c, vector_
 /// Returns false if there were too many primitives to render the fill.
 bool vgerFill(vgerContext, vgerPaintIndex paint);
 
+/// Clear path information.
+///
+/// This is useful for ensuring scripts don't mess up other rendering.
+void vgerCancelPath(vgerContext vg);
+
 #pragma mark - Transforms
 
 /// Translates current coordinate system.

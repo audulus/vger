@@ -887,6 +887,10 @@ bool vgerFill(vgerContext vg, vgerPaintIndex paint) {
     return vg->fill(paint);
 }
 
+void vgerCancelPath(vgerContext vg) {
+    vg->yScanner.segments.clear();
+}
+
 void vgerEncode(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
     vg->encode(buf, pass, false);
 }
