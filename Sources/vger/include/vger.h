@@ -93,6 +93,9 @@ vgerImageIndex vgerAddMTLTexture(vgerContext, id<MTLTexture>);
 /// Remove a texture.
 void vgerDeleteTexture(vgerContext, vgerImageIndex texID);
 
+/// Remove all textures.
+void vgerDeleteTextures(vgerContext);
+
 /// Get the size of a texture.
 vector_int2 vgerTextureSize(vgerContext, vgerImageIndex texID);
 

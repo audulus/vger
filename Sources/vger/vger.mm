@@ -181,6 +181,10 @@ void vgerDeleteTexture(vgerContext vg, vgerImageIndex texID) {
     [vg->textures setObject:vg->nullTexture atIndexedSubscript:texID.index];
 }
 
+void vgerDeleteTextures(vgerContext vg) {
+    assert(vg);
+    [vg->textures removeAllObjects];
+}
 
 vector_int2 vgerTextureSize(vgerContext vg, vgerImageIndex texID) {
     assert(vg);
