@@ -495,6 +495,9 @@ static void textAt(vgerContext vger, float x, float y, const char* str) {
 
 - (void) testPrimDemo {
 
+    // Match the baseline regardless of earlier tests that also consume rand().
+    srand(1);
+
     auto cyan = float4{0,1,1,1};
     auto magenta = float4{1,0,1,1};
 
