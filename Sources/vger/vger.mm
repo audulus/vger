@@ -199,10 +199,10 @@ void vgerFillCircle(vgerContext vg, vector_float2 center, float radius, vgerPain
 
     vgerPrim prim {
         .type = vgerCircle,
-        .cvs = { center },
-        .radius = radius,
-        .paint = paint.index,
         .width = 0.0,
+        .radius = radius,
+        .cvs = { center },
+        .paint = paint.index,
         .xform = vg->addxform(vg->txStack.back())
     };
 
@@ -215,9 +215,9 @@ void vgerStrokeArc(vgerContext vg, vector_float2 center, float radius, float wid
 
     vgerPrim prim {
         .type = vgerArc,
+        .width = width,
         .radius = radius,
         .cvs = { center, {sin(rotation), cos(rotation)}, {sin(aperture), cos(aperture)} },
-        .width = width,
         .paint = paint.index,
         .xform = vg->addxform(vg->txStack.back())
     };
@@ -246,8 +246,8 @@ void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float 
 
     vgerPrim prim {
         .type = vgerRectStroke,
-        .radius = radius,
         .width = width,
+        .radius = radius,
         .cvs = { min, max },
         .paint = paint.index,
         .xform = vg->addxform(vg->txStack.back())
@@ -529,12 +529,12 @@ void vger::renderTextLine(CTLineRef line, TextLayoutInfo& textInfo, vgerPaintInd
                 vgerPrim prim = {
                     .type = vgerGlyph,
                     .paint = paint.index,
+                    .xform = xform,
                     .quadBounds = { a, b },
                     .texBounds = {
                         float2{GLYPH_MARGIN,   originY},
                         float2{GLYPH_MARGIN+w, originY-h}
                     },
-                    .xform = xform
                 };
 
                 prim.glyph = info.regionIndex;
@@ -816,10 +816,10 @@ bool vger::fill(vgerPaintIndex paint) {
 
         vgerPrim prim = {
             .type = vgerPathFill,
+            .start = static_cast<uint32_t>(scenes[currentScene].cvs.count),
+            .count = uint16_t(n),
             .paint = paint.index,
             .xform = xform,
-            .start = static_cast<uint32_t>(scenes[currentScene].cvs.count),
-            .count = uint16_t(n)
         };
 
         Interval xInt{FLT_MAX, -FLT_MAX};
