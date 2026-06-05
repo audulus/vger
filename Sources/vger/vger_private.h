@@ -120,8 +120,8 @@ struct vger {
     /// For loading images from files.
     MTKTextureLoader* textureLoader;
 
-    /// Have we already computed glyph bounds?
-    bool computedGlyphBounds = false;
+    /// Have we already computed glyph bounds for each layer?
+    bool computedGlyphBounds[VGER_MAX_LAYERS] = {};
 
     /// Used in vgerTextBounds.
     std::vector<CGPoint> origins;
@@ -173,6 +173,8 @@ struct vger {
     void fillForTile(vgerPaintIndex paint);
 
     void encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, bool glow);
+
+    void encodeLayer(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, int layer, bool glow);
 
     void encodeTileRender(id<MTLCommandBuffer> buf, id<MTLTexture> renderTexture);
 

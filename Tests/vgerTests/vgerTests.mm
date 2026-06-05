@@ -931,6 +931,59 @@ void makeCircle(vgerContext vger, float2 center, float radius) {
     vgerDelete(vger);
 }
 
+- (void) testEncodeLayerOnlyRendersRequestedLayer {
+
+    auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);
+    vgerSetLayerCount(vger, 2);
+
+    vgerBegin(vger, 512, 512, 1.0);
+
+    auto cyan = vgerColorPaint(vger, float4{0,1,1,1});
+    auto magenta = vgerColorPaint(vger, float4{1,0,1,1});
+
+    vgerSetLayer(vger, 0);
+    vgerFillCircle(vger, float2{256,256}, 80, cyan);
+
+    vgerSetLayer(vger, 1);
+    vgerFillCircle(vger, float2{256,256}, 40, magenta);
+
+    auto commandBuffer = [queue commandBuffer];
+    vgerEncodeLayer(vger, commandBuffer, pass, 1);
+
+    #if TARGET_OS_OSX
+    auto blitEncoder = [commandBuffer blitCommandEncoder];
+    [blitEncoder synchronizeResource:texture];
+    [blitEncoder endEncoding];
+    #endif
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    const int width = int(texture.width);
+    const int height = int(texture.height);
+    std::vector<UInt8> pixels(4 * width * height);
+    [texture getBytes:pixels.data()
+          bytesPerRow:4 * width
+            fromRegion:MTLRegionMake2D(0, 0, width, height)
+           mipmapLevel:0];
+
+    auto pixel = [&](int x, int y) {
+        return &pixels[4 * (y * width + x)];
+    };
+
+    auto center = pixel(256, 256);
+    XCTAssertGreaterThan(int(center[0]), 240);
+    XCTAssertLessThan(int(center[1]), 16);
+    XCTAssertGreaterThan(int(center[2]), 240);
+
+    auto layerZeroOnly = pixel(316, 256);
+    XCTAssertLessThan(int(layerZeroOnly[0]), 16);
+    XCTAssertLessThan(int(layerZeroOnly[1]), 16);
+    XCTAssertLessThan(int(layerZeroOnly[2]), 16);
+
+    vgerDelete(vger);
+}
+
 - (void) testPathRectangle {
 
     auto vger = vgerNew(0, MTLPixelFormatBGRA8Unorm);

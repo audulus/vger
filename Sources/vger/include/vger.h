@@ -201,6 +201,9 @@ void vgerSetLayer(vgerContext, int layer);
 /// Encode drawing commands to a metal command buffer.
 void vgerEncode(vgerContext, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 
+/// Encode drawing commands from one layer to a metal command buffer.
+void vgerEncodeLayer(vgerContext, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, int layer);
+
 /// Encode drawing commands to a metal command buffer for the glow pass.
 void vgerEncodeGlowPass(vgerContext, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass);
 

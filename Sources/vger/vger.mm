@@ -78,7 +78,9 @@ void vger::begin(float windowWidth, float windowHeight, float devicePxRatio) {
     currentLayer = 0;
     windowSize = {windowWidth, windowHeight};
     this->devicePxRatio = devicePxRatio;
-    computedGlyphBounds = false;
+    for(int layer=0; layer<VGER_MAX_LAYERS; ++layer) {
+        computedGlyphBounds[layer] = false;
+    }
 
     // Prune the text cache.
     for(auto it = std::begin(textCache); it != std::end(textCache);) {
@@ -921,53 +923,63 @@ void vgerCancelPath(vgerContext vg) {
 }
 
 void vgerEncode(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
-    vg->encode(buf, pass, false);
+    for(int layer = 0; layer < vg->layerCount; ++layer) {
+        if(layer) {
+            pass.colorAttachments[0].loadAction = MTLLoadActionLoad;
+        }
+
+        vgerEncodeLayer(vg, buf, pass, layer);
+    }
+}
+
+void vgerEncodeLayer(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, int layer) {
+    assert(layer < VGER_MAX_LAYERS);
+    assert(layer >= 0);
+    vg->encodeLayer(buf, pass, layer, false);
 }
 
 void vger::encode(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, bool glow) {
+    for(int layer = 0; layer < layerCount; ++layer) {
+        if(layer) {
+            pass.colorAttachments[0].loadAction = MTLLoadActionLoad;
+        }
+
+        encodeLayer(buf, pass, layer, glow);
+    }
+}
+
+void vger::encodeLayer(id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass, int layer, bool glow) {
 
     [glyphCache update:buf];
 
     auto glyphRects = [glyphCache getRects];
     auto& scene = scenes[currentScene];
+    auto count = scene.prims[layer].count;
 
-    bool computeGlyphBounds = false;
-    if(!computedGlyphBounds) {
-        computeGlyphBounds = true;
-        computedGlyphBounds = true;
-    }
-
-    for(int layer = 0; layer < layerCount; ++layer) {
-
-        auto count = scene.prims[layer].count;
-
-        if(computeGlyphBounds) {
-            auto primp = scene.prims[layer].ptr;
-            for(int i=0;i<count;++i) {
-                auto& prim = primp[i];
-                if(prim.type == vgerGlyph) {
-                    auto r = glyphRects[prim.glyph-1];
-                    for(int i=0;i<2;++i) {
-                        prim.texBounds[i] += float2{float(r.x), float(r.y)};
-                    }
+    if(!computedGlyphBounds[layer]) {
+        auto primp = scene.prims[layer].ptr;
+        for(int i=0;i<count;++i) {
+            auto& prim = primp[i];
+            if(prim.type == vgerGlyph) {
+                auto r = glyphRects[prim.glyph-1];
+                for(int i=0;i<2;++i) {
+                    prim.texBounds[i] += float2{float(r.x), float(r.y)};
                 }
             }
         }
 
-        if(layer) {
-            pass.colorAttachments[0].loadAction = MTLLoadActionLoad;
-        }
-
-        [(glow ? glowRenderer : renderer) encodeTo:buf
-                                              pass:pass
-                                             scene:scene
-                                             count:int(count)
-                                             layer:layer
-                                          textures:textures
-                                      glyphTexture:[glyphCache getAltas]
-                                        windowSize:windowSize
-                                              glow:glow];
+        computedGlyphBounds[layer] = true;
     }
+
+    [(glow ? glowRenderer : renderer) encodeTo:buf
+                                          pass:pass
+                                         scene:scene
+                                         count:int(count)
+                                         layer:layer
+                                      textures:textures
+                                  glyphTexture:[glyphCache getAltas]
+                                    windowSize:windowSize
+                                          glow:glow];
 }
 
 void vgerEncodeGlowPass(vgerContext vg, id<MTLCommandBuffer> buf, MTLRenderPassDescriptor* pass) {
