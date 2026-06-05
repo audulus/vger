@@ -244,16 +244,41 @@ void vgerStrokeRect(vgerContext vg, vector_float2 min, vector_float2 max, float 
 
     if(!vg->checkPaint(paint)) return;
 
-    vgerPrim prim {
-        .type = vgerRectStroke,
-        .width = width,
-        .radius = radius,
-        .cvs = { min, max },
-        .paint = paint.index,
-        .xform = vg->addxform(vg->txStack.back())
+    const float pad = width + 1.0f;
+    const float corner = radius > pad ? radius : pad;
+    const uint32_t xform = vg->addxform(vg->txStack.back());
+
+    auto addStrokePrim = [&](float2 boundsMin, float2 boundsMax) {
+        vgerPrim prim {
+            .type = vgerRectStroke,
+            .width = width,
+            .radius = radius,
+            .cvs = { min, max },
+            .paint = paint.index,
+            .xform = xform,
+            .quadBounds = { boundsMin, boundsMax },
+            .texBounds = { boundsMin, boundsMax }
+        };
+        vg->addPrim(prim);
     };
 
-    vg->addPrim(prim);
+    addStrokePrim(float2{min.x + corner, min.y - pad},
+                  float2{max.x - corner, min.y + pad});
+    addStrokePrim(float2{max.x - pad, min.y + corner},
+                  float2{max.x + pad, max.y - corner});
+    addStrokePrim(float2{min.x + corner, max.y - pad},
+                  float2{max.x - corner, max.y + pad});
+    addStrokePrim(float2{min.x - pad, min.y + corner},
+                  float2{min.x + pad, max.y - corner});
+
+    addStrokePrim(float2{min.x - pad, min.y - pad},
+                  float2{min.x + corner, min.y + corner});
+    addStrokePrim(float2{max.x - corner, min.y - pad},
+                  float2{max.x + pad, min.y + corner});
+    addStrokePrim(float2{max.x - corner, max.y - corner},
+                  float2{max.x + pad, max.y + pad});
+    addStrokePrim(float2{min.x - pad, max.y - corner},
+                  float2{min.x + corner, max.y + pad});
 
 }
 

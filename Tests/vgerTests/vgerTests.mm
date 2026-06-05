@@ -121,6 +121,20 @@ static void SplitBezier(float t,
     XCTAssertEqual(sizeof(vgerPrim), 96);
 }
 
+- (void) testStrokeRectPrimCount {
+    auto vg = vgerNew(0, MTLPixelFormatBGRA8Unorm);
+    vgerBegin(vg, 512, 512, 1.0);
+
+    auto paint = vgerColorPaint(vg, float4{1,0,1,1});
+    auto before = vgerPrimCount(vg);
+    vgerStrokeRect(vg, float2{100,100}, float2{200,200}, 10, 2, paint);
+    auto after = vgerPrimCount(vg);
+
+    XCTAssertEqual(after - before, 8);
+
+    vgerDelete(vg);
+}
+
 - (void) testBasic {
 
     float theta = 0;
