@@ -112,9 +112,10 @@ void vgerBegin(vgerContext vg, float windowWidth, float windowHeight, float devi
 vgerImageIndex vgerCreateImage(vgerContext vg, const char* filename) {
 
     auto url = [NSURL fileURLWithPath:[NSString stringWithUTF8String:filename]];
+    auto options = @{ MTKTextureLoaderOptionSRGB: @NO };
 
     NSError* error;
-    auto tex = [vg->textureLoader newTextureWithContentsOfURL:url options:nil error:&error];
+    auto tex = [vg->textureLoader newTextureWithContentsOfURL:url options:options error:&error];
 
     if(error) {
         NSLog(@"error loading texture: %@", error);
@@ -137,9 +138,10 @@ vgerImageIndex vgerCreateImageMem(vgerContext vg, const uint8_t* data, size_t si
     }
 
     auto nsdata = [NSData dataWithBytesNoCopy:(void*)data length:size freeWhenDone:NO];
+    auto options = @{ MTKTextureLoaderOptionSRGB: @NO };
 
     NSError* error;
-    auto tex = [vg->textureLoader newTextureWithData:nsdata options:nil error:&error];
+    auto tex = [vg->textureLoader newTextureWithData:nsdata options:options error:&error];
 
     if(error) {
         NSLog(@"vgerCreateImageMem: error loading texture: %@", error);
